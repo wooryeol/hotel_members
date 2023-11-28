@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">parnas</string>
+
+    <string name="main_finish_toast">뒤로 버튼을 한번 더 누르시면 종료됩니다.</string>
+    <string name="error_camera_permission">카메라 사용 권한을 허용해야 사용할 수 있습니다.</string>
+    <string name="popup_camera_permission">카메라 사용 권한을 허용해야 사용할 수 있습니다.\n설정창으로 가시겠습니까?</string>
+    <string name="popup_storage_permission">카메라 및 내부저장소 사용 권한을 허용해야 사용할 수 있습니다.\n설정창으로 가시겠습니까?</string>
+    <string name="error_storage_permission">카메라 및 내부저장소 사용 권한을 허용해야 사용할 수 있습니다.</string>
+
+    <!-- 버튼 -->
+    <string name="btn_yes">네</string>
+    <string name="btn_no">아니요</string>
+    <string name="btn_confirm">확인</string>
+
+    <!--카카오 로그인-->
+    <string name="kakao_app_key">ad25a9e0b13535621097c8a06b3928a7</string>
+    <string name="kakao_app_key_add_kakao">kakaoad25a9e0b13535621097c8a06b3928a7</string>
+
+    <!-- 최초 접속 url -->
+    <string name="base_url">https://www.parnashotel.com/</string>
+    <!-- 점검일 경우 접속 url -->
+    <string name="sub_url">http://183.99.79.4/info</string>
+</resources>

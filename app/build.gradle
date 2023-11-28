@@ -1,0 +1,94 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
+
+android {
+    compileSdkVersion 34
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        applicationId "kr.co.parnas"
+        minSdkVersion 28
+        targetSdkVersion 31
+        versionCode 21071501
+        versionName "0.9.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        //Cannot fit requested classes in a single dex file 해결을 위해
+        multiDexEnabled true
+    }
+
+    //하위버전 호환을 위해
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            android.applicationVariants.all { variant ->
+                variant.outputs.all {
+                    outputFileName = "SE(" + defaultConfig.versionName + ")_test.apk"
+                }
+            }
+        }
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            android.applicationVariants.all { variant ->
+                variant.outputs.all {
+                    outputFileName = "SE(" + defaultConfig.versionName + ")_release.apk"
+                }
+            }
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    //aab로 스토어에 올릴경우 언어문제로 업로드 안되는 에러가 발생
+    bundle{
+        language{
+            enableSplit = false
+        }
+    }
+    buildFeatures {
+        viewBinding = true
+    }
+}
+
+dependencies {
+    // 카카오
+    implementation'com.kakao.sdk:v2-user:2.13.0'
+
+    implementation ("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
+    implementation ("androidx.core:core-ktx:1.12.0")
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    //Cannot fit requested classes in a single dex file 해결을 위해
+    implementation 'com.android.support:multidex:1.0.3'
+
+    //네트워크 통신 및 json파싱 라이브러리
+    implementation 'com.squareup.retrofit2:retrofit:2.6.2'
+    implementation 'com.squareup.retrofit2:converter-gson:2.6.2'
+    implementation 'com.squareup.retrofit2:converter-scalars:2.6.1'
+    implementation 'com.google.code.gson:gson:2.8.6'
+
+    //QR코드 사용을 위한 라이브러리
+    implementation 'com.journeyapps:zxing-android-embedded:4.2.0'
+}
