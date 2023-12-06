@@ -5,14 +5,16 @@ import android.content.Context
 import android.content.SharedPreferences
 
 object SharedData {
-    const val SHARED_NAME = "SE"
-
+    private const val SHARED_NAME = "PARNAS"
     //deviceId
     const val DEVICE_ID = "device_id"
+    const val DEVICE_TOKEN = "device_token"
     //푸시 토큰
     const val PUSH_TOKEN = "push_token"
+    const val PUSH_SERVICE = "push_service"
     //노티ID
     const val NOTI_ID = "noti_id"
+
 
     fun setSharedData(context: Context, strKey: String, objData: Any): Boolean {
         val prefs = context.getSharedPreferences(SHARED_NAME, Activity.MODE_PRIVATE)

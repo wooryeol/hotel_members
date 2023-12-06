@@ -1,6 +1,11 @@
 package kr.co.parnas.common
 
 object Define {
+
+    var DOMAIN = "https://www.parnashotel.com"
+    /*val ROOT = "https://www.kshp.or.kr/mobile/symposium/2023autumn"*/
+
+
     const val SUCCESS = "success"
     //파일 프로바이더
     val AUTHORITY = "kr.co.mindall.seapp.fileprovider"

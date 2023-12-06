@@ -2,21 +2,17 @@ package kr.co.parnas.menu
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.app.*
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.net.Uri
 import android.net.http.SslError
 import android.os.*
-import android.provider.MediaStore
-import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
@@ -32,28 +28,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import com.google.gson.JsonObject
-import com.google.zxing.integration.android.IntentIntegrator
-import com.google.zxing.integration.android.IntentResult
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
-import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import kr.co.parnas.R
 import kr.co.parnas.common.Define
-import kr.co.parnas.common.PopupFactory
 import kr.co.parnas.common.SharedData
 import kr.co.parnas.common.UtilPermission
 import kr.co.parnas.common.Utils
 import kr.co.parnas.databinding.ActMainBinding
 import org.json.JSONObject
-import java.io.File
-import java.io.IOException
 import java.net.URLDecoder
-import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -63,6 +51,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mActivity: Activity
     private lateinit var webview: WebView
     private var isTwo = false
+    private var mUrl :String? = null
 
     //사진 업로드 관련
     /*private var mUploadMessage: ValueCallback<Array<Uri>>? = null
@@ -84,8 +73,9 @@ class MainActivity : AppCompatActivity() {
 
         webview = mBinding.webview
 
-        val url = getString(R.string.base_url)
-        initWebview(url)
+        val pushUrl = intent.getStringExtra("index")
+        mUrl = pushUrl ?: Define.DOMAIN
+        initWebview(mUrl!!)
     }
 
     @SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
@@ -143,7 +133,8 @@ class MainActivity : AppCompatActivity() {
             false
         }
         webview.webViewClient = object : WebViewClient() {
-            //유효하지 않은 것으로 판단되는 인증서가 문제가 없는지 판단하고 문제가 없을경우 preceed()를 호출하고 아닌경우 cancel을 처리해야만 구글에서 업데이트를 허락함
+            // 유효하지 않은 것으로 판단되는 인증서의 문제가 없는지 판단하고 문제가 없을 경우 preceed()를 호출
+            // 아닌 경우 cancel을 처리해야만 구글에서 업데이트를 허락함
             @SuppressLint("WebViewClientOnReceivedSslError")
             override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError) {
                 //기존에 인증서가 유효하지 않아도 그냥 통과시켰다.
@@ -285,6 +276,7 @@ class MainActivity : AppCompatActivity() {
         private val COVER_SCREEN_PARAMS = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
 
 
+        @SuppressLint("SetJavaScriptEnabled")
         override fun onCreateWindow(view: WebView, dialog: Boolean, userGesture: Boolean, resultMsg: Message): Boolean {
             val newWebView = WebView(mActivity)
             val settings = newWebView.settings

@@ -36,15 +36,33 @@
         </activity>
 
         <activity
-            android:name="kr.co.parnas.menu.MainActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:name=".menu.SplashActivity"
+            android:theme="@style/WhiteActionBar"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <!-- 백그라운드에서 푸시오는 경우 이벤트 처리 -->
+                <action android:name="NOTIFICATION_CLICK"/>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="kr.co.parnas.menu.MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"/>
+
+        <!-- FCM -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/channel_id" />
+        <service android:name=".push.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <!-- FCM End -->
 
         <provider
             android:name="androidx.core.content.FileProvider"

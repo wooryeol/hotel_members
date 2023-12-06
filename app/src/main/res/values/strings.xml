@@ -20,4 +20,9 @@
     <string name="base_url">https://www.parnashotel.com/</string>
     <!-- 점검일 경우 접속 url -->
     <string name="sub_url">http://183.99.79.4/info</string>
+
+    <!-- 푸시채널 관련 -->
+    <string name="channel_id">parnas</string>
+    <string name="channel_name">PARNAS</string>
+    <string name="channel_desc">푸시알림</string>
 </resources>
