@@ -12,7 +12,7 @@ android {
         applicationId "kr.co.parnas"
         minSdkVersion 28
         targetSdkVersion 31
-        versionCode 23120601
+        versionCode 23120701
         versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -97,4 +97,7 @@ dependencies {
     //fcm
     implementation platform('com.google.firebase:firebase-bom:29.0.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    //glide
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 }
