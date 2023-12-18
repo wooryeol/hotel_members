@@ -1,8 +1,10 @@
-package kr.co.parnas.menu
+package kr.co.parnas.menu.webview
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.*
+import android.app.Activity
+import android.app.AlertDialog
+import android.app.DownloadManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
@@ -12,14 +14,27 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.net.Uri
 import android.net.http.SslError
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.CountDownTimer
+import android.os.Environment
+import android.os.Message
 import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.webkit.*
+import android.webkit.CookieManager
+import android.webkit.DownloadListener
+import android.webkit.JavascriptInterface
+import android.webkit.JsPromptResult
+import android.webkit.JsResult
+import android.webkit.SslErrorHandler
+import android.webkit.WebChromeClient
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.TextView
@@ -40,13 +55,12 @@ import kr.co.parnas.common.SharedData
 import kr.co.parnas.common.UtilPermission
 import kr.co.parnas.common.Utils
 import kr.co.parnas.databinding.ActMainBinding
+import kr.co.parnas.databinding.ActWebviewBinding
 import org.json.JSONObject
 import java.net.URLDecoder
-import java.util.*
 
-
-class MainActivity : AppCompatActivity() {
-    private lateinit var mBinding: ActMainBinding
+class WebViewActivity : AppCompatActivity() {
+    private lateinit var mBinding: ActWebviewBinding
     private lateinit var mContext: Context
     private lateinit var mActivity: Activity
     private lateinit var webview: WebView
@@ -59,7 +73,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBinding = ActMainBinding.inflate(layoutInflater)
+        mBinding = ActWebviewBinding.inflate(layoutInflater)
         setContentView(mBinding.root)
 
         //앱 사용중 화면 켜짐
@@ -204,7 +218,7 @@ class MainActivity : AppCompatActivity() {
         return value
     }
 
-    inner class CustomDownloadListener(val activity: Activity): DownloadListener{
+    inner class CustomDownloadListener(val activity: Activity): DownloadListener {
         override fun onDownloadStart(
             url: String?,
             userAgent: String?,

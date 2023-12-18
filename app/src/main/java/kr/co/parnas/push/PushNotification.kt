@@ -10,7 +10,7 @@ import androidx.core.app.NotificationCompat
 import kr.co.parnas.R
 import kr.co.parnas.common.SharedData
 import kr.co.parnas.common.Utils
-
+import kr.co.parnas.menu.home.MainActivity
 
 
 class PushNotification {
@@ -27,7 +27,7 @@ class PushNotification {
         notiId++
         if (notiId > 99) notiId = 0
         SharedData.setSharedData(context, SharedData.NOTI_ID, notiId)
-        val intent = Intent(context, kr.co.parnas.menu.MainActivity::class.java)
+        val intent = Intent(context, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         intent.putExtra("index", index)
         val pendingIntent = PendingIntent.getActivity(

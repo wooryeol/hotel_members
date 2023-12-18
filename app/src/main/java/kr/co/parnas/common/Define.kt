@@ -3,6 +3,7 @@ package kr.co.parnas.common
 object Define {
 
     var DOMAIN = "https://www.parnashotel.com"
+    // var DOMAIN = "http://192.168.0.194:3000"
     /*val ROOT = "https://www.kshp.or.kr/mobile/symposium/2023autumn"*/
 
 

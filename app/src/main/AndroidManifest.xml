@@ -26,7 +26,7 @@
         android:usesCleartextTraffic="true">
 
         <activity
-            android:name=".menu.TierActivity"
+            android:name=".menu.tier.TierActivity"
             android:exported="true"/>
 
         <activity
@@ -44,7 +44,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".menu.SplashActivity"
+            android:name=".menu.splash.SplashActivity"
             android:exported="true"
             android:theme="@style/WhiteActionBar">
 
@@ -58,7 +58,7 @@
 
         </activity>
         <activity
-            android:name=".menu.MainActivity"
+            android:name=".menu.home.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true" /> <!-- FCM -->
         <meta-data

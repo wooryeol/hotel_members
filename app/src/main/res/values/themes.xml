@@ -22,7 +22,7 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
     <!-- 흰색 인디케이터 영역 및 스타일 -->
-    <style name="WhiteActionBar" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="WhiteActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimaryDark">@color/white</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
     </style>

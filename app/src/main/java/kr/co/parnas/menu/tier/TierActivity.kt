@@ -1,4 +1,4 @@
-package kr.co.parnas.menu
+package kr.co.parnas.menu.tier
 
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
@@ -11,16 +11,15 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
-import kr.co.parnas.databinding.ActivityTierBinding
+import kr.co.parnas.databinding.ActTierBinding
 
 class TierActivity : AppCompatActivity() {
 
-    private lateinit var mBinding: ActivityTierBinding
+    private lateinit var mBinding: ActTierBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBinding = ActivityTierBinding.inflate(layoutInflater)
+        mBinding = ActTierBinding.inflate(layoutInflater)
         setContentView(mBinding.root)
 
         initBarChart(mBinding.barChart)

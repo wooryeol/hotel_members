@@ -1,4 +1,4 @@
-package kr.co.parnas.menu
+package kr.co.parnas.menu.splash
 
 import android.Manifest
 import android.app.Notification
@@ -21,6 +21,7 @@ import kr.co.parnas.R
 import kr.co.parnas.common.Define
 import kr.co.parnas.common.PopupFactory
 import kr.co.parnas.common.SharedData
+import kr.co.parnas.menu.home.MainActivity
 import kr.co.parnas.net.ApiClientService
 import retrofit2.Call
 import retrofit2.Callback
