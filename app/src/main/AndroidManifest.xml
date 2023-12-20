@@ -10,6 +10,7 @@
     <uses-feature
         android:name="android.hardware.camera2.full"
         android:required="false" />
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -26,10 +27,6 @@
         android:usesCleartextTraffic="true">
 
         <activity
-            android:name=".menu.tier.TierActivity"
-            android:exported="true"/>
-
-        <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
             android:exported="true">
             <intent-filter>
@@ -43,6 +40,11 @@
                     android:scheme="@string/kakao_app_key_add_kakao" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".menu.myPage.RewardActivity"
+            android:exported="true"
+            android:theme="@style/WhiteActionBar"/>
+
         <activity
             android:name=".menu.splash.SplashActivity"
             android:exported="true"
@@ -57,6 +59,7 @@
             </intent-filter>
 
         </activity>
+
         <activity
             android:name=".menu.home.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
