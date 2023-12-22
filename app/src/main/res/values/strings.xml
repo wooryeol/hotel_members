@@ -1,6 +1,21 @@
 <resources>
     <string name="app_name">parnas</string>
 
+    <!--로그인-->
+    <string name="login">https://www.parnashotel.com/login</string>
+    <!--회원가입-->
+    <string name="signUp">https://www.parnashotel.com/signUp</string>
+    <!--객실예약-->
+    <string name="rsvn">https://www.parnashotel.com/reservationSchedule?tab=0</string>
+    <!--호텔찾기-->
+    <string name="search">https://www.parnashotel.com/reservationSchedule?tab=1</string>
+    <!--다이닝 예약-->
+    <string name="dining">https://www.parnashotel.com/reservationDining</string>
+    <!--마이페이지-->
+    <string name="my_page">https://www.parnashotel.com/myPage/dashboard/</string>
+    <!--예약조회-->
+    <string name="reservation_check">https://www.parnashotel.com/reservationCheck</string>
+
     <string name="main_finish_toast">뒤로 버튼을 한번 더 누르시면 종료됩니다.</string>
     <string name="error_camera_permission">카메라 사용 권한을 허용해야 사용할 수 있습니다.</string>
     <string name="popup_camera_permission">카메라 사용 권한을 허용해야 사용할 수 있습니다.\n설정창으로 가시겠습니까?</string>

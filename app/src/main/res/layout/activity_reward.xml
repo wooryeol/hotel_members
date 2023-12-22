@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/myPage"
                 android:textColor="@color/white"
-                android:textStyle="bold"
+                android:fontFamily="@font/noto_sans_kr_bold"
                 android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true" />
 
@@ -211,6 +211,7 @@
             android:paddingHorizontal="20dp">
 
             <LinearLayout
+                android:id="@+id/rsvn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -228,7 +229,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/noto_sans_kr_regular"
                     android:text="@string/room_reservation"
                     android:textColor="@color/black"
                     android:textSize="13dp"
@@ -237,6 +238,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/dining"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -254,7 +256,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/noto_sans_kr_regular"
                     android:text="@string/dining_reservations"
                     android:textColor="@color/black"
                     android:textSize="13dp"
@@ -263,6 +265,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/search"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -280,7 +283,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/noto_sans_kr_regular"
                     android:text="@string/hotel_search"
                     android:textColor="@color/black"
                     android:textSize="13dp"
@@ -289,6 +292,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/reservation_check"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -306,7 +310,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/noto_sans_kr_regular"
                     android:text="@string/reservation_inquiry"
                     android:textColor="@color/black"
                     android:textSize="13dp"

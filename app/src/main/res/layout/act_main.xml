@@ -4,6 +4,7 @@
     android:id="@+id/superView"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
         android:id="@+id/area01"
         android:layout_width="match_parent"
@@ -34,6 +35,7 @@
                     android:padding="10dp"
                     android:text="@string/main_login_tv"
                     android:textColor="@color/white"
+                    android:fontFamily="@font/noto_sans_kr_regular"
                     android:textSize="13dp"
                     tools:ignore="RelativeOverlap" />
 
@@ -45,6 +47,7 @@
                     android:layout_centerVertical="true"
                     android:padding="10dp"
                     android:text="@string/main_reg_tv"
+                    android:fontFamily="@font/noto_sans_kr_regular"
                     android:textColor="@color/white"
                     android:textSize="13dp"/>
 
@@ -61,6 +64,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/main_msg"
                     android:textColor="@color/white"
+                    android:fontFamily="@font/noto_sans_kr_regular"
                     android:textSize="25dp"
                     android:textStyle="bold"
                     android:textAlignment="center"/>
@@ -72,6 +76,7 @@
                     android:layout_marginTop="10dp"
                     android:text="@string/reward_more"
                     android:textColor="@color/white"
+                    android:fontFamily="@font/noto_sans_kr_regular"
                     android:textSize="12dp"
                     android:background="@drawable/button_59c4c8"
                     tools:ignore="SmallSp" />
@@ -87,12 +92,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/area01"
-        android:layout_marginBottom="-20dp"
+        android:layout_marginBottom="-25dp"
         android:layout_centerHorizontal="true"
         android:layout_marginHorizontal="20dp"
-        android:paddingVertical="15dp"
+        android:paddingVertical="10dp"
         android:text="@string/waist_title"
         android:textAlignment="center"
+        android:fontFamily="@font/noto_sans_kr_regular"
         android:textColor="@color/black"
         android:textSize="12dp"
         android:background="@drawable/background_border_59c4c8"
@@ -113,6 +119,7 @@
             tools:ignore="UselessParent">
 
             <LinearLayout
+                android:id="@+id/rsvn"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -122,7 +129,6 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:scaleType="fitCenter"
-
                     android:src="@drawable/icon_rsv_room"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/todo" />
@@ -130,8 +136,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:text="@string/room_reservation"
+                    android:fontFamily="@font/noto_sans_kr_regular"
                     android:textColor="@color/black"
                     android:textSize="13dp"
                     tools:ignore="RelativeOverlap" />
@@ -139,6 +145,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/dining"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -155,7 +162,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/noto_sans_kr_regular"
                     android:text="@string/dining_reservations"
                     android:textColor="@color/black"
                     android:textSize="13dp"
@@ -164,6 +171,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/search"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -180,7 +188,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/noto_sans_kr_regular"
                     android:text="@string/hotel_search"
                     android:textColor="@color/black"
                     android:textSize="13dp"
@@ -189,6 +197,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/reservation_check"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -205,7 +214,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/noto_sans_kr_regular"
                     android:text="@string/reservation_inquiry"
                     android:textColor="@color/black"
                     android:textSize="13dp"
@@ -238,6 +247,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_centerInParent="true"
+                android:fontFamily="@font/noto_sans_kr_regular"
                 android:text="@string/main_footer_msg"
                 android:textColor="@color/white"
                 android:textSize="13dp"

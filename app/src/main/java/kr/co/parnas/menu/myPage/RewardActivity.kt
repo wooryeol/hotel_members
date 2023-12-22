@@ -2,13 +2,11 @@ package kr.co.parnas.menu.myPage
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -19,9 +17,9 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import kr.co.parnas.R
+import kr.co.parnas.common.Utils
 import kr.co.parnas.databinding.ActivityRewardBinding
 import kr.co.parnas.databinding.CellRewardBinding
-import kr.co.parnas.menu.webview.WebViewActivity
 import kr.co.parnas.network.model.HotelModel
 
 @SuppressLint("ResourceType")
@@ -80,6 +78,20 @@ class RewardActivity : AppCompatActivity() {
 
         // 바코드 생성
         createBarcode()
+
+        // 링크 걸어주는 곳
+        mBinding.rsvn.setOnClickListener {
+            Utils.moveToPage(mContext, getString(R.string.rsvn))
+        }
+        mBinding.dining.setOnClickListener {
+            Utils.moveToPage(mContext, getString(R.string.dining))
+        }
+        mBinding.search.setOnClickListener {
+            Utils.moveToPage(mContext, getString(R.string.search))
+        }
+        mBinding.reservationCheck.setOnClickListener {
+            Utils.moveToPage(mContext, getString(R.string.reservation_check))
+        }
     }
 
     override fun onResume() {
@@ -164,9 +176,7 @@ class RewardActivity : AppCompatActivity() {
             fun bind(itemModel: HotelModel){
 
                 itemView.setOnClickListener {
-                    val intent = Intent(mContext, WebViewActivity::class.java)
-                    intent.putExtra("index", itemModel.url)
-                    mContext.startActivity(intent)
+                    Utils.moveToPage(mContext, itemModel.url)
                 }
 
                 binding.imageView.setImageResource(itemModel.img)

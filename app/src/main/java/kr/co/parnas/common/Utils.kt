@@ -9,10 +9,22 @@ import android.os.Handler
 import android.provider.Settings
 import android.util.TypedValue
 import kr.co.parnas.BuildConfig
+import kr.co.parnas.menu.webview.WebViewActivity
 import java.io.UnsupportedEncodingException
 import java.util.*
 
 object Utils {
+
+    /**
+     * 네이티브에서 인 앱 웹뷰 url로 이동할 때 사용
+     * @param context : 해당 액티비티 context
+     * @param url : 이동하려는 url 주소
+     */
+    fun moveToPage(context: Context, url: String) {
+        val intent = Intent(context, WebViewActivity::class.java)
+        intent.putExtra("index", url)
+        context.startActivity(intent)
+    }
 
     /**
      * @param context : 해당 액티비티 context

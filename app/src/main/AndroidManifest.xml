@@ -46,14 +46,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/WhiteActionBar">
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <!-- 백그라운드에서 푸시오는 경우 이벤트 처리 -->
-                <action android:name="NOTIFICATION_CLICK" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
         </activity>
 
         <activity
@@ -62,7 +54,13 @@
             android:screenOrientation="portrait"
             android:theme="@style/WhiteActionBar">
 
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <!-- 백그라운드에서 푸시오는 경우 이벤트 처리 -->
+                <action android:name="NOTIFICATION_CLICK" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
         </activity>
 
