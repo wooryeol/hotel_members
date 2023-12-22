@@ -8,6 +8,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.os.*
@@ -16,11 +17,19 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
+import androidx.vectordrawable.graphics.drawable.Animatable2Compat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.gif.GifDrawable
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.google.firebase.messaging.FirebaseMessaging
 import kr.co.parnas.R
 import kr.co.parnas.common.Define
 import kr.co.parnas.common.PopupFactory
 import kr.co.parnas.common.SharedData
+import kr.co.parnas.databinding.ActSplashBinding
 import kr.co.parnas.menu.home.MainActivity
 import kr.co.parnas.net.ApiClientService
 import retrofit2.Call
@@ -28,6 +37,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class SplashActivity : AppCompatActivity() {
+    private lateinit var mBinding : ActSplashBinding
     lateinit var mContext: Context
     //최초 진입인지 여부
     //최초 진입일땐 권한 체크를 하지 않고 설정 페이지에서 돌아올때 체크하기 위해
@@ -37,9 +47,13 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.act_splash)
+        mBinding = ActSplashBinding.inflate(layoutInflater)
+        setContentView(mBinding.root)
 
         mContext = this
+
+        // splash
+
 
         //백그라운드에서 푸시오는 경우
         val bundle = intent.extras
@@ -149,7 +163,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun nextPage(){
-        val handler = Handler(Looper.getMainLooper())
+        /*val handler = Handler(Looper.getMainLooper())*/
         val r = Runnable {
             val intent = Intent(this, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -158,7 +172,42 @@ class SplashActivity : AppCompatActivity() {
             }
             startActivity(intent)
         }
-        handler.postDelayed(r, 1000)
+        r.run()
+        /*handler.postDelayed(r, 3000)*/
+    }
+
+    private fun gifSplash() {
+        Glide.with(this)
+            .asGif()
+            .load(R.raw.splash)
+            .listener(object : RequestListener<GifDrawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<GifDrawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    nextPage()
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: GifDrawable?,
+                    model: Any?,
+                    target: Target<GifDrawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    resource?.setLoopCount(1)
+                    resource?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
+                        override fun onAnimationEnd(drawable: Drawable?) {
+                            nextPage()
+                        }
+                    })
+                    return false
+                }
+            })
+            .into(mBinding.splash)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -204,11 +253,11 @@ class SplashActivity : AppCompatActivity() {
         val call = service.requestAppInfo(url, token, "A", push)
         call.enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>, response: Response<String>) {
-                nextPage()
+                gifSplash()
             }
 
             override fun onFailure(call: Call<String>, t: Throwable) {
-                nextPage()
+                gifSplash()
             }
         })
     }

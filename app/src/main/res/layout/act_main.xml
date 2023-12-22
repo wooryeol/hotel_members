@@ -11,6 +11,7 @@
         android:background="@drawable/bg"
         android:orientation="vertical">
         <RelativeLayout
+            android:id="@+id/header"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:ignore="UselessParent">
@@ -33,7 +34,7 @@
                     android:padding="10dp"
                     android:text="@string/main_login_tv"
                     android:textColor="@color/white"
-                    android:textSize="13sp"
+                    android:textSize="13dp"
                     tools:ignore="RelativeOverlap" />
 
                 <TextView
@@ -45,7 +46,7 @@
                     android:padding="10dp"
                     android:text="@string/main_reg_tv"
                     android:textColor="@color/white"
-                    android:textSize="13sp"/>
+                    android:textSize="13dp"/>
 
             </RelativeLayout>
 
@@ -60,7 +61,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/main_msg"
                     android:textColor="@color/white"
-                    android:textSize="25sp"
+                    android:textSize="25dp"
                     android:textStyle="bold"
                     android:textAlignment="center"/>
 
@@ -69,9 +70,9 @@
                     android:layout_height="35dp"
                     android:paddingHorizontal="15dp"
                     android:layout_marginTop="10dp"
-                    android:text="@string/reword_more"
+                    android:text="@string/reward_more"
                     android:textColor="@color/white"
-                    android:textSize="12sp"
+                    android:textSize="12dp"
                     android:background="@drawable/button_59c4c8"
                     tools:ignore="SmallSp" />
 
@@ -81,18 +82,20 @@
 
     </LinearLayout>
 
-    <Button
+    <TextView
         android:id="@+id/overlayView"
-        android:layout_width="wrap_content"
-        android:layout_height="35dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/area01"
-        android:layout_marginBottom="-18dp"
+        android:layout_marginBottom="-20dp"
         android:layout_centerHorizontal="true"
-        android:paddingHorizontal="15dp"
-        android:text="@string/reword_more"
-        android:textColor="@color/white"
-        android:textSize="12sp"
-        android:background="@drawable/button_59c4c8"
+        android:layout_marginHorizontal="20dp"
+        android:paddingVertical="15dp"
+        android:text="@string/waist_title"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="12dp"
+        android:background="@drawable/background_border_59c4c8"
         tools:ignore="NotSibling" />
 
     <LinearLayout
@@ -101,13 +104,14 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:orientation="vertical">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="35dp"
             android:orientation="horizontal"
-            android:baselineAligned="false"
+            android:paddingHorizontal="20dp"
             tools:ignore="UselessParent">
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -115,9 +119,10 @@
                 android:gravity="center"
                 android:orientation="vertical">
                 <ImageButton
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:scaleType="fitCenter"
+
                     android:src="@drawable/icon_rsv_room"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/todo" />
@@ -128,7 +133,7 @@
                     android:layout_marginTop="10dp"
                     android:text="@string/room_reservation"
                     android:textColor="@color/black"
-                    android:textSize="13sp"
+                    android:textSize="13dp"
                     tools:ignore="RelativeOverlap" />
 
             </LinearLayout>
@@ -140,8 +145,8 @@
                 android:gravity="center"
                 android:orientation="vertical">
                 <ImageButton
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/icon_rsv_dinning"
                     android:background="@android:color/transparent"
@@ -153,7 +158,7 @@
                     android:layout_marginTop="10dp"
                     android:text="@string/dining_reservations"
                     android:textColor="@color/black"
-                    android:textSize="13sp"
+                    android:textSize="13dp"
                     tools:ignore="RelativeOverlap" />
 
             </LinearLayout>
@@ -165,8 +170,8 @@
                 android:gravity="center"
                 android:orientation="vertical">
                 <ImageButton
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/icon_search_hotel"
                     android:background="@android:color/transparent"
@@ -178,7 +183,7 @@
                     android:layout_marginTop="10dp"
                     android:text="@string/hotel_search"
                     android:textColor="@color/black"
-                    android:textSize="13sp"
+                    android:textSize="13dp"
                     tools:ignore="RelativeOverlap" />
 
             </LinearLayout>
@@ -190,8 +195,8 @@
                 android:gravity="center"
                 android:orientation="vertical">
                 <ImageButton
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/icon_search_rsv_status"
                     android:background="@android:color/transparent"
@@ -203,7 +208,7 @@
                     android:layout_marginTop="10dp"
                     android:text="@string/reservation_inquiry"
                     android:textColor="@color/black"
-                    android:textSize="13sp"
+                    android:textSize="13dp"
                     tools:ignore="RelativeOverlap" />
 
             </LinearLayout>
@@ -235,7 +240,7 @@
                 android:layout_centerInParent="true"
                 android:text="@string/main_footer_msg"
                 android:textColor="@color/white"
-                android:textSize="13sp"
+                android:textSize="13dp"
                 android:textStyle="bold"
                 tools:ignore="RelativeOverlap" />
 

@@ -1,57 +1,21 @@
 package kr.co.parnas.menu.home
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.app.*
-import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
-import android.content.pm.ActivityInfo
-import android.content.res.Configuration
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.Point
-import android.graphics.drawable.Drawable
-import android.net.Uri
-import android.net.http.SslError
 import android.os.*
 import android.util.DisplayMetrics
-import android.util.Log
-import android.util.TypedValue
 import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.webkit.*
-import android.widget.Button
-import android.widget.FrameLayout
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.ContextThemeWrapper
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.JsonObject
-import com.kakao.sdk.auth.model.OAuthToken
-import com.kakao.sdk.common.KakaoSdk
-import com.kakao.sdk.common.model.ClientError
-import com.kakao.sdk.common.model.ClientErrorCause
-import com.kakao.sdk.user.UserApiClient
 import kr.co.parnas.R
-import kr.co.parnas.common.Define
-import kr.co.parnas.common.SharedData
-import kr.co.parnas.common.UtilPermission
 import kr.co.parnas.common.Utils
-import kr.co.parnas.common.custom.GridSpacingItemDecoration
 import kr.co.parnas.databinding.ActMainBinding
 import kr.co.parnas.databinding.CellHotelBinding
+import kr.co.parnas.menu.myPage.RewardActivity
 import kr.co.parnas.network.model.HotelModel
-import org.json.JSONObject
-import java.net.URLDecoder
 import java.util.*
 
 
@@ -70,6 +34,10 @@ class MainActivity : AppCompatActivity() {
 
         mContext = this
         mActivity = this
+
+        mBinding.regTv.setOnClickListener {
+            Utils.nextPage(mContext, RewardActivity(), 0, true)
+        }
 
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
@@ -106,11 +74,14 @@ class MainActivity : AppCompatActivity() {
         }*/
 
         val list: List<HotelModel> = arrayListOf(
-            HotelModel(R.drawable.hotel_grandinter, "", "테스트1"),
-            HotelModel(R.drawable.hotel_grandinter, "", "테스트2"),
-            HotelModel(R.drawable.hotel_grandinter, "", "테스트3"),
-            HotelModel(R.drawable.hotel_grandinter, "", "테스트4"),
-            HotelModel(R.drawable.hotel_grandinter, "", "테스트5")
+            HotelModel(R.drawable.grand, "", "그랜드 인터컨티넨탈 서울 파르나스", ""),
+            HotelModel(R.drawable.coex, "", "인터컨티넨탈 서울 코엑스", ""),
+            HotelModel(R.drawable.parnas_jeju, "", "파르나스 호텔 제주", ""),
+            HotelModel(R.drawable.myoungdong_1, "", "나인 트리 호텔 명동", ""),
+            HotelModel(R.drawable.myoungdong_2, "", "나인 트리 프리미어 호텔 명동", ""),
+            HotelModel(R.drawable.insadong, "", "나인 트리 프리미어 호텔 인사동", ""),
+            HotelModel(R.drawable.dongdaemoon, "", "나인 트리 호텔 동대문", ""),
+            HotelModel(R.drawable.pangyo, "", "나인 트리 프리미어 호텔 서울 판교", "")
         )
 
         val popularityAdapter = RecyclerViewAdapter(mContext)
@@ -129,6 +100,8 @@ class RecyclerViewAdapter(context: Context): RecyclerView.Adapter<RecyclerViewAd
             itemView.setOnClickListener {
 
             }
+            binding.hotelName.text = itemModel.title
+            binding.thumb.setImageResource(itemModel.img)
         }
     }
 

@@ -1,8 +1,11 @@
 package kr.co.parnas.common
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Handler
 import android.provider.Settings
 import android.util.TypedValue
 import kr.co.parnas.BuildConfig
@@ -10,6 +13,26 @@ import java.io.UnsupportedEncodingException
 import java.util.*
 
 object Utils {
+
+    /**
+     * @param context : 해당 액티비티 context
+     * @param activity : 이동하려는 액티비티명
+     * @param delayTime : 스플래쉬에서 사용할 때 값을 넣어주면 된다
+     * @param backable : 이동하고 난 후 이전 액티비티를 종료 시켜주고 싶을 때 사용
+     */
+    fun nextPage(context: Context, activity: Activity, delayTime: Long, backable: Boolean){
+        Handler().postDelayed(Runnable {
+            // 앱의 MainActivity로 넘어가기
+            val intent = Intent(context, activity::class.java)
+            context.startActivity(intent)
+
+            // 현재 액티비티 닫기
+            if(!backable){
+                (context as Activity).finish()
+            }
+        }, delayTime)
+    }
+
     fun Log(msg: String) {
         if (BuildConfig.DEBUG) android.util.Log.d("SE", msg)
     }

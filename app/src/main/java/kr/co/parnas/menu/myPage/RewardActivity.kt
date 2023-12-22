@@ -2,33 +2,38 @@ package kr.co.parnas.menu.myPage
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.util.Log
-import android.view.View
+import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ProgressBar
-import androidx.coordinatorlayout.widget.CoordinatorLayout
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.snackbar.Snackbar
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
+import com.google.zxing.BarcodeFormat
+import com.journeyapps.barcodescanner.BarcodeEncoder
 import kr.co.parnas.R
-import kr.co.parnas.common.Utils
 import kr.co.parnas.databinding.ActivityRewardBinding
+import kr.co.parnas.databinding.CellRewardBinding
+import kr.co.parnas.menu.webview.WebViewActivity
+import kr.co.parnas.network.model.HotelModel
 
 @SuppressLint("ResourceType")
 class RewardActivity : AppCompatActivity() {
 
     private lateinit var mContext: Context
-
     private var _mBinding: ActivityRewardBinding? = null
     private val mBinding get() = _mBinding!!
 
-    private val bottomSheetLayout by lazy { findViewById<LinearLayout>(R.id.bottom_sheet_layout) }
-    private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+    private var currentPosition = 0
+    private var myHandler = MyHandler()
+    private val intervalTime = 1500.toLong()
 
     @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,13 +46,50 @@ class RewardActivity : AppCompatActivity() {
         // 상태바 색상
         window.statusBarColor = Color.parseColor(getString(R.color.grade_c))
 
-
-        initializePersistentBottomSheet()
-        persistentBottomSheetEvent()
-
         // 현재 grade
-        currentGrade(40)
+        currentGrade(0)
 
+        //뷰 페이저
+        val list: List<HotelModel> = arrayListOf(
+            HotelModel(R.drawable.grand, "", "그랜드인터컨티넨탈", "https://parnashotel.com?hotelCode=21&lang=kor&prodID=163"),
+            HotelModel(R.drawable.coex, "", "인터컨티넨탈 코엑스", "https://parnashotel.com?hotelCode=23&lang=kor&prodID=164"),
+            HotelModel(R.drawable.parnas_jeju, "", "파르나스 호텔 제주", "https://parnashotel.com?hotelCode=26&lang=kor&prodID=170"),
+            HotelModel(R.drawable.pangyo, "", "나인트리 판교", "https://parnashotel.com?hotelCode=27&lang=kor&prodID=165"),
+            HotelModel(R.drawable.myoungdong_2, "", "나인트리 명동2", "https://parnashotel.com?hotelCode=29&lang=kor&prodID=167"),
+            HotelModel(R.drawable.insadong, "", "나인트리 인사동", "https://parnashotel.com?hotelCode=30&lang=kor&prodID=168"),
+            HotelModel(R.drawable.myoungdong_1, "", "나인트리 명동", "https://parnashotel.com?hotelCode=28&lang=kor&prodID=166"),
+            HotelModel(R.drawable.dongdaemoon, "", "나인트리 동대문", "https://parnashotel.com?hotelCode=31&lang=kor&prodID=169")
+        )
+        val viewPagerAdapter = ViewPagerAdapter(mContext)
+        viewPagerAdapter.datalist = list
+        mBinding.viewPager.adapter = viewPagerAdapter
+        mBinding.viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL // 방향을 가로로
+        mBinding.dotsIndicator.attachTo(mBinding.viewPager)
+
+        mBinding.viewPager.apply {
+            registerOnPageChangeCallback( object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageScrollStateChanged(state: Int) {
+                    super.onPageScrollStateChanged(state)
+                    when(state) {
+                        ViewPager2.SCROLL_STATE_IDLE -> autoScrollStart(intervalTime)
+                        ViewPager2.SCROLL_STATE_DRAGGING -> autoScrollStop()
+                    }
+                }
+            })
+        }
+
+        // 바코드 생성
+        createBarcode()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        autoScrollStart(intervalTime)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        autoScrollStop()
     }
 
     override fun onDestroy() {
@@ -55,64 +97,48 @@ class RewardActivity : AppCompatActivity() {
         _mBinding = null
     }
 
-    // Persistent BottomSheet 초기화
-    private fun initializePersistentBottomSheet() {
-
-        // BottomSheetBehavior에 layout 설정
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout)
-
-        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-
-                // BottomSheetBehavior state에 따른 이벤트
-                when (newState) {
-                    BottomSheetBehavior.STATE_HIDDEN -> {
-                        Log.d("wooryeol", "state: hidden")
-                    }
-                    BottomSheetBehavior.STATE_EXPANDED -> {
-                        Log.d("wooryeol", "state: expanded")
-                    }
-                    BottomSheetBehavior.STATE_COLLAPSED -> {
-                        Log.d("wooryeol", "state: collapsed")
-                    }
-                    BottomSheetBehavior.STATE_DRAGGING -> {
-                        Log.d("wooryeol", "state: dragging")
-                    }
-                    BottomSheetBehavior.STATE_SETTLING -> {
-                        Log.d("wooryeol", "state: settling")
-                    }
-                    BottomSheetBehavior.STATE_HALF_EXPANDED -> {
-                        Log.d("wooryeol", "state: half expanded")
-                    }
-                }
-
-            }
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-            }
-        })
+    // 뷰페이저 자동스크롤
+    private fun autoScrollStart(intervalTime: Long) {
+        myHandler.removeMessages(0)
+        myHandler.sendEmptyMessageDelayed(0, intervalTime)
     }
 
-    // PersistentBottomSheet 내부 버튼 click event
-    private fun persistentBottomSheetEvent() {
+    private fun autoScrollStop() {
+        myHandler.removeMessages(0)
+    }
 
-        /*mBinding.rewardPointBtn.setOnClickListener {
-            // BottomSheet의 최대 높이만큼 보여주기
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+    private inner class MyHandler: Handler() {
+        override fun handleMessage(msg: Message) {
+            super.handleMessage(msg)
+            if (currentPosition == 7) {
+                mBinding.viewPager.setCurrentItem(0, true)
+                currentPosition = 0
+            } else {
+                mBinding.viewPager.setCurrentItem(++currentPosition, true)
+                autoScrollStart(intervalTime)
+            }
         }
+    }
 
-        bottomSheetHidePersistentButton.setOnClickListener {
-            // BottomSheet 숨김
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        }*/
-
+    private fun createBarcode(){
+        val widthPx = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, 590f,
+            resources.displayMetrics
+        )
+        val heightPx = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, 80f,
+            resources.displayMetrics
+        )
+        val barcodeNumber = "13450673"
+        val barcodeEncoder = BarcodeEncoder()
+        val bitmap = barcodeEncoder.encodeBitmap(barcodeNumber, BarcodeFormat.CODE_128, widthPx.toInt(), heightPx.toInt())
+        mBinding.barcode.setImageBitmap(bitmap)
     }
 
     // grade의 위치를 바꿔주는 곳
     private fun currentGrade(gradeRate: Int) {
-        val progressBar = findViewById<ProgressBar>(R.id.progress_bar)
-        val grade = findViewById<ImageView>(R.id.grade)
-
-        progressBar.progress = gradeRate
+        val progressBar = mBinding.progressBar
+        val grade = mBinding.grade
 
         val layoutParams = grade.layoutParams as LinearLayout.LayoutParams
 
@@ -122,11 +148,41 @@ class RewardActivity : AppCompatActivity() {
                 progressBar.viewTreeObserver.removeOnGlobalLayoutListener(this)
 
                 val totalWidth = progressBar.width
-                val desiredPosition = (gradeRate / 100f) * totalWidth
+                val desiredPosition = ( gradeRate / 100f) * totalWidth
 
-                layoutParams.leftMargin = desiredPosition.toInt() - grade.width / 2
+                layoutParams.leftMargin = desiredPosition.toInt()
                 grade.layoutParams = layoutParams
             }
         })
+    }
+
+    class ViewPagerAdapter(context: Context) : RecyclerView.Adapter<ViewPagerAdapter.PagerViewHolder>() {
+        var datalist: List<HotelModel> = java.util.ArrayList()
+        var mContext = context
+
+        inner class PagerViewHolder(private val binding: CellRewardBinding) : RecyclerView.ViewHolder(binding.root){
+            fun bind(itemModel: HotelModel){
+
+                itemView.setOnClickListener {
+                    val intent = Intent(mContext, WebViewActivity::class.java)
+                    intent.putExtra("index", itemModel.url)
+                    mContext.startActivity(intent)
+                }
+
+                binding.imageView.setImageResource(itemModel.img)
+                binding.cellTitle.text = itemModel.title
+                binding.cellTitle.bringToFront()
+            }
+        }
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):PagerViewHolder {
+            val binding = CellRewardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            return PagerViewHolder(binding)
+        }
+
+        override fun getItemCount(): Int = datalist.size
+
+        override fun onBindViewHolder(holder: PagerViewHolder, position: Int) {
+            holder.bind(datalist[position])
+        }
     }
 }

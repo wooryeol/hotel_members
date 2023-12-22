@@ -43,11 +43,7 @@
 
         <activity android:name=".menu.myPage.RewardActivity"
             android:exported="true"
-            android:theme="@style/WhiteActionBar"/>
-
-        <activity
-            android:name=".menu.splash.SplashActivity"
-            android:exported="true"
+            android:screenOrientation="portrait"
             android:theme="@style/WhiteActionBar">
 
             <intent-filter>
@@ -61,9 +57,28 @@
         </activity>
 
         <activity
+            android:name=".menu.splash.SplashActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/WhiteActionBar">
+
+
+
+        </activity>
+
+        <activity
             android:name=".menu.home.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:exported="true" /> <!-- FCM -->
+            android:screenOrientation="portrait"
+            android:exported="true" />
+
+        <activity
+            android:name=".menu.webview.WebViewActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:exported="true" />
+
+        <!-- FCM -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/channel_id" />
@@ -75,6 +90,8 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service> <!-- FCM End -->
+
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

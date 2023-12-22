@@ -23,6 +23,7 @@
     </style>
     <!-- 흰색 인디케이터 영역 및 스타일 -->
     <style name="WhiteActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowSplashScreenAnimatedIcon" tools:ignore="NewApi">@color/white</item>
         <item name="colorPrimaryDark">@color/white</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
     </style>

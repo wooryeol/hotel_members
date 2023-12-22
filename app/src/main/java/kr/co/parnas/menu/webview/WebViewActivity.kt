@@ -65,7 +65,7 @@ class WebViewActivity : AppCompatActivity() {
     private lateinit var mActivity: Activity
     private lateinit var webview: WebView
     private var isTwo = false
-    private var mUrl :String? = null
+    var mUrl :String? = null
 
     //사진 업로드 관련
     /*private var mUploadMessage: ValueCallback<Array<Uri>>? = null
@@ -468,14 +468,15 @@ class WebViewActivity : AppCompatActivity() {
         if(canGoBack() == true){
             goBack()
         }else {
-            if (!isTwo) {
+            finish()
+            /*if (!isTwo) {
                 Toast.makeText(mContext, getString(R.string.main_finish_toast), Toast.LENGTH_SHORT)
                     .show()
                 val timer = FinishTimer(2000, 1) //2초동안 수행
                 timer.start()
             } else {
                 finish()
-            }
+            }*/
         }
     }
 

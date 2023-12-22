@@ -7,14 +7,15 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="white_opacity_25">#40FFFFFF</color>
     <color name="gray">#FFDBDBDB</color>
 
     <color name="color_59c4c8">#58c4c8</color>
     <color name="color_cd9745">#cd9745</color>
 
-    <color name="grade_c">#ff663d</color>
-    <color name="grade_v1">#4fc9cc</color>
-    <color name="grade_v2">#007082</color>
-    <color name="grade_v3">#D29E48</color>
-    <color name="grade_v4">#0F1B2B</color>
+    <color name="grade_c">#05C7CA</color>
+    <color name="grade_v1">#FF5628</color>
+    <color name="grade_v2">#993333</color>
+    <color name="grade_v3">#D59631</color>
+    <color name="grade_v4">#0D1B2D</color>
 </resources>
