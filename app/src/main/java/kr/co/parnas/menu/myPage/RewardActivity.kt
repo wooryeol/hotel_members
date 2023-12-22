@@ -14,6 +14,7 @@ import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.denzcoskun.imageslider.models.SlideModel
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import kr.co.parnas.R
@@ -45,7 +46,7 @@ class RewardActivity : AppCompatActivity() {
         window.statusBarColor = Color.parseColor(getString(R.color.grade_c))
 
         // 현재 grade
-        currentGrade(0)
+        currentGrade(50)
 
         //뷰 페이저
         val list: List<HotelModel> = arrayListOf(
@@ -58,6 +59,7 @@ class RewardActivity : AppCompatActivity() {
             HotelModel(R.drawable.myoungdong_1, "", "나인트리 명동", "https://parnashotel.com?hotelCode=28&lang=kor&prodID=166"),
             HotelModel(R.drawable.dongdaemoon, "", "나인트리 동대문", "https://parnashotel.com?hotelCode=31&lang=kor&prodID=169")
         )
+
         val viewPagerAdapter = ViewPagerAdapter(mContext)
         viewPagerAdapter.datalist = list
         mBinding.viewPager.adapter = viewPagerAdapter

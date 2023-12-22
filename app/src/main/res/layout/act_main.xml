@@ -21,6 +21,7 @@
                 android:layout_height="wrap_content"
                 tools:ignore="UselessParent">
                 <ImageView
+                    android:id="@+id/main_logo"
                     android:layout_width="100dp"
                     android:layout_height="60dp"
                     android:src="@drawable/header_title"

@@ -12,7 +12,7 @@ android {
         applicationId "kr.co.parnas"
         minSdkVersion 28
         targetSdkVersion 32
-        versionCode 23122202
+        versionCode 23122203
         versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -74,6 +74,7 @@ dependencies {
 
     // 뷰페이져에 들어가는 인디케이터
     implementation("com.tbuonomo:dotsindicator:5.0")
+    implementation("com.github.denzcoskun:ImageSlideshow:0.1.2")
 
     // 바코드 생성
     implementation ("com.journeyapps:zxing-android-embedded:4.2.0")

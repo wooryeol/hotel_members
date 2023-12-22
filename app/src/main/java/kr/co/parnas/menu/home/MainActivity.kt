@@ -91,6 +91,9 @@ class MainActivity : AppCompatActivity() {
         mBinding.reservationCheck.setOnClickListener {
             Utils.moveToPage(mContext, getString(R.string.reservation_check))
         }
+        mBinding.mainLogo.setOnClickListener {
+            Utils.nextPage(mContext, RewardActivity(), 0, true)
+        }
     }
 }
 
