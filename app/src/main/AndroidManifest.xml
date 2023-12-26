@@ -44,7 +44,7 @@
         <activity android:name=".menu.myPage.RewardActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/WhiteActionBar">
+            android:theme="@style/RewardActionBar">
 
         </activity>
 

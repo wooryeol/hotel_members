@@ -12,12 +12,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kr.co.parnas.R
+import kr.co.parnas.common.Define
 import kr.co.parnas.common.Utils
 import kr.co.parnas.databinding.ActMainBinding
 import kr.co.parnas.databinding.CellHotelBinding
 import kr.co.parnas.menu.myPage.RewardActivity
 import kr.co.parnas.menu.webview.WebViewActivity
 import kr.co.parnas.network.model.HotelModel
+import kr.co.parnas.network.model.TierModel
 import java.util.*
 
 
@@ -54,14 +56,14 @@ class MainActivity : AppCompatActivity() {
         mBinding.area01.layoutParams = area01LayoutParams
 
         val list: List<HotelModel> = arrayListOf(
-            HotelModel(R.drawable.grand, "", "그랜드인터컨티넨탈", "https://parnashotel.com?hotelCode=21&lang=kor"),
-            HotelModel(R.drawable.coex, "", "인터컨티넨탈 코엑스", "https://parnashotel.com?hotelCode=23&lang=kor"),
-            HotelModel(R.drawable.parnas_jeju, "", "파르나스 호텔 제주", "https://parnashotel.com?hotelCode=26&lang=kor"),
-            HotelModel(R.drawable.pangyo, "", "나인트리 판교", "https://parnashotel.com?hotelCode=27&lang=kor"),
-            HotelModel(R.drawable.myoungdong_2, "", "나인트리 명동2", "https://parnashotel.com?hotelCode=29&lang=kor"),
-            HotelModel(R.drawable.insadong, "", "나인트리 인사동", "https://parnashotel.com?hotelCode=30&lang=kor"),
-            HotelModel(R.drawable.myoungdong_1, "", "나인트리 명동", "https://parnashotel.com?hotelCode=28&lang=kor"),
-            HotelModel(R.drawable.dongdaemoon, "", "나인트리 동대문", "https://parnashotel.com?hotelCode=31&lang=kor")
+            HotelModel(R.drawable.grand, "", "그랜드인터컨티넨탈", "${Define.DOMAIN}?hotelCode=21&lang=kor"),
+            HotelModel(R.drawable.coex, "", "인터컨티넨탈 코엑스", "${Define.DOMAIN}?hotelCode=23&lang=kor"),
+            HotelModel(R.drawable.parnas_jeju, "", "파르나스 호텔 제주", "${Define.DOMAIN}?hotelCode=26&lang=kor"),
+            HotelModel(R.drawable.pangyo, "", "나인트리 판교", "${Define.DOMAIN}?hotelCode=27&lang=kor"),
+            HotelModel(R.drawable.myoungdong_2, "", "나인트리 명동2", "${Define.DOMAIN}?hotelCode=29&lang=kor"),
+            HotelModel(R.drawable.insadong, "", "나인트리 인사동", "${Define.DOMAIN}?hotelCode=30&lang=kor"),
+            HotelModel(R.drawable.myoungdong_1, "", "나인트리 명동", "${Define.DOMAIN}?hotelCode=28&lang=kor"),
+            HotelModel(R.drawable.dongdaemoon, "", "나인트리 동대문", "${Define.DOMAIN}?hotelCode=31&lang=kor")
         )
 
         val popularityAdapter = RecyclerViewAdapter(mContext)
@@ -71,25 +73,25 @@ class MainActivity : AppCompatActivity() {
 
         // 링크 걸어주는 곳
         mBinding.loginTv.setOnClickListener {
-            Utils.moveToPage(mContext, getString(R.string.login))
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.login}")
         }
         mBinding.regTv.setOnClickListener {
-            Utils.moveToPage(mContext, getString(R.string.signUp))
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.signUp}")
         }
         mBinding.overlayView.setOnClickListener {
-            Utils.moveToPage(mContext, getString(R.string.rsvn))
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.rsvn}")
         }
         mBinding.rsvn.setOnClickListener {
-            Utils.moveToPage(mContext, getString(R.string.rsvn))
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.rsvn}")
         }
         mBinding.dining.setOnClickListener {
-            Utils.moveToPage(mContext, getString(R.string.dining))
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.dining}")
         }
         mBinding.search.setOnClickListener {
-            Utils.moveToPage(mContext, getString(R.string.search))
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.search}")
         }
         mBinding.reservationCheck.setOnClickListener {
-            Utils.moveToPage(mContext, getString(R.string.reservation_check))
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.reservationCheck}")
         }
         mBinding.mainLogo.setOnClickListener {
             Utils.nextPage(mContext, RewardActivity(), 0, true)

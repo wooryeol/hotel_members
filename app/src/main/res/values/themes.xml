@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Seandroid" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.Seandroid" parent="Theme.AppCompat.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
@@ -21,15 +21,24 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
+
     <!-- 흰색 인디케이터 영역 및 스타일 -->
     <style name="WhiteActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowSplashScreenAnimatedIcon" tools:ignore="NewApi">@color/white</item>
         <item name="colorPrimaryDark">@color/white</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
     </style>
+
     <!-- 시스템 팝업 스타일 -->
     <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:windowNoTitle">true</item>
         <item name="android:textSize">14dp</item>
+    </style>
+
+    <!--리워드 페이지 status bar text color 흰색으로 설정-->
+    <style name="RewardActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowSplashScreenAnimatedIcon" tools:ignore="NewApi">@color/white</item>
+        <item name="colorPrimaryDark">@color/white</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
     </style>
 </resources>

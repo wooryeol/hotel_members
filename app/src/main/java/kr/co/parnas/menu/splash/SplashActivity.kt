@@ -39,6 +39,7 @@ import retrofit2.Response
 class SplashActivity : AppCompatActivity() {
     private lateinit var mBinding : ActSplashBinding
     lateinit var mContext: Context
+
     //최초 진입인지 여부
     //최초 진입일땐 권한 체크를 하지 않고 설정 페이지에서 돌아올때 체크하기 위해
     var isFirst = true
@@ -248,7 +249,7 @@ class SplashActivity : AppCompatActivity() {
     private fun requestAppInfo() {
         val token = SharedData.getSharedData(mContext, SharedData.DEVICE_TOKEN, "")
         val push = SharedData.getSharedData(mContext, SharedData.PUSH_SERVICE, "Y")
-        val url = getString(R.string.base_url)
+        val url = Define.DOMAIN
         val service = ApiClientService.retrofitString.create(ApiClientService::class.java)
         val call = service.requestAppInfo(url, token, "A", push)
         call.enqueue(object : Callback<String> {

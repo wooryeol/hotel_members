@@ -12,16 +12,21 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.denzcoskun.imageslider.models.SlideModel
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import kr.co.parnas.R
+import kr.co.parnas.common.Define
 import kr.co.parnas.common.Utils
 import kr.co.parnas.databinding.ActivityRewardBinding
 import kr.co.parnas.databinding.CellRewardBinding
 import kr.co.parnas.network.model.HotelModel
+import kr.co.parnas.network.model.TierModel
+import java.text.NumberFormat
+import java.util.Locale
 
 @SuppressLint("ResourceType")
 class RewardActivity : AppCompatActivity() {
@@ -34,7 +39,7 @@ class RewardActivity : AppCompatActivity() {
     private var myHandler = MyHandler()
     private val intervalTime = 1500.toLong()
 
-    @SuppressLint("ResourceType")
+    @SuppressLint("ResourceType", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _mBinding = ActivityRewardBinding.inflate(layoutInflater)
@@ -42,22 +47,75 @@ class RewardActivity : AppCompatActivity() {
 
         mContext = this
 
-        // 상태바 색상
-        window.statusBarColor = Color.parseColor(getString(R.color.grade_c))
+        // 링크 걸어주는 곳
+        mBinding.rsvn.setOnClickListener {
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.rsvn}")
+        }
+        mBinding.dining.setOnClickListener {
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.dining}")
+        }
+        mBinding.search.setOnClickListener {
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.search}")
+        }
+        mBinding.reservationCheck.setOnClickListener {
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.reservationCheck}")
+        }
 
-        // 현재 grade
+        // 마이페이지 회정 정보 및 등급 별 화면 구성
+        val data: List<TierModel> = listOf(TierModel("김파르파르", 20231225, 54332, "v3"))
+        mBinding.userName.text = data[0].name
+        mBinding.memNumber.text = "PM${data[0].memNumber}"
+        val point = NumberFormat.getNumberInstance(Locale.getDefault()).format(data[0].point)
+        mBinding.btmSheetPoint.text = point.toString()
+
+        // 현재 grade bubble 위치
         currentGrade(50)
+
+        // 바코드 생성
+        createBarcode(data[0].memNumber)
+
+        if (data[0].tier == "club") {
+            mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_c))
+            window.statusBarColor = Color.parseColor(getString(R.color.grade_c))
+            mBinding.gradeImg.setImageResource(R.drawable.grade_c)
+            mBinding.grade.setImageResource(R.drawable.speech_bubble_club)
+            mBinding.progressBar.setImageResource(R.drawable.progress_bar_club)
+        } else if (data[0].tier == "v1") {
+            mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v1))
+            window.statusBarColor = Color.parseColor(getString(R.color.grade_v1))
+            mBinding.gradeImg.setImageResource(R.drawable.grade_v1)
+            mBinding.grade.setImageResource(R.drawable.speech_bubble_v1)
+            mBinding.progressBar.setImageResource(R.drawable.progress_bar_v1)
+        } else if (data[0].tier == "v2") {
+            mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v2))
+            window.statusBarColor = Color.parseColor(getString(R.color.grade_v2))
+            mBinding.gradeImg.setImageResource(R.drawable.grade_v2)
+            mBinding.grade.setImageResource(R.drawable.speech_bubble_v2)
+            mBinding.progressBar.setImageResource(R.drawable.progress_bar_v2)
+        } else if (data[0].tier == "v3") {
+            mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v3))
+            window.statusBarColor = Color.parseColor(getString(R.color.grade_v3))
+            mBinding.gradeImg.setImageResource(R.drawable.grade_v3)
+            mBinding.grade.setImageResource(R.drawable.speech_bubble_v3)
+            mBinding.progressBar.setImageResource(R.drawable.progress_bar_v3)
+        } else {
+            mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v4))
+            window.statusBarColor = Color.parseColor(getString(R.color.grade_v4))
+            mBinding.gradeImg.setImageResource(R.drawable.grade_v4)
+            mBinding.grade.setImageResource(R.drawable.speech_bubble_v4)
+            mBinding.progressBar.setImageResource(R.drawable.progress_bar_v4)
+        }
 
         //뷰 페이저
         val list: List<HotelModel> = arrayListOf(
-            HotelModel(R.drawable.grand, "", "그랜드인터컨티넨탈", "https://parnashotel.com?hotelCode=21&lang=kor&prodID=163"),
-            HotelModel(R.drawable.coex, "", "인터컨티넨탈 코엑스", "https://parnashotel.com?hotelCode=23&lang=kor&prodID=164"),
-            HotelModel(R.drawable.parnas_jeju, "", "파르나스 호텔 제주", "https://parnashotel.com?hotelCode=26&lang=kor&prodID=170"),
-            HotelModel(R.drawable.pangyo, "", "나인트리 판교", "https://parnashotel.com?hotelCode=27&lang=kor&prodID=165"),
-            HotelModel(R.drawable.myoungdong_2, "", "나인트리 명동2", "https://parnashotel.com?hotelCode=29&lang=kor&prodID=167"),
-            HotelModel(R.drawable.insadong, "", "나인트리 인사동", "https://parnashotel.com?hotelCode=30&lang=kor&prodID=168"),
-            HotelModel(R.drawable.myoungdong_1, "", "나인트리 명동", "https://parnashotel.com?hotelCode=28&lang=kor&prodID=166"),
-            HotelModel(R.drawable.dongdaemoon, "", "나인트리 동대문", "https://parnashotel.com?hotelCode=31&lang=kor&prodID=169")
+            HotelModel(R.drawable.grand, "", "그랜드인터컨티넨탈", "${Define.DOMAIN}?hotelCode=21&lang=kor&prodID=163", data),
+            HotelModel(R.drawable.coex, "", "인터컨티넨탈 코엑스", "${Define.DOMAIN}?hotelCode=23&lang=kor&prodID=164", data),
+            HotelModel(R.drawable.parnas_jeju, "", "파르나스 호텔 제주", "${Define.DOMAIN}?hotelCode=26&lang=kor&prodID=170", data),
+            HotelModel(R.drawable.pangyo, "", "나인트리 판교", "${Define.DOMAIN}?hotelCode=27&lang=kor&prodID=165", data),
+            HotelModel(R.drawable.myoungdong_2, "", "나인트리 명동2", "${Define.DOMAIN}?hotelCode=29&lang=kor&prodID=167", data),
+            HotelModel(R.drawable.insadong, "", "나인트리 인사동", "${Define.DOMAIN}?hotelCode=30&lang=kor&prodID=168", data),
+            HotelModel(R.drawable.myoungdong_1, "", "나인트리 명동", "${Define.DOMAIN}?hotelCode=28&lang=kor&prodID=166", data),
+            HotelModel(R.drawable.dongdaemoon, "", "나인트리 동대문", "${Define.DOMAIN}?hotelCode=31&lang=kor&prodID=169", data)
         )
 
         val viewPagerAdapter = ViewPagerAdapter(mContext)
@@ -76,23 +134,6 @@ class RewardActivity : AppCompatActivity() {
                     }
                 }
             })
-        }
-
-        // 바코드 생성
-        createBarcode()
-
-        // 링크 걸어주는 곳
-        mBinding.rsvn.setOnClickListener {
-            Utils.moveToPage(mContext, getString(R.string.rsvn))
-        }
-        mBinding.dining.setOnClickListener {
-            Utils.moveToPage(mContext, getString(R.string.dining))
-        }
-        mBinding.search.setOnClickListener {
-            Utils.moveToPage(mContext, getString(R.string.search))
-        }
-        mBinding.reservationCheck.setOnClickListener {
-            Utils.moveToPage(mContext, getString(R.string.reservation_check))
         }
     }
 
@@ -134,7 +175,7 @@ class RewardActivity : AppCompatActivity() {
         }
     }
 
-    private fun createBarcode(){
+    private fun createBarcode(barcodeNumber: Int){
         val widthPx = TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP, 590f,
             resources.displayMetrics
@@ -143,9 +184,8 @@ class RewardActivity : AppCompatActivity() {
             TypedValue.COMPLEX_UNIT_DIP, 80f,
             resources.displayMetrics
         )
-        val barcodeNumber = "13450673"
         val barcodeEncoder = BarcodeEncoder()
-        val bitmap = barcodeEncoder.encodeBitmap(barcodeNumber, BarcodeFormat.CODE_128, widthPx.toInt(), heightPx.toInt())
+        val bitmap = barcodeEncoder.encodeBitmap(barcodeNumber.toString(), BarcodeFormat.CODE_128, widthPx.toInt(), heightPx.toInt())
         mBinding.barcode.setImageBitmap(bitmap)
     }
 
@@ -180,10 +220,21 @@ class RewardActivity : AppCompatActivity() {
                 itemView.setOnClickListener {
                     Utils.moveToPage(mContext, itemModel.url)
                 }
-
                 binding.imageView.setImageResource(itemModel.img)
                 binding.cellTitle.text = itemModel.title
                 binding.cellTitle.bringToFront()
+                val tier = itemModel.data?.get(0)?.tier
+                if (tier == "club") {
+                    binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_c))
+                } else if(tier == "v1") {
+                    binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_v1))
+                } else if(tier == "v2") {
+                    binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_v2))
+                } else if(tier == "v3") {
+                    binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_v3))
+                } else {
+                    binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_v4))
+                }
             }
         }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):PagerViewHolder {

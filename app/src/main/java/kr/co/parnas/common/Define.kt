@@ -2,9 +2,18 @@ package kr.co.parnas.common
 
 object Define {
 
-    var DOMAIN = "https://www.parnashotel.com"
-    // var DOMAIN = "http://192.168.0.194:3000"
-    /*val ROOT = "https://www.kshp.or.kr/mobile/symposium/2023autumn"*/
+    // var DOMAIN = "https://www.parnashotel.com"
+    // var DOMAIN = "http://192.168.0.194:3000" // 로컬
+    val DOMAIN = "http://121.138.151.6:12402" // 개발
+
+    const val login = "/login"
+    const val signUp = "/signUp"
+    const val rsvn = "/reservationSchedule?tab=0"
+    const val search = "/reservationSchedule?tab=1"
+    const val dining = "/reservationDining"
+    const val myPage = "/myPage/dashboard/"
+    const val reservationCheck = "/reservationCheck"
+
 
 
     const val SUCCESS = "success"

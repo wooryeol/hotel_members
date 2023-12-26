@@ -12,7 +12,7 @@ android {
         applicationId "kr.co.parnas"
         minSdkVersion 28
         targetSdkVersion 32
-        versionCode 23122203
+        versionCode 23122601
         versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
