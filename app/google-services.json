@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1085187475935",
+    "project_id": "parnas-membership-rewards-fcm",
+    "storage_bucket": "parnas-membership-rewards-fcm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085187475935:android:76481023932d24263f1c6a",
+        "android_client_info": {
+          "package_name": "kr.co.parnashotel.rewards"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsoNGooznSzH7CbedwMmA1HBUYU8k_6Wc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

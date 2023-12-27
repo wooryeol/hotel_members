@@ -178,7 +178,7 @@ class SplashActivity : AppCompatActivity() {
     private fun gifSplash() {
         Glide.with(this)
             .asGif()
-            .load(R.raw.splash)
+            .load(R.raw.splash_03)
             .listener(object : RequestListener<GifDrawable> {
                 override fun onLoadFailed(
                     e: GlideException?,

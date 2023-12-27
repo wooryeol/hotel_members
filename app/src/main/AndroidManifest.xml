@@ -6,17 +6,9 @@
     <uses-permission
         android:name="android.permission.INTERNET"
         android:required="true" />
-    <uses-permission android:name="android.permission.CAMERA" />
-
-    <uses-feature
-        android:name="android.hardware.camera2.full"
-        android:required="false" />
-
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="false" />
 
     <application
+        android:name=".rewards.common.GlobalApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -28,6 +20,10 @@
         android:theme="@style/WhiteActionBar"
         android:usesCleartextTraffic="true"
         tools:ignore="HardcodedDebugMode">
+
+        <meta-data
+            android:name="com.kakao.sdk.AppKey"
+            android:value="@string/kakao_app_key"/>
 
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
