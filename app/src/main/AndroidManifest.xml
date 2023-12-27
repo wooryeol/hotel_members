@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="kr.co.parnas">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="kr.co.parnashotel">
 
     <uses-permission
         android:name="android.permission.INTERNET"
@@ -23,8 +24,10 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:debuggable="true"
         android:theme="@style/WhiteActionBar"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        tools:ignore="HardcodedDebugMode">
 
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
@@ -41,7 +44,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".menu.myPage.RewardActivity"
+        <activity android:name="kr.co.parnashotel.rewards.menu.myPage.RewardActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/RewardActionBar">
@@ -49,14 +52,14 @@
         </activity>
 
         <activity
-            android:name=".menu.splash.SplashActivity"
+            android:name="kr.co.parnashotel.rewards.menu.splash.SplashActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/WhiteActionBar">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <!-- 백그라운드에서 푸시오는 경우 이벤트 처리 -->
+                <!-- 백그라운드에서 푸시오는 경우 이벤트 처리-->
                 <action android:name="NOTIFICATION_CLICK" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -65,29 +68,40 @@
         </activity>
 
         <activity
-            android:name=".menu.home.MainActivity"
+            android:name="kr.co.parnashotel.rewards.menu.home.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:exported="true" />
+            android:exported="true" >
+
+
+
+        </activity>
 
         <activity
-            android:name=".menu.webview.WebViewActivity"
+            android:name="kr.co.parnashotel.rewards.menu.webview.WebViewActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:exported="true" />
+            android:exported="true">
 
-        <!-- FCM -->
+            <intent-filter>
+                <data android:scheme="kakaotalk"/>
+                <data android:host="kakaotalk"/>
+            </intent-filter>
+
+        </activity>
+
+        <!-- FCM
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/channel_id" />
 
         <service
-            android:name=".push.MyFirebaseMessagingService"
+            android:name="kr.co.parnashotel.rewards.push.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </service> <!-- FCM End -->
+        </service>  FCM End -->
 
 
         <provider
