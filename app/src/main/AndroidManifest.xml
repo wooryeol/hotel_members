@@ -3,9 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="kr.co.parnashotel">
 
-    <uses-permission
-        android:name="android.permission.INTERNET"
-        android:required="true" />
+    <uses-permission android:name="android.permission.INTERNET" android:required="true" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <application
         android:name=".rewards.common.GlobalApplication"
@@ -67,11 +66,7 @@
             android:name="kr.co.parnashotel.rewards.menu.home.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:exported="true" >
-
-
-
-        </activity>
+            android:exported="true" />
 
         <activity
             android:name="kr.co.parnashotel.rewards.menu.webview.WebViewActivity"
@@ -86,7 +81,7 @@
 
         </activity>
 
-        <!-- FCM
+        <!--FCM-->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/channel_id" />
@@ -97,7 +92,8 @@
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </service>  FCM End -->
+        </service>
+        <!--FCM End-->
 
 
         <provider

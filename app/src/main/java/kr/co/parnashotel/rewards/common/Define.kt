@@ -6,8 +6,7 @@ object Define {
     // var DOMAIN = "http://192.168.0.194:3000" // 로컬
     // val DOMAIN = "http://121.138.151.6:12402" // 개발
 
-    /*const val login = "/membershipLogin"*/
-    const val login = "/login"
+    const val login = "/membershipLogin"
     const val signUp = "/signUp"
     const val rsvn = "/reservationSchedule?tab=0"
     const val search = "/reservationSchedule?tab=1"
