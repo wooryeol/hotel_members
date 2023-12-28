@@ -9,34 +9,37 @@
         android:id="@+id/area01"
         android:layout_width="match_parent"
         android:layout_height="400dp"
-        android:background="@drawable/bg"
+        android:background="@color/color_0D192C"
         android:orientation="vertical">
+
         <RelativeLayout
             android:id="@+id/header"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:ignore="UselessParent">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:ignore="UselessParent">
+
                 <ImageView
                     android:id="@+id/main_logo"
                     android:layout_width="100dp"
                     android:layout_height="60dp"
-                    android:src="@drawable/header_title"
-                    android:contentDescription="@string/todo" />
+                    android:contentDescription="@string/todo"
+                    android:src="@drawable/header_title" />
 
                 <TextView
                     android:id="@+id/loginTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toStartOf="@+id/regTv"
                     android:layout_centerVertical="true"
+                    android:layout_toStartOf="@+id/regTv"
+                    android:fontFamily="@font/noto_sans_kr_regular"
                     android:padding="10dp"
                     android:text="@string/main_login_tv"
                     android:textColor="@color/white"
-                    android:fontFamily="@font/noto_sans_kr_regular"
                     android:textSize="13dp"
                     tools:ignore="RelativeOverlap" />
 
@@ -46,11 +49,11 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
+                    android:fontFamily="@font/noto_sans_kr_regular"
                     android:padding="10dp"
                     android:text="@string/main_reg_tv"
-                    android:fontFamily="@font/noto_sans_kr_regular"
                     android:textColor="@color/white"
-                    android:textSize="13dp"/>
+                    android:textSize="13dp" />
 
             </RelativeLayout>
 
@@ -60,26 +63,27 @@
                 android:layout_centerInParent="true"
                 android:gravity="center"
                 android:orientation="vertical">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/main_msg"
-                    android:textColor="@color/white"
                     android:fontFamily="@font/noto_sans_kr_regular"
+                    android:text="@string/main_msg"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
                     android:textSize="25dp"
-                    android:textStyle="bold"
-                    android:textAlignment="center"/>
+                    android:textStyle="bold" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="35dp"
-                    android:paddingHorizontal="15dp"
                     android:layout_marginTop="10dp"
+                    android:background="@drawable/button_59c4c8"
+                    android:fontFamily="@font/noto_sans_kr_regular"
+                    android:paddingHorizontal="15dp"
                     android:text="@string/reward_more"
                     android:textColor="@color/white"
-                    android:fontFamily="@font/noto_sans_kr_regular"
                     android:textSize="12dp"
-                    android:background="@drawable/button_59c4c8"
                     tools:ignore="SmallSp" />
 
             </LinearLayout>
@@ -236,10 +240,10 @@
         <RelativeLayout
             android:id="@+id/footer"
             android:layout_width="match_parent"
-            android:layout_height="80dp">
+            android:layout_height="75dp">
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="75dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/recommend_sample"/>
 

@@ -40,9 +40,36 @@ class MainActivity : AppCompatActivity() {
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         val screenHeight = displayMetrics.heightPixels
 
+        val weightHeight: Float
+        val weightHeightCalc: Float
+
+        if(screenHeight in 1000..1280) {
+            weightHeight = 1.0f
+            weightHeightCalc = 1f
+        } else if(screenHeight in 2000..2030) {
+            weightHeight = 1.5f
+            weightHeightCalc = 1.3f
+        } else if(screenHeight in 2031..2050) {
+            weightHeight = 1.4f
+            weightHeightCalc = 1.26f
+        } else if(screenHeight in 2051..2400) {
+            weightHeight = 1.4f
+            weightHeightCalc = 1.3f
+        } else if(screenHeight in 2401..2900) {
+            weightHeight = 1.5f
+            weightHeightCalc = 1.5f
+        } else {
+            weightHeight = 1.3f
+            weightHeightCalc = 1.26f
+        }
+
+        Utils.Log("screen Height01 ===> $weightHeight")
+        Utils.Log("screen Height02 ===> $weightHeightCalc")
+        Utils.Log("screen Height03 ===> $screenHeight")
+
         // 레이아웃의 높이를 비율에 맞게 계산
-        val totalWeight = 1.3f + 1f
-        val area01Height = screenHeight * (1.3f / totalWeight)
+        val totalWeight = weightHeight + 1f
+        val area01Height = screenHeight * (weightHeightCalc / totalWeight)
 
         // 레이아웃의 LayoutParams 객체를 생성하고 높이를 설정
         val area01LayoutParams = mBinding.area01.layoutParams
@@ -53,14 +80,14 @@ class MainActivity : AppCompatActivity() {
         mBinding.area01.layoutParams = area01LayoutParams
 
         val list: List<HotelModel> = arrayListOf(
-            HotelModel(R.drawable.grand, "", "그랜드인터컨티넨탈", "${Define.DOMAIN}?hotelCode=21&lang=kor"),
-            HotelModel(R.drawable.coex, "", "인터컨티넨탈 코엑스", "${Define.DOMAIN}?hotelCode=23&lang=kor"),
+            HotelModel(R.drawable.grand, "", "그랜드 인터컨티넨탈 서울 파르나스", "${Define.DOMAIN}?hotelCode=21&lang=kor"),
+            HotelModel(R.drawable.coex, "", "인터컨티넨탈 서울 코엑스", "${Define.DOMAIN}?hotelCode=23&lang=kor"),
             HotelModel(R.drawable.parnas_jeju, "", "파르나스 호텔 제주", "${Define.DOMAIN}?hotelCode=26&lang=kor"),
-            HotelModel(R.drawable.pangyo, "", "나인트리 판교", "${Define.DOMAIN}?hotelCode=27&lang=kor"),
-            HotelModel(R.drawable.myoungdong_2, "", "나인트리 명동2", "${Define.DOMAIN}?hotelCode=29&lang=kor"),
-            HotelModel(R.drawable.insadong, "", "나인트리 인사동", "${Define.DOMAIN}?hotelCode=30&lang=kor"),
-            HotelModel(R.drawable.myoungdong_1, "", "나인트리 명동", "${Define.DOMAIN}?hotelCode=28&lang=kor"),
-            HotelModel(R.drawable.dongdaemoon, "", "나인트리 동대문", "${Define.DOMAIN}?hotelCode=31&lang=kor")
+            HotelModel(R.drawable.pangyo, "", "나인트리 프리미어 호텔 서울 판교", "${Define.DOMAIN}?hotelCode=27&lang=kor"),
+            HotelModel(R.drawable.myoungdong_2, "", "나인트리 프리미어 호텔 명동2", "${Define.DOMAIN}?hotelCode=29&lang=kor"),
+            HotelModel(R.drawable.insadong, "", "나인트리 프리미어 호텔 인사동", "${Define.DOMAIN}?hotelCode=30&lang=kor"),
+            HotelModel(R.drawable.myoungdong_1, "", "나인트리 호텔 명동", "${Define.DOMAIN}?hotelCode=28&lang=kor"),
+            HotelModel(R.drawable.dongdaemoon, "", "나인트리 호텔 동대문", "${Define.DOMAIN}?hotelCode=31&lang=kor")
         )
 
         val popularityAdapter = RecyclerViewAdapter(mContext)
