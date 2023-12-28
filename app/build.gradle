@@ -13,7 +13,7 @@ android {
         minSdkVersion 28
         targetSdkVersion 33
         versionCode 23122802
-        versionName "0.9.3"
+        versionName "0.9.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         //Cannot fit requested classes in a single dex file 해결을 위해

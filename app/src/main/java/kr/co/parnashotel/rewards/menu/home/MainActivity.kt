@@ -68,16 +68,20 @@ class MainActivity : AppCompatActivity() {
         Utils.Log("screen Height03 ===> $screenHeight")
 
         // 레이아웃의 높이를 비율에 맞게 계산
-        val totalWeight = weightHeight + 1f
-        val area01Height = screenHeight * (weightHeightCalc / totalWeight)
+        val totalWeight = 1.2f + 1f
+        val area01Height = screenHeight * (1.2f / totalWeight)
+        val area02Height = screenHeight * (1f / totalWeight)
 
         // 레이아웃의 LayoutParams 객체를 생성하고 높이를 설정
         val area01LayoutParams = mBinding.area01.layoutParams
+        val area02LayoutParams = mBinding.area02.layoutParams
 
-        area01LayoutParams.height = area01Height.toInt()
+        // area01LayoutParams.height = area01Height.toInt()
+        // area02LayoutParams.height = area02Height.toInt()
 
         // 레이아웃에 새로운 높이를 적용합니다.
-        mBinding.area01.layoutParams = area01LayoutParams
+        // mBinding.area01.layoutParams = area01LayoutParams
+        // mBinding.area02.layoutParams = area02LayoutParams
 
         val list: List<HotelModel> = arrayListOf(
             HotelModel(R.drawable.grand, "", "그랜드 인터컨티넨탈 서울 파르나스", "${Define.DOMAIN}?hotelCode=21&lang=kor"),
