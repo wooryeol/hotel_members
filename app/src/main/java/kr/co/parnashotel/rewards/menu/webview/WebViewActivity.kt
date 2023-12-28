@@ -46,13 +46,12 @@ import com.google.gson.JsonObject
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
-import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import kr.co.parnashotel.R
+import kr.co.parnashotel.databinding.ActWebviewBinding
 import kr.co.parnashotel.rewards.common.SharedData
 import kr.co.parnashotel.rewards.common.UtilPermission
 import kr.co.parnashotel.rewards.common.Utils
-import kr.co.parnashotel.databinding.ActWebviewBinding
 import org.json.JSONObject
 import java.net.URLDecoder
 
@@ -65,8 +64,7 @@ class WebViewActivity : AppCompatActivity() {
     private var mUrl :String? = null
 
     //사진 업로드 관련
-    /*private var mUploadMessage: ValueCallback<Array<Uri>>? = null
-    private var mUri: Uri? = null*/
+    /*private var mUploadMessage: ValueCallback<Array<Uri>>? = null*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -565,6 +563,7 @@ class WebViewActivity : AppCompatActivity() {
         //카카오 로그인
         @JavascriptInterface
         fun kakaoLogin() {
+            Log.d("kakao login", "카카오 로그인 들어옴")
 
             val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
                 if (error != null) {
@@ -581,7 +580,7 @@ class WebViewActivity : AppCompatActivity() {
 
                             // 여기에 던져주는 JSON 설정하기
                             val user1 = user.kakaoAccount
-                            Log.i("", "사용자 계정$user1")
+                            Log.d("", "사용자 계정$user1")
 
                             try {
                                 val jsonObject = JSONObject()

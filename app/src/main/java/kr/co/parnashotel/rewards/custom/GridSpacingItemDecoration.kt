@@ -1,4 +1,4 @@
-package kr.co.parnashotel.rewards.common.custom
+package kr.co.parnashotel.rewards.custom
 
 import android.graphics.Rect
 import android.view.View

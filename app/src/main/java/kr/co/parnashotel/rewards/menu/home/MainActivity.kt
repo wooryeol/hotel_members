@@ -53,14 +53,14 @@ class MainActivity : AppCompatActivity() {
         mBinding.area01.layoutParams = area01LayoutParams
 
         val list: List<HotelModel> = arrayListOf(
-            HotelModel(R.drawable.grand, "", "그랜드인터컨티넨탈", "${kr.co.parnashotel.rewards.common.Define.DOMAIN}?hotelCode=21&lang=kor"),
-            HotelModel(R.drawable.coex, "", "인터컨티넨탈 코엑스", "${kr.co.parnashotel.rewards.common.Define.DOMAIN}?hotelCode=23&lang=kor"),
+            HotelModel(R.drawable.grand, "", "그랜드인터컨티넨탈", "${Define.DOMAIN}?hotelCode=21&lang=kor"),
+            HotelModel(R.drawable.coex, "", "인터컨티넨탈 코엑스", "${Define.DOMAIN}?hotelCode=23&lang=kor"),
             HotelModel(R.drawable.parnas_jeju, "", "파르나스 호텔 제주", "${Define.DOMAIN}?hotelCode=26&lang=kor"),
-            HotelModel(R.drawable.pangyo, "", "나인트리 판교", "${kr.co.parnashotel.rewards.common.Define.DOMAIN}?hotelCode=27&lang=kor"),
-            HotelModel(R.drawable.myoungdong_2, "", "나인트리 명동2", "${kr.co.parnashotel.rewards.common.Define.DOMAIN}?hotelCode=29&lang=kor"),
-            HotelModel(R.drawable.insadong, "", "나인트리 인사동", "${kr.co.parnashotel.rewards.common.Define.DOMAIN}?hotelCode=30&lang=kor"),
-            HotelModel(R.drawable.myoungdong_1, "", "나인트리 명동", "${kr.co.parnashotel.rewards.common.Define.DOMAIN}?hotelCode=28&lang=kor"),
-            HotelModel(R.drawable.dongdaemoon, "", "나인트리 동대문", "${kr.co.parnashotel.rewards.common.Define.DOMAIN}?hotelCode=31&lang=kor")
+            HotelModel(R.drawable.pangyo, "", "나인트리 판교", "${Define.DOMAIN}?hotelCode=27&lang=kor"),
+            HotelModel(R.drawable.myoungdong_2, "", "나인트리 명동2", "${Define.DOMAIN}?hotelCode=29&lang=kor"),
+            HotelModel(R.drawable.insadong, "", "나인트리 인사동", "${Define.DOMAIN}?hotelCode=30&lang=kor"),
+            HotelModel(R.drawable.myoungdong_1, "", "나인트리 명동", "${Define.DOMAIN}?hotelCode=28&lang=kor"),
+            HotelModel(R.drawable.dongdaemoon, "", "나인트리 동대문", "${Define.DOMAIN}?hotelCode=31&lang=kor")
         )
 
         val popularityAdapter = RecyclerViewAdapter(mContext)

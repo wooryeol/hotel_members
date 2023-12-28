@@ -47,20 +47,20 @@ class RewardActivity : AppCompatActivity() {
 
         // 링크 걸어주는 곳
         mBinding.rsvn.setOnClickListener {
-            Utils.moveToPage(mContext, "${kr.co.parnashotel.rewards.common.Define.DOMAIN}${kr.co.parnashotel.rewards.common.Define.rsvn}")
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.rsvn}")
         }
         mBinding.dining.setOnClickListener {
-            Utils.moveToPage(mContext, "${kr.co.parnashotel.rewards.common.Define.DOMAIN}${kr.co.parnashotel.rewards.common.Define.dining}")
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.dining}")
         }
         mBinding.search.setOnClickListener {
-            Utils.moveToPage(mContext, "${kr.co.parnashotel.rewards.common.Define.DOMAIN}${kr.co.parnashotel.rewards.common.Define.search}")
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.search}")
         }
         mBinding.reservationCheck.setOnClickListener {
-            Utils.moveToPage(mContext, "${kr.co.parnashotel.rewards.common.Define.DOMAIN}${kr.co.parnashotel.rewards.common.Define.reservationCheck}")
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.reservationCheck}")
         }
 
         // 마이페이지 회정 정보 및 등급 별 화면 구성
-        val data: List<TierModel> = listOf(TierModel("김파르파르", 20231225, 54332, "v3"))
+        val data: List<TierModel> = listOf(TierModel("김파르", 20240101, 54332, "v2"))
         mBinding.userName.text = data[0].name
         mBinding.memNumber.text = "PM${data[0].memNumber}"
         val point = NumberFormat.getNumberInstance(Locale.getDefault()).format(data[0].point)
@@ -106,14 +106,14 @@ class RewardActivity : AppCompatActivity() {
 
         //뷰 페이저
         val list: List<HotelModel> = arrayListOf(
-            HotelModel(R.drawable.grand, "", "그랜드인터컨티넨탈", "${kr.co.parnashotel.rewards.common.Define.DOMAIN}?hotelCode=21&lang=kor&prodID=163", data),
-            HotelModel(R.drawable.coex, "", "인터컨티넨탈 코엑스", "${kr.co.parnashotel.rewards.common.Define.DOMAIN}?hotelCode=23&lang=kor&prodID=164", data),
-            HotelModel(R.drawable.parnas_jeju, "", "파르나스 호텔 제주", "${kr.co.parnashotel.rewards.common.Define.DOMAIN}?hotelCode=26&lang=kor&prodID=170", data),
-            HotelModel(R.drawable.pangyo, "", "나인트리 판교", "${kr.co.parnashotel.rewards.common.Define.DOMAIN}?hotelCode=27&lang=kor&prodID=165", data),
+            HotelModel(R.drawable.grand, "", "그랜드인터컨티넨탈", "${Define.DOMAIN}?hotelCode=21&lang=kor&prodID=163", data),
+            HotelModel(R.drawable.coex, "", "인터컨티넨탈 코엑스", "${Define.DOMAIN}?hotelCode=23&lang=kor&prodID=164", data),
+            HotelModel(R.drawable.parnas_jeju, "", "파르나스 호텔 제주", "${Define.DOMAIN}?hotelCode=26&lang=kor&prodID=170", data),
+            HotelModel(R.drawable.pangyo, "", "나인트리 판교", "${Define.DOMAIN}?hotelCode=27&lang=kor&prodID=165", data),
             HotelModel(R.drawable.myoungdong_2, "", "나인트리 명동2", "${Define.DOMAIN}?hotelCode=29&lang=kor&prodID=167", data),
-            HotelModel(R.drawable.insadong, "", "나인트리 인사동", "${kr.co.parnashotel.rewards.common.Define.DOMAIN}?hotelCode=30&lang=kor&prodID=168", data),
-            HotelModel(R.drawable.myoungdong_1, "", "나인트리 명동", "${kr.co.parnashotel.rewards.common.Define.DOMAIN}?hotelCode=28&lang=kor&prodID=166", data),
-            HotelModel(R.drawable.dongdaemoon, "", "나인트리 동대문", "${kr.co.parnashotel.rewards.common.Define.DOMAIN}?hotelCode=31&lang=kor&prodID=169", data)
+            HotelModel(R.drawable.insadong, "", "나인트리 인사동", "${Define.DOMAIN}?hotelCode=30&lang=kor&prodID=168", data),
+            HotelModel(R.drawable.myoungdong_1, "", "나인트리 명동", "${Define.DOMAIN}?hotelCode=28&lang=kor&prodID=166", data),
+            HotelModel(R.drawable.dongdaemoon, "", "나인트리 동대문", "${Define.DOMAIN}?hotelCode=31&lang=kor&prodID=169", data)
         )
 
         val viewPagerAdapter = ViewPagerAdapter(mContext)
