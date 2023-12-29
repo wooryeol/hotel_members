@@ -12,8 +12,8 @@ android {
         applicationId "kr.co.parnashotel.rewards"
         minSdkVersion 28
         targetSdkVersion 33
-        versionCode 23122802
-        versionName "0.9.5"
+        versionCode 23122903
+        versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         //Cannot fit requested classes in a single dex file 해결을 위해
