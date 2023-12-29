@@ -36,53 +36,6 @@ class MainActivity : AppCompatActivity() {
         mContext = this
         mActivity = this
 
-        val displayMetrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
-        val screenHeight = displayMetrics.heightPixels
-
-        val weightHeight: Float
-        val weightHeightCalc: Float
-
-        if(screenHeight in 1000..1280) {
-            weightHeight = 1.0f
-            weightHeightCalc = 1f
-        } else if(screenHeight in 2000..2030) {
-            weightHeight = 1.5f
-            weightHeightCalc = 1.3f
-        } else if(screenHeight in 2031..2050) {
-            weightHeight = 1.4f
-            weightHeightCalc = 1.26f
-        } else if(screenHeight in 2051..2400) {
-            weightHeight = 1.4f
-            weightHeightCalc = 1.3f
-        } else if(screenHeight in 2401..2900) {
-            weightHeight = 1.5f
-            weightHeightCalc = 1.5f
-        } else {
-            weightHeight = 1.3f
-            weightHeightCalc = 1.26f
-        }
-
-        Utils.Log("screen Height01 ===> $weightHeight")
-        Utils.Log("screen Height02 ===> $weightHeightCalc")
-        Utils.Log("screen Height03 ===> $screenHeight")
-
-        // 레이아웃의 높이를 비율에 맞게 계산
-        val totalWeight = 1.2f + 1f
-        val area01Height = screenHeight * (1.2f / totalWeight)
-        val area02Height = screenHeight * (1f / totalWeight)
-
-        // 레이아웃의 LayoutParams 객체를 생성하고 높이를 설정
-        val area01LayoutParams = mBinding.area01.layoutParams
-        val area02LayoutParams = mBinding.area02.layoutParams
-
-        // area01LayoutParams.height = area01Height.toInt()
-        // area02LayoutParams.height = area02Height.toInt()
-
-        // 레이아웃에 새로운 높이를 적용합니다.
-        // mBinding.area01.layoutParams = area01LayoutParams
-        // mBinding.area02.layoutParams = area02LayoutParams
-
         val list: List<HotelModel> = arrayListOf(
             HotelModel(R.drawable.grand, "", "그랜드 인터컨티넨탈 서울 파르나스", "${Define.DOMAIN}?hotelCode=21&lang=kor"),
             HotelModel(R.drawable.coex, "", "인터컨티넨탈 서울 코엑스", "${Define.DOMAIN}?hotelCode=23&lang=kor"),

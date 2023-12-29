@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
         android:id="@+id/area01"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="1"
         android:background="@color/color_0D192C"
-        android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/guidelineTop"
-        app:layout_constraintVertical_chainStyle="packed"
-        tools:ignore="MissingConstraints">
+        android:orientation="vertical">
         <RelativeLayout
             android:id="@+id/header"
             android:layout_width="match_parent"
@@ -93,46 +91,49 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.53" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/overlayView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:paddingVertical="10dp"
-        android:text="@string/waist_title"
-        android:textAlignment="center"
-        android:fontFamily="@font/noto_sans_kr_regular"
-        android:textColor="@color/black"
-        android:textSize="12dp"
-        android:background="@drawable/background_border_59c4c8"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/guidelineTop"
-        app:layout_constraintTop_toBottomOf="@+id/area01"
-        tools:ignore="NotSibling" />
-    <!-- 중앙 오버레이 내용을 여기에 추가 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineBottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.6" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@color/color_0D192C"
+                android:layout_weight="1"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/overlayView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:layout_marginHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:text="@string/waist_title"
+            android:textAlignment="center"
+            android:fontFamily="@font/noto_sans_kr_regular"
+            android:textColor="@color/black"
+            android:textSize="12dp"
+            android:background="@drawable/background_border_59c4c8" />
+
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/area02"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/guidelineBottom"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
         <LinearLayout
             android:id="@+id/menuArea"
             android:layout_width="match_parent"
@@ -260,9 +261,7 @@
     <RelativeLayout
         android:id="@+id/footer"
         android:layout_width="match_parent"
-        android:layout_height="75dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:ignore="MissingConstraints">
+        android:layout_height="75dp">
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="75dp"
@@ -283,4 +282,4 @@
 
     </RelativeLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
