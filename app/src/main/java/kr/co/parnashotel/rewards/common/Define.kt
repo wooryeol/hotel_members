@@ -16,7 +16,7 @@ object Define {
 
     const val SUCCESS = "success"
     //파일 프로바이더
-    val AUTHORITY = "kr.co.mindall.seapp.fileprovider"
+    val AUTHORITY = "kr.co.parnashotel.fileprovider"
     //카메라사용 권한 요청코드
     const val CAMERA_REQUEST_CODE = 1001
     //저장소 사용 권한 요청코드

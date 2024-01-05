@@ -530,6 +530,19 @@ class WebViewActivity : AppCompatActivity() {
             setDeviceInfo()
         }
 
+        //유저(로그인) 정보 저장
+        @JavascriptInterface
+        fun setUserInfo(data: String) {
+            runOnUiThread {
+                Log.d("test log", "setUserInfo >>> $data")
+                val json = JSONObject(data)
+                val userId  = json.get("userId").toString()
+                val password = json.get("password").toString()
+                SharedData.setSharedData(mContext, "userId", userId)
+                SharedData.setSharedData(mContext, "password", password)
+            }
+        }
+
         //토스트 띄우기
         @JavascriptInterface
         fun callToast(msg: String) {
