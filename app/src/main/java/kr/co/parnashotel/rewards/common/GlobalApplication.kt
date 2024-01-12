@@ -3,6 +3,7 @@ package kr.co.parnashotel.rewards.common
 import android.app.Application
 import com.kakao.sdk.common.KakaoSdk
 import kr.co.parnashotel.R
+import kr.co.parnashotel.rewards.model.TierModel
 
 class GlobalApplication:Application() {
     override fun onCreate() {

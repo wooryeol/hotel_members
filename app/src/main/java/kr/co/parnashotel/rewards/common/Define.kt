@@ -12,6 +12,7 @@ object Define {
     const val dining = "/reservationDining"
     const val myPage = "/myPage/dashboard/"
     const val reservationCheck = "/reservationCheck"
+    const val dashBoard = "/myPage"
 
 
     const val SUCCESS = "success"

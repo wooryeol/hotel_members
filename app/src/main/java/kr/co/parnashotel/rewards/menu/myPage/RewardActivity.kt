@@ -23,10 +23,11 @@ import kr.co.parnashotel.databinding.ActivityRewardBinding
 import kr.co.parnashotel.databinding.CellRewardBinding
 import kr.co.parnashotel.rewards.common.Define
 import kr.co.parnashotel.rewards.common.SharedData
+import kr.co.parnashotel.rewards.menu.home.MainActivity
+import kr.co.parnashotel.rewards.menu.webview.WebViewActivity
 import kr.co.parnashotel.rewards.model.HotelModel
 import kr.co.parnashotel.rewards.model.TierModel
 import java.text.NumberFormat
-import java.util.ArrayList
 import java.util.Locale
 
 @SuppressLint("ResourceType")
@@ -61,6 +62,9 @@ class RewardActivity : AppCompatActivity() {
         mBinding.reservationCheck.setOnClickListener {
             Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.reservationCheck}")
         }
+        mBinding.dashBoard.setOnClickListener{
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.dashBoard}")
+        }
 
         //뷰 페이저
         val list: List<HotelModel> = arrayListOf(
@@ -92,19 +96,25 @@ class RewardActivity : AppCompatActivity() {
             })
         }
 
-        getUserInfo()
+        getSetting()
     }
 
-    private fun getUserInfo(){
+    private fun getSetting(){
         val userDataIntent = intent
         val userData = userDataIntent.getSerializableExtra("userData") as TierModel
-
         Log.d("test log", "userData >>> $userData")
+
+        MainActivity.isLoginButtonClicked = false
 
         val name  = userData.name
         val gradeName  = userData.gradeName
         val membershipNo  = userData.membershipNo
         val point  = userData.point
+
+        /*val name  = getUserInfo().name
+        val gradeName  = getUserInfo().gradeName
+        val membershipNo  = getUserInfo().membershipNo
+        val point  = getUserInfo().point*/
 
         // 회원명
         mBinding.userName.text = name
@@ -253,7 +263,7 @@ class RewardActivity : AppCompatActivity() {
                 binding.cellTitle.text = itemModel.title
                 binding.cellTitle.bringToFront()
                 when (itemModel.data?.get(0)?.gradeName) {
-                    "club" -> {
+                    "클럽" -> {
                         binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_c))
                     }
                     "v1" -> {

@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     companion object{
         @SuppressLint("StaticFieldLeak")
         var mainActivity : MainActivity? = null
+        var isLoginButtonClicked = false
     }
 
     private lateinit var mBinding: ActMainBinding
@@ -60,6 +61,7 @@ class MainActivity : AppCompatActivity() {
 
         // 링크 걸어주는 곳
         mBinding.loginTv.setOnClickListener {
+            isLoginButtonClicked = true
             Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.login}")
         }
         mBinding.regTv.setOnClickListener {

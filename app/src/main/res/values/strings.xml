@@ -35,7 +35,7 @@
 
     <!--마이페이지-->
     <string name="page_name">REWARD</string>
-    <string name="myPage">My page</string>
+    <string name="dashBoard">Dash board</string>
     <string name="greeting">안녕하세요,</string>
 
 </resources>

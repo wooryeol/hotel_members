@@ -67,6 +67,8 @@ class WebViewActivity : AppCompatActivity() {
     private var isTwo = false
     private var mUrl :String? = null
 
+    private var userData : TierModel? = null
+
     //사진 업로드 관련
     /*private var mUploadMessage: ValueCallback<Array<Uri>>? = null*/
 
@@ -534,10 +536,20 @@ class WebViewActivity : AppCompatActivity() {
             setDeviceInfo()
         }
 
+        @JavascriptInterface
+        fun callMyPage() {
+            runOnUiThread {
+                val intent = Intent(mContext, RewardActivity::class.java)
+                intent.putExtra("userData", userData)
+                startActivity(intent)
+            }
+        }
+
         //유저(로그인) 정보 저장
         @JavascriptInterface
         fun setUserInfo(data: String) {
             runOnUiThread {
+
                 Log.d("test log", "setUserInfo >>> $data")
                 val json = JSONObject(data)
                 val name  = json.get("name").toString()
@@ -545,17 +557,18 @@ class WebViewActivity : AppCompatActivity() {
                 val membershipNo  = json.get("membershipNo").toString()
                 val point  = json.get("point").toString().toInt()
 
-                val userData = ArrayList<TierModel>()
-
-                userData.add(TierModel(name, membershipNo, point, gradeName))
+                userData = TierModel(name, membershipNo, point, gradeName)
 
                 val intent = Intent(mContext, RewardActivity::class.java)
-                intent.putExtra("userData", userData)
 
                 // 메인 액티비티 종료
-                val mainActivity = MainActivity.mainActivity
-                mainActivity!!.finish()
-                startActivity(intent)
+                MainActivity.mainActivity!!.finishAffinity()
+
+                if (MainActivity.isLoginButtonClicked) {
+                    intent.putExtra("userData", userData)
+                    this@WebViewActivity.finish()
+                    startActivity(intent)
+                }
             }
         }
 
