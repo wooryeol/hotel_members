@@ -49,9 +49,13 @@ import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import kr.co.parnashotel.R
 import kr.co.parnashotel.databinding.ActWebviewBinding
+import kr.co.parnashotel.rewards.common.Define
 import kr.co.parnashotel.rewards.common.SharedData
 import kr.co.parnashotel.rewards.common.UtilPermission
 import kr.co.parnashotel.rewards.common.Utils
+import kr.co.parnashotel.rewards.menu.home.MainActivity
+import kr.co.parnashotel.rewards.menu.myPage.RewardActivity
+import kr.co.parnashotel.rewards.model.TierModel
 import org.json.JSONObject
 import java.net.URLDecoder
 
@@ -79,7 +83,7 @@ class WebViewActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         val pushUrl = intent.getStringExtra("index")
-        mUrl = pushUrl ?: kr.co.parnashotel.rewards.common.Define.DOMAIN
+        mUrl = pushUrl ?: Define.DOMAIN
         initWebview(mUrl!!)
     }
 
@@ -536,10 +540,22 @@ class WebViewActivity : AppCompatActivity() {
             runOnUiThread {
                 Log.d("test log", "setUserInfo >>> $data")
                 val json = JSONObject(data)
-                val userId  = json.get("userId").toString()
-                val password = json.get("password").toString()
-                SharedData.setSharedData(mContext, "userId", userId)
-                SharedData.setSharedData(mContext, "password", password)
+                val name  = json.get("name").toString()
+                val gradeName  = json.get("gradeName").toString()
+                val membershipNo  = json.get("membershipNo").toString()
+                val point  = json.get("point").toString().toInt()
+
+                val userData = ArrayList<TierModel>()
+
+                userData.add(TierModel(name, membershipNo, point, gradeName))
+
+                val intent = Intent(mContext, RewardActivity::class.java)
+                intent.putExtra("userData", userData)
+
+                // 메인 액티비티 종료
+                val mainActivity = MainActivity.mainActivity
+                mainActivity!!.finish()
+                startActivity(intent)
             }
         }
 

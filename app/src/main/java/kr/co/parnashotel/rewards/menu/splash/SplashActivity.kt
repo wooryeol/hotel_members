@@ -29,6 +29,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import kr.co.parnashotel.R
 import kr.co.parnashotel.rewards.common.SharedData
 import kr.co.parnashotel.databinding.ActSplashBinding
+import kr.co.parnashotel.rewards.common.Define
 import kr.co.parnashotel.rewards.common.Utils
 import kr.co.parnashotel.rewards.menu.home.MainActivity
 import kr.co.parnashotel.rewards.net.ApiClientService
@@ -248,7 +249,7 @@ class SplashActivity : AppCompatActivity() {
     private fun requestAppInfo() {
         val token = SharedData.getSharedData(mContext, SharedData.DEVICE_TOKEN, "")
         val push = SharedData.getSharedData(mContext, SharedData.PUSH_SERVICE, "Y")
-        val url = kr.co.parnashotel.rewards.common.Define.DOMAIN
+        val url = Define.DOMAIN
         val service = ApiClientService.retrofitString.create(ApiClientService::class.java)
         val call = service.requestAppInfo(url, token, "A", push)
         call.enqueue(object : Callback<String> {

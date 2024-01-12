@@ -1,5 +1,6 @@
 package kr.co.parnashotel.rewards.menu.home
 
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.os.*
@@ -21,9 +22,14 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
+
+    companion object{
+        @SuppressLint("StaticFieldLeak")
+        var mainActivity : MainActivity? = null
+    }
+
     private lateinit var mBinding: ActMainBinding
     private lateinit var mContext: Context
-    private lateinit var mActivity: Activity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         mContext = this
-        mActivity = this
+        mainActivity = this
 
         val list: List<HotelModel> = arrayListOf(
             HotelModel(R.drawable.grand, "", "그랜드 인터컨티넨탈 서울 파르나스", "${Define.DOMAIN}?hotelCode=21&lang=kor"),
@@ -54,29 +60,29 @@ class MainActivity : AppCompatActivity() {
 
         // 링크 걸어주는 곳
         mBinding.loginTv.setOnClickListener {
-            Utils.moveToPage(mContext, "${kr.co.parnashotel.rewards.common.Define.DOMAIN}${kr.co.parnashotel.rewards.common.Define.login}")
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.login}")
         }
         mBinding.regTv.setOnClickListener {
-            Utils.moveToPage(mContext, "${kr.co.parnashotel.rewards.common.Define.DOMAIN}${kr.co.parnashotel.rewards.common.Define.signUp}")
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.signUp}")
         }
         mBinding.overlayView.setOnClickListener {
-            Utils.moveToPage(mContext, "${kr.co.parnashotel.rewards.common.Define.DOMAIN}${kr.co.parnashotel.rewards.common.Define.rsvn}")
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.rsvn}")
         }
         mBinding.rsvn.setOnClickListener {
-            Utils.moveToPage(mContext, "${kr.co.parnashotel.rewards.common.Define.DOMAIN}${kr.co.parnashotel.rewards.common.Define.rsvn}")
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.rsvn}")
         }
         mBinding.dining.setOnClickListener {
-            Utils.moveToPage(mContext, "${kr.co.parnashotel.rewards.common.Define.DOMAIN}${kr.co.parnashotel.rewards.common.Define.dining}")
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.dining}")
         }
         mBinding.search.setOnClickListener {
-            Utils.moveToPage(mContext, "${kr.co.parnashotel.rewards.common.Define.DOMAIN}${kr.co.parnashotel.rewards.common.Define.search}")
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.search}")
         }
         mBinding.reservationCheck.setOnClickListener {
-            Utils.moveToPage(mContext, "${kr.co.parnashotel.rewards.common.Define.DOMAIN}${kr.co.parnashotel.rewards.common.Define.reservationCheck}")
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.reservationCheck}")
         }
-        mBinding.mainLogo.setOnClickListener {
+        /*mBinding.mainLogo.setOnClickListener {
             Utils.nextPage(mContext, RewardActivity(), 0, true)
-        }
+        }*/
     }
 }
 

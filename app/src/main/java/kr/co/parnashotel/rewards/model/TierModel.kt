@@ -1,8 +1,10 @@
 package kr.co.parnashotel.rewards.model
 
+import java.io.Serializable
+
 data class TierModel(
     var name: String,
-    var memNumber: Int,
+    var membershipNo: String,
     var point: Int,
-    var tier: String
-)
+    var gradeName: String
+):Serializable

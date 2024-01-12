@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -21,9 +22,11 @@ import kr.co.parnashotel.rewards.common.Utils
 import kr.co.parnashotel.databinding.ActivityRewardBinding
 import kr.co.parnashotel.databinding.CellRewardBinding
 import kr.co.parnashotel.rewards.common.Define
+import kr.co.parnashotel.rewards.common.SharedData
 import kr.co.parnashotel.rewards.model.HotelModel
 import kr.co.parnashotel.rewards.model.TierModel
 import java.text.NumberFormat
+import java.util.ArrayList
 import java.util.Locale
 
 @SuppressLint("ResourceType")
@@ -59,61 +62,16 @@ class RewardActivity : AppCompatActivity() {
             Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.reservationCheck}")
         }
 
-        // 마이페이지 회정 정보 및 등급 별 화면 구성
-        val data: List<TierModel> = listOf(TierModel("김파르", 20240101, 54332, "v2"))
-        mBinding.userName.text = data[0].name
-        mBinding.memNumber.text = "PM${data[0].memNumber}"
-        val point = NumberFormat.getNumberInstance(Locale.getDefault()).format(data[0].point)
-        mBinding.btmSheetPoint.text = point.toString()
-
-        // 현재 grade bubble 위치
-        currentGrade(50)
-
-        // 바코드 생성
-        createBarcode(data[0].memNumber)
-
-        if (data[0].tier == "club") {
-            mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_c))
-            window.statusBarColor = Color.parseColor(getString(R.color.grade_c))
-            mBinding.gradeImg.setImageResource(R.drawable.grade_c)
-            mBinding.grade.setImageResource(R.drawable.speech_bubble_club)
-            mBinding.progressBar.setImageResource(R.drawable.progress_bar_club)
-        } else if (data[0].tier == "v1") {
-            mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v1))
-            window.statusBarColor = Color.parseColor(getString(R.color.grade_v1))
-            mBinding.gradeImg.setImageResource(R.drawable.grade_v1)
-            mBinding.grade.setImageResource(R.drawable.speech_bubble_v1)
-            mBinding.progressBar.setImageResource(R.drawable.progress_bar_v1)
-        } else if (data[0].tier == "v2") {
-            mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v2))
-            window.statusBarColor = Color.parseColor(getString(R.color.grade_v2))
-            mBinding.gradeImg.setImageResource(R.drawable.grade_v2)
-            mBinding.grade.setImageResource(R.drawable.speech_bubble_v2)
-            mBinding.progressBar.setImageResource(R.drawable.progress_bar_v2)
-        } else if (data[0].tier == "v3") {
-            mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v3))
-            window.statusBarColor = Color.parseColor(getString(R.color.grade_v3))
-            mBinding.gradeImg.setImageResource(R.drawable.grade_v3)
-            mBinding.grade.setImageResource(R.drawable.speech_bubble_v3)
-            mBinding.progressBar.setImageResource(R.drawable.progress_bar_v3)
-        } else {
-            mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v4))
-            window.statusBarColor = Color.parseColor(getString(R.color.grade_v4))
-            mBinding.gradeImg.setImageResource(R.drawable.grade_v4)
-            mBinding.grade.setImageResource(R.drawable.speech_bubble_v4)
-            mBinding.progressBar.setImageResource(R.drawable.progress_bar_v4)
-        }
-
         //뷰 페이저
         val list: List<HotelModel> = arrayListOf(
-            HotelModel(R.drawable.grand, "", "그랜드인터컨티넨탈", "${Define.DOMAIN}?hotelCode=21&lang=kor&prodID=163", data),
-            HotelModel(R.drawable.coex, "", "인터컨티넨탈 코엑스", "${Define.DOMAIN}?hotelCode=23&lang=kor&prodID=164", data),
-            HotelModel(R.drawable.parnas_jeju, "", "파르나스 호텔 제주", "${Define.DOMAIN}?hotelCode=26&lang=kor&prodID=170", data),
-            HotelModel(R.drawable.pangyo, "", "나인트리 판교", "${Define.DOMAIN}?hotelCode=27&lang=kor&prodID=165", data),
-            HotelModel(R.drawable.myoungdong_2, "", "나인트리 명동2", "${Define.DOMAIN}?hotelCode=29&lang=kor&prodID=167", data),
-            HotelModel(R.drawable.insadong, "", "나인트리 인사동", "${Define.DOMAIN}?hotelCode=30&lang=kor&prodID=168", data),
-            HotelModel(R.drawable.myoungdong_1, "", "나인트리 명동", "${Define.DOMAIN}?hotelCode=28&lang=kor&prodID=166", data),
-            HotelModel(R.drawable.dongdaemoon, "", "나인트리 동대문", "${Define.DOMAIN}?hotelCode=31&lang=kor&prodID=169", data)
+            HotelModel(R.drawable.grand, "", "그랜드인터컨티넨탈", "${Define.DOMAIN}?hotelCode=21&lang=kor&prodID=163"),
+            HotelModel(R.drawable.coex, "", "인터컨티넨탈 코엑스", "${Define.DOMAIN}?hotelCode=23&lang=kor&prodID=164"),
+            HotelModel(R.drawable.parnas_jeju, "", "파르나스 호텔 제주", "${Define.DOMAIN}?hotelCode=26&lang=kor&prodID=170"),
+            HotelModel(R.drawable.pangyo, "", "나인트리 판교", "${Define.DOMAIN}?hotelCode=27&lang=kor&prodID=165"),
+            HotelModel(R.drawable.myoungdong_2, "", "나인트리 명동2", "${Define.DOMAIN}?hotelCode=29&lang=kor&prodID=167"),
+            HotelModel(R.drawable.insadong, "", "나인트리 인사동", "${Define.DOMAIN}?hotelCode=30&lang=kor&prodID=168"),
+            HotelModel(R.drawable.myoungdong_1, "", "나인트리 명동", "${Define.DOMAIN}?hotelCode=28&lang=kor&prodID=166"),
+            HotelModel(R.drawable.dongdaemoon, "", "나인트리 동대문", "${Define.DOMAIN}?hotelCode=31&lang=kor&prodID=169")
         )
 
         val viewPagerAdapter = ViewPagerAdapter(mContext)
@@ -132,6 +90,79 @@ class RewardActivity : AppCompatActivity() {
                     }
                 }
             })
+        }
+
+        getUserInfo()
+    }
+
+    private fun getUserInfo(){
+        val userDataIntent = intent
+        val userData = userDataIntent.getSerializableExtra("userData") as TierModel
+
+        Log.d("test log", "userData >>> $userData")
+
+        val name  = userData.name
+        val gradeName  = userData.gradeName
+        val membershipNo  = userData.membershipNo
+        val point  = userData.point
+
+        // 회원명
+        mBinding.userName.text = name
+
+        // 회원 번호
+        mBinding.memNumber.text = membershipNo
+
+        // 포인트
+        val formattedPoint = NumberFormat.getNumberInstance(Locale.getDefault()).format(point)
+        mBinding.btmSheetPoint.text = formattedPoint
+
+        // 현재 grade bubble 위치
+        currentGrade(50)
+
+        // 바코드 생성
+        createBarcode(membershipNo)
+
+        // 티어별 ui 설정
+        tierSetting(gradeName)
+    }
+
+    private fun tierSetting(gradeName: String){
+        when (gradeName) {
+            "클럽" -> {
+                mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_c))
+                window.statusBarColor = Color.parseColor(getString(R.color.grade_c))
+                mBinding.gradeImg.setImageResource(R.drawable.grade_c)
+                mBinding.grade.setImageResource(R.drawable.speech_bubble_club)
+                mBinding.progressBar.setImageResource(R.drawable.progress_bar_club)
+            }
+            "v1" -> {
+                mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v1))
+                window.statusBarColor = Color.parseColor(getString(R.color.grade_v1))
+                mBinding.gradeImg.setImageResource(R.drawable.grade_v1)
+                mBinding.grade.setImageResource(R.drawable.speech_bubble_v1)
+                mBinding.progressBar.setImageResource(R.drawable.progress_bar_v1)
+            }
+            "v2" -> {
+                mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v2))
+                window.statusBarColor = Color.parseColor(getString(R.color.grade_v2))
+                mBinding.gradeImg.setImageResource(R.drawable.grade_v2)
+                mBinding.grade.setImageResource(R.drawable.speech_bubble_v2)
+                mBinding.progressBar.setImageResource(R.drawable.progress_bar_v2)
+            }
+            "v3" -> {
+                mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v3))
+                window.statusBarColor = Color.parseColor(getString(R.color.grade_v3))
+                mBinding.gradeImg.setImageResource(R.drawable.grade_v3)
+                mBinding.grade.setImageResource(R.drawable.speech_bubble_v3)
+                mBinding.progressBar.setImageResource(R.drawable.progress_bar_v3)
+            }
+            else -> {
+                mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v4))
+                window.statusBarColor = Color.parseColor(getString(R.color.grade_v4))
+                mBinding.gradeImg.setImageResource(R.drawable.grade_v4)
+                mBinding.grade.setImageResource(R.drawable.speech_bubble_v4)
+                mBinding.progressBar.setImageResource(R.drawable.progress_bar_v4)
+            }
         }
     }
 
@@ -173,7 +204,7 @@ class RewardActivity : AppCompatActivity() {
         }
     }
 
-    private fun createBarcode(barcodeNumber: Int){
+    private fun createBarcode(barcodeNumber: String){
         val widthPx = TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP, 590f,
             resources.displayMetrics
@@ -221,17 +252,22 @@ class RewardActivity : AppCompatActivity() {
                 binding.imageView.setImageResource(itemModel.img)
                 binding.cellTitle.text = itemModel.title
                 binding.cellTitle.bringToFront()
-                val tier = itemModel.data?.get(0)?.tier
-                if (tier == "club") {
-                    binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_c))
-                } else if(tier == "v1") {
-                    binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_v1))
-                } else if(tier == "v2") {
-                    binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_v2))
-                } else if(tier == "v3") {
-                    binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_v3))
-                } else {
-                    binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_v4))
+                when (itemModel.data?.get(0)?.gradeName) {
+                    "club" -> {
+                        binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_c))
+                    }
+                    "v1" -> {
+                        binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_v1))
+                    }
+                    "v2" -> {
+                        binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_v2))
+                    }
+                    "v3" -> {
+                        binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_v3))
+                    }
+                    else -> {
+                        binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_v4))
+                    }
                 }
             }
         }

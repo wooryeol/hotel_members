@@ -1,6 +1,7 @@
 package kr.co.parnashotel.rewards.net
 
 import kr.co.parnashotel.BuildConfig
+import kr.co.parnashotel.rewards.common.Define
 import kr.co.parnashotel.rewards.net.model.MemoInfoModel
 import kr.co.parnashotel.rewards.net.model.PhotoListModel
 import kr.co.parnashotel.rewards.net.model.ResultModel
@@ -100,7 +101,7 @@ interface ApiClientService {
         //Gson으로 리턴
         val retrofit: Retrofit
             get() = Retrofit.Builder()
-                .baseUrl(kr.co.parnashotel.rewards.common.Define.DOMAIN)
+                .baseUrl(Define.DOMAIN)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(builder.build())
                 .build()
@@ -108,7 +109,7 @@ interface ApiClientService {
         //String으로 리턴
         val retrofitString: Retrofit
             get() = Retrofit.Builder()
-                .baseUrl(kr.co.parnashotel.rewards.common.Define.DOMAIN)
+                .baseUrl(Define.DOMAIN)
                 .addConverterFactory(ToStringConverterFactory())
                 .client(builder.build())
                 .build()
