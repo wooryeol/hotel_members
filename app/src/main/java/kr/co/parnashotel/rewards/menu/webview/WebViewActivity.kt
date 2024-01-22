@@ -87,6 +87,8 @@ class WebViewActivity : AppCompatActivity() {
         val pushUrl = intent.getStringExtra("index")
         mUrl = pushUrl ?: Define.DOMAIN
         initWebview(mUrl!!)
+
+        setMembershipNo()
     }
 
     @SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
@@ -523,6 +525,21 @@ class WebViewActivity : AppCompatActivity() {
         })
     }
 
+    // 멤버십 번호 전달
+    private fun setMembershipNo() {
+        val membershipNo = intent.getStringExtra("membershipNo")
+        Log.d("test log", "membershipNo >>> $membershipNo")
+        if (membershipNo?.isNotEmpty() == true) {
+            webview.post(Runnable {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    webview.evaluateJavascript("javascript:getMembershipNo('$membershipNo')",null)
+                } else {
+                    webview.loadUrl("javascript:getMembershipNo('$membershipNo')")
+                }
+            })
+        }
+    }
+
     inner class AppScript {
         //종료하기
         @JavascriptInterface
@@ -545,11 +562,37 @@ class WebViewActivity : AppCompatActivity() {
             }
         }
 
+        @JavascriptInterface
+        fun callMembershipNumber() {
+            runOnUiThread {
+                setMembershipNo()
+            }
+        }
+
+        @JavascriptInterface
+        fun callKakaoUserInfo() {
+            runOnUiThread {
+
+            }
+        }
+        @JavascriptInterface
+        fun logout() {
+            runOnUiThread {
+                RewardActivity.rewardActivity!!.finish()
+                this@WebViewActivity.finish()
+                userData = null
+                Log.d("test log", "userData >>> $userData")
+                val intent = Intent(mContext, MainActivity::class.java)
+                intent.putExtra("userData", userData)
+                startActivity(intent)
+            }
+        }
+
+
         //유저(로그인) 정보 저장
         @JavascriptInterface
         fun setUserInfo(data: String) {
             runOnUiThread {
-
                 Log.d("test log", "setUserInfo >>> $data")
                 val json = JSONObject(data)
                 val name  = json.get("name").toString()

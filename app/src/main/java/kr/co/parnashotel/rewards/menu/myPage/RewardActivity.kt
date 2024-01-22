@@ -2,7 +2,9 @@ package kr.co.parnashotel.rewards.menu.myPage
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -33,6 +35,12 @@ import java.util.Locale
 @SuppressLint("ResourceType")
 class RewardActivity : AppCompatActivity() {
 
+    companion object{
+        @SuppressLint("StaticFieldLeak")
+        var rewardActivity: RewardActivity? = null
+    }
+
+
     private lateinit var mContext: Context
     private var _mBinding: ActivityRewardBinding? = null
     private val mBinding get() = _mBinding!!
@@ -40,6 +48,7 @@ class RewardActivity : AppCompatActivity() {
     private var currentPosition = 0
     private var myHandler = MyHandler()
     private val intervalTime = 1500.toLong()
+    private var userData: TierModel? = null
 
     @SuppressLint("ResourceType", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +57,10 @@ class RewardActivity : AppCompatActivity() {
         setContentView(_mBinding!!.root)
 
         mContext = this
+        rewardActivity = this
+
+        val userDataIntent = intent
+        userData = userDataIntent.getSerializableExtra("userData") as TierModel
 
         // 링크 걸어주는 곳
         mBinding.rsvn.setOnClickListener {
@@ -63,7 +76,11 @@ class RewardActivity : AppCompatActivity() {
             Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.reservationCheck}")
         }
         mBinding.dashBoard.setOnClickListener{
-            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.dashBoard}")
+            val intent = Intent(mContext, WebViewActivity::class.java)
+            Log.d("test log", "membershipNo >>> ${userData?.membershipNo}")
+            intent.putExtra("index", Define.DOMAIN+Define.dashBoard)
+            intent.putExtra("membershipNo", userData?.membershipNo)
+            startActivity(intent)
         }
 
         //뷰 페이저
@@ -100,16 +117,16 @@ class RewardActivity : AppCompatActivity() {
     }
 
     private fun getSetting(){
-        val userDataIntent = intent
-        val userData = userDataIntent.getSerializableExtra("userData") as TierModel
+        /*val userDataIntent = intent
+        val userData = userDataIntent.getSerializableExtra("userData") as TierModel*/
         Log.d("test log", "userData >>> $userData")
 
         MainActivity.isLoginButtonClicked = false
 
-        val name  = userData.name
-        val gradeName  = userData.gradeName
-        val membershipNo  = userData.membershipNo
-        val point  = userData.point
+        val name  = userData?.name
+        val gradeName  = userData?.gradeName
+        val membershipNo  = userData?.membershipNo
+        val point  = userData?.point
 
         /*val name  = getUserInfo().name
         val gradeName  = getUserInfo().gradeName
@@ -130,10 +147,10 @@ class RewardActivity : AppCompatActivity() {
         currentGrade(50)
 
         // 바코드 생성
-        createBarcode(membershipNo)
+        createBarcode(userData!!.membershipNo)
 
         // 티어별 ui 설정
-        tierSetting(gradeName)
+        tierSetting(userData!!.gradeName)
     }
 
     private fun tierSetting(gradeName: String){

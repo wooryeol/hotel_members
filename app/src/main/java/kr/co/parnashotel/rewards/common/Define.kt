@@ -1,8 +1,8 @@
 package kr.co.parnashotel.rewards.common
 
 object Define {
-    // var DOMAIN = "https://www.parnashotel.com"
-    var DOMAIN = "http://192.168.0.29:3000" // 로컬
+    var DOMAIN = "https://www.parnashotel.com"
+    // var DOMAIN = "http://192.168.0.29:3000" // 대리님 로컬
     // val DOMAIN = "http://121.138.151.6:12402" // 개발
 
     const val login = "/membershipLogin"
