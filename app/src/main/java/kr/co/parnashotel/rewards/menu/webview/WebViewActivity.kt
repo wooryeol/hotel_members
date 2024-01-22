@@ -528,13 +528,14 @@ class WebViewActivity : AppCompatActivity() {
     // 멤버십 번호 전달
     private fun setMembershipNo() {
         val membershipNo = intent.getStringExtra("membershipNo")
+        val accessToken = intent.getStringExtra("accessToken")
         Log.d("test log", "membershipNo >>> $membershipNo")
         if (membershipNo?.isNotEmpty() == true) {
             webview.post(Runnable {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    webview.evaluateJavascript("javascript:getMembershipNo('$membershipNo')",null)
+                    webview.evaluateJavascript("javascript:getMembershipNo('$membershipNo', '$accessToken')",null)
                 } else {
-                    webview.loadUrl("javascript:getMembershipNo('$membershipNo')")
+                    webview.loadUrl("javascript:getMembershipNo('$membershipNo', '$accessToken')")
                 }
             })
         }
@@ -599,8 +600,9 @@ class WebViewActivity : AppCompatActivity() {
                 val gradeName  = json.get("gradeName").toString()
                 val membershipNo  = json.get("membershipNo").toString()
                 val point  = json.get("point").toString().toInt()
+                val accessToken = json.get("accessToken").toString()
 
-                userData = TierModel(name, membershipNo, point, gradeName)
+                userData = TierModel(name, membershipNo, point, gradeName, accessToken)
 
                 val intent = Intent(mContext, RewardActivity::class.java)
 

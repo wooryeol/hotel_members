@@ -32,7 +32,6 @@ import kr.co.parnashotel.rewards.model.TierModel
 import java.text.NumberFormat
 import java.util.Locale
 
-@SuppressLint("ResourceType")
 class RewardActivity : AppCompatActivity() {
 
     companion object{
@@ -157,35 +156,36 @@ class RewardActivity : AppCompatActivity() {
         when (gradeName) {
             "클럽" -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_c))
-                window.statusBarColor = Color.parseColor(getString(R.color.grade_c))
+                //window.statusBarColor = Color.parseColor(getString(R.color.grade_c))
+                window.statusBarColor = mContext.resources.getColor(R.color.grade_c)
                 mBinding.gradeImg.setImageResource(R.drawable.grade_c)
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_club)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_club)
             }
             "v1" -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v1))
-                window.statusBarColor = Color.parseColor(getString(R.color.grade_v1))
+                window.statusBarColor = mContext.resources.getColor(R.color.grade_v1)
                 mBinding.gradeImg.setImageResource(R.drawable.grade_v1)
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_v1)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_v1)
             }
             "v2" -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v2))
-                window.statusBarColor = Color.parseColor(getString(R.color.grade_v2))
+                window.statusBarColor = mContext.resources.getColor(R.color.grade_v2)
                 mBinding.gradeImg.setImageResource(R.drawable.grade_v2)
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_v2)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_v2)
             }
             "v3" -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v3))
-                window.statusBarColor = Color.parseColor(getString(R.color.grade_v3))
+                window.statusBarColor = mContext.resources.getColor(R.color.grade_v3)
                 mBinding.gradeImg.setImageResource(R.drawable.grade_v3)
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_v3)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_v3)
             }
             else -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v4))
-                window.statusBarColor = Color.parseColor(getString(R.color.grade_v4))
+                window.statusBarColor = mContext.resources.getColor(R.color.grade_v4)
                 mBinding.gradeImg.setImageResource(R.drawable.grade_v4)
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_v4)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_v4)
