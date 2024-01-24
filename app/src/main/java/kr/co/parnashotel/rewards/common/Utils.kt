@@ -46,7 +46,7 @@ object Utils {
     }
 
     fun Log(msg: String) {
-        if (BuildConfig.DEBUG) android.util.Log.d("SE", msg)
+        if (BuildConfig.DEBUG) android.util.Log.d("H2O", msg)
     }
 
     fun LogLine(msg: String) {

@@ -3,8 +3,6 @@ package kr.co.parnashotel.rewards.menu.myPage
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -24,11 +22,10 @@ import kr.co.parnashotel.rewards.common.Utils
 import kr.co.parnashotel.databinding.ActivityRewardBinding
 import kr.co.parnashotel.databinding.CellRewardBinding
 import kr.co.parnashotel.rewards.common.Define
-import kr.co.parnashotel.rewards.common.SharedData
+import kr.co.parnashotel.rewards.common.GlobalApplication
 import kr.co.parnashotel.rewards.menu.home.MainActivity
 import kr.co.parnashotel.rewards.menu.webview.WebViewActivity
 import kr.co.parnashotel.rewards.model.HotelModel
-import kr.co.parnashotel.rewards.model.TierModel
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -47,7 +44,6 @@ class RewardActivity : AppCompatActivity() {
     private var currentPosition = 0
     private var myHandler = MyHandler()
     private val intervalTime = 1500.toLong()
-    private var userData: TierModel? = null
 
     @SuppressLint("ResourceType", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,28 +54,21 @@ class RewardActivity : AppCompatActivity() {
         mContext = this
         rewardActivity = this
 
-        val userDataIntent = intent
-        userData = userDataIntent.getSerializableExtra("userData") as TierModel
-
         // 링크 걸어주는 곳
         mBinding.rsvn.setOnClickListener {
-            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.rsvn}")
+            loginMove(Define.DOMAIN+Define.rsvn)
         }
         mBinding.dining.setOnClickListener {
-            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.dining}")
+            loginMove(Define.DOMAIN+Define.dining)
         }
         mBinding.search.setOnClickListener {
-            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.search}")
+            loginMove(Define.DOMAIN+Define.search)
         }
         mBinding.reservationCheck.setOnClickListener {
-            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.reservationCheck}")
+            loginMove(Define.DOMAIN+Define.reservationCheck)
         }
         mBinding.dashBoard.setOnClickListener{
-            val intent = Intent(mContext, WebViewActivity::class.java)
-            Log.d("test log", "membershipNo >>> ${userData?.membershipNo}")
-            intent.putExtra("index", Define.DOMAIN+Define.dashBoard)
-            intent.putExtra("membershipNo", userData?.membershipNo)
-            startActivity(intent)
+            loginMove(Define.DOMAIN+Define.dashBoard)
         }
 
         //뷰 페이저
@@ -115,22 +104,24 @@ class RewardActivity : AppCompatActivity() {
         getSetting()
     }
 
+    private fun loginMove(domain: String){
+        val intent = Intent(mContext, WebViewActivity::class.java)
+        intent.putExtra("index", domain)
+        intent.putExtra("membershipNo", GlobalApplication.userInfo?.membershipNo)
+        intent.putExtra("accessToken", GlobalApplication.userInfo?.accessToken)
+        startActivity(intent)
+    }
     private fun getSetting(){
         /*val userDataIntent = intent
         val userData = userDataIntent.getSerializableExtra("userData") as TierModel*/
-        Log.d("test log", "userData >>> $userData")
+        Log.d("test log", "userData >>> ${GlobalApplication.userInfo}")
 
         MainActivity.isLoginButtonClicked = false
 
-        val name  = userData?.name
-        val gradeName  = userData?.gradeName
-        val membershipNo  = userData?.membershipNo
-        val point  = userData?.point
-
-        /*val name  = getUserInfo().name
-        val gradeName  = getUserInfo().gradeName
-        val membershipNo  = getUserInfo().membershipNo
-        val point  = getUserInfo().point*/
+        val name  = GlobalApplication.userInfo?.name
+        val gradeName  = GlobalApplication.userInfo?.gradeName
+        val membershipNo  = GlobalApplication.userInfo?.membershipNo
+        val point  = GlobalApplication.userInfo?.point
 
         // 회원명
         mBinding.userName.text = name
@@ -146,10 +137,10 @@ class RewardActivity : AppCompatActivity() {
         currentGrade(50)
 
         // 바코드 생성
-        createBarcode(userData!!.membershipNo)
+        createBarcode(membershipNo!!)
 
         // 티어별 ui 설정
-        tierSetting(userData!!.gradeName)
+        tierSetting(gradeName!!)
     }
 
     private fun tierSetting(gradeName: String){

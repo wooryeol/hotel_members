@@ -82,9 +82,6 @@ class MainActivity : AppCompatActivity() {
         mBinding.reservationCheck.setOnClickListener {
             Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.reservationCheck}")
         }
-        /*mBinding.mainLogo.setOnClickListener {
-            Utils.nextPage(mContext, RewardActivity(), 0, true)
-        }*/
     }
 }
 

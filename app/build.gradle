@@ -12,7 +12,7 @@ android {
         applicationId "kr.co.parnashotel.rewards"
         minSdkVersion 28
         targetSdkVersion 33
-        versionCode 24012202
+        versionCode 24012401
         versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -24,6 +24,15 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    signingConfigs {
+        release {
+            storeFile file('../key/parnashotel_rewards_keystore.jks')
+            storePassword "pFFoDJAk9ex-jd7jizL4aqaQTDBAFqgHLEZk"
+            keyAlias "parnashotel_rewards"
+            keyPassword "pFFoDJAk9ex-jd7jizL4aqaQTDBAFqgHLEZk"
+        }
     }
 
     buildTypes {
@@ -41,6 +50,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
 
             android.applicationVariants.all { variant ->
                 variant.outputs.all {
@@ -69,6 +79,10 @@ android {
 }
 
 dependencies {
+
+    // 모델 json으로 변경
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0"
+
     // 카카오
     implementation("com.kakao.sdk:v2-user:2.13.0")
 

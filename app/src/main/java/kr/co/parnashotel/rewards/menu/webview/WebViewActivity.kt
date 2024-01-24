@@ -42,6 +42,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
@@ -50,11 +51,13 @@ import com.kakao.sdk.user.UserApiClient
 import kr.co.parnashotel.R
 import kr.co.parnashotel.databinding.ActWebviewBinding
 import kr.co.parnashotel.rewards.common.Define
+import kr.co.parnashotel.rewards.common.GlobalApplication
 import kr.co.parnashotel.rewards.common.SharedData
 import kr.co.parnashotel.rewards.common.UtilPermission
 import kr.co.parnashotel.rewards.common.Utils
 import kr.co.parnashotel.rewards.menu.home.MainActivity
 import kr.co.parnashotel.rewards.menu.myPage.RewardActivity
+import kr.co.parnashotel.rewards.model.MembershipUserInfo
 import kr.co.parnashotel.rewards.model.TierModel
 import org.json.JSONObject
 import java.net.URLDecoder
@@ -66,11 +69,6 @@ class WebViewActivity : AppCompatActivity() {
     private lateinit var webview: WebView
     private var isTwo = false
     private var mUrl :String? = null
-
-    private var userData : TierModel? = null
-
-    //사진 업로드 관련
-    /*private var mUploadMessage: ValueCallback<Array<Uri>>? = null*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,7 +110,7 @@ class WebViewActivity : AppCompatActivity() {
         settings.setSupportZoom(false)
         settings.builtInZoomControls = false
         settings.displayZoomControls = false
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             //동영상 재생 문제
             settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
             //간헐적인 동영상 플레이 장애처리
@@ -120,7 +118,7 @@ class WebViewActivity : AppCompatActivity() {
 
             //디버깅용 WebView 셋팅
             WebView.setWebContentsDebuggingEnabled(true)
-        }
+        }*/
 
         //userAgent 추가
         val userAgent = settings.userAgentString
@@ -253,9 +251,9 @@ class WebViewActivity : AppCompatActivity() {
                     request.setTitle(
                         fileName //위에서 디코딩하고 앞에 내용을 자른 최종 파일명
                     )
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         request.setRequiresCharging(false)
-                    }
+                    }*/
                     request.allowScanningByMediaScanner()
                     request.setAllowedOverMetered(true)
                     request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
@@ -517,29 +515,27 @@ class WebViewActivity : AppCompatActivity() {
         json.addProperty("mobileOsCd", Build.VERSION.RELEASE)
 
         webview.post(Runnable {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                webview.evaluateJavascript("javascript:getDeviceInfo($json)",null)
-            } else {
-                webview.loadUrl("javascript:getDeviceInfo($json)")
-            }
+            webview.loadUrl("javascript:getDeviceInfo($json)")
         })
     }
 
     // 멤버십 번호 전달
     private fun setMembershipNo() {
-        val membershipNo = intent.getStringExtra("membershipNo")
-        val accessToken = intent.getStringExtra("accessToken")
+        val membershipNo = GlobalApplication.userInfo?.membershipNo
+        val accessToken = GlobalApplication.userInfo?.accessToken
+
         Log.d("test log", "membershipNo >>> $membershipNo")
-        if (membershipNo?.isNotEmpty() == true) {
+        Log.d("test log", "accessToken >>> $accessToken")
+
+        if (membershipNo?.isNotEmpty() == true && accessToken?.isNotEmpty() == true) {
             webview.post(Runnable {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    webview.evaluateJavascript("javascript:getMembershipNo('$membershipNo', '$accessToken')",null)
-                } else {
-                    webview.loadUrl("javascript:getMembershipNo('$membershipNo', '$accessToken')")
-                }
+                // Log.d("test log", "222 accessToken >>> $accessToken")
+                webview.loadUrl("javascript:getMembershipNo('$membershipNo', '$accessToken')")
             })
         }
     }
+
+
 
     inner class AppScript {
         //종료하기
@@ -555,10 +551,43 @@ class WebViewActivity : AppCompatActivity() {
         }
 
         @JavascriptInterface
+        fun setMembershipUserInfo(data: String) {
+            runOnUiThread {
+                Log.d("test log", "setMembershipUserInfo >>> $data")
+                GlobalApplication.membershipUserInfo = Gson().fromJson(data, MembershipUserInfo::class.java)
+                //Log.d("test log", "GlobalApplication.membershipUserInfo >>> ${GlobalApplication.membershipUserInfo}")
+            }
+        }
+
+        @JavascriptInterface
+        fun callAccessToken() {
+            val accessToken = GlobalApplication.userInfo?.accessToken
+            val membershipUserInfo = GlobalApplication.membershipUserInfo
+
+            Log.d("test log", "membershipUserInfo >>> $membershipUserInfo")
+
+            runOnUiThread {
+                webview.post(Runnable {
+                    if (accessToken != null) {
+                        Log.d("test log", "333 accessToken >>> $accessToken")
+                        webview.loadUrl("javascript:setAccessToken('$accessToken')")
+                    }
+
+                    if (membershipUserInfo != null) {
+                        val gsonMembershipUserInfo = Gson().toJson(membershipUserInfo)
+                        Log.d("test log", "json membershipUserInfo >>> $gsonMembershipUserInfo")
+                        webview.loadUrl("javascript:setUserMembershipInfo($gsonMembershipUserInfo)")
+                    }
+                })
+            }
+        }
+
+        @JavascriptInterface
         fun callMyPage() {
             runOnUiThread {
                 val intent = Intent(mContext, RewardActivity::class.java)
-                intent.putExtra("userData", userData)
+                /*intent.putExtra("userData", userData)*/
+                intent.putExtra("userData", GlobalApplication.userInfo)
                 startActivity(intent)
             }
         }
@@ -576,15 +605,17 @@ class WebViewActivity : AppCompatActivity() {
 
             }
         }
+
         @JavascriptInterface
         fun logout() {
             runOnUiThread {
                 RewardActivity.rewardActivity!!.finish()
                 this@WebViewActivity.finish()
-                userData = null
-                Log.d("test log", "userData >>> $userData")
+                /*userData = null*/
+                GlobalApplication.userInfo = null
+                Log.d("test log", "userData >>> ${GlobalApplication.userInfo}")
                 val intent = Intent(mContext, MainActivity::class.java)
-                intent.putExtra("userData", userData)
+                intent.putExtra("userData", GlobalApplication.userInfo)
                 startActivity(intent)
             }
         }
@@ -596,13 +627,15 @@ class WebViewActivity : AppCompatActivity() {
             runOnUiThread {
                 Log.d("test log", "setUserInfo >>> $data")
                 val json = JSONObject(data)
-                val name  = json.get("name").toString()
-                val gradeName  = json.get("gradeName").toString()
-                val membershipNo  = json.get("membershipNo").toString()
-                val point  = json.get("point").toString().toInt()
+                val name = json.get("name").toString()
+                val gradeName = json.get("gradeName").toString()
+                val membershipNo = json.get("membershipNo").toString()
+                val point = json.get("point").toString().toInt()
                 val accessToken = json.get("accessToken").toString()
+                // Log.d("test log", "111 accessToken >>> $accessToken")
 
-                userData = TierModel(name, membershipNo, point, gradeName, accessToken)
+                GlobalApplication.userInfo =
+                    TierModel(name, membershipNo, point, gradeName, accessToken)
 
                 val intent = Intent(mContext, RewardActivity::class.java)
 
@@ -610,7 +643,7 @@ class WebViewActivity : AppCompatActivity() {
                 MainActivity.mainActivity!!.finishAffinity()
 
                 if (MainActivity.isLoginButtonClicked) {
-                    intent.putExtra("userData", userData)
+                    intent.putExtra("userData", GlobalApplication.userInfo)
                     this@WebViewActivity.finish()
                     startActivity(intent)
                 }
@@ -625,25 +658,35 @@ class WebViewActivity : AppCompatActivity() {
 
         //앱 업데이트
         @JavascriptInterface
-        fun callAppUpdate(){
+        fun callAppUpdate() {
             val appPackageName = packageName
             try {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$appPackageName")))
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("market://details?id=$appPackageName")
+                    )
+                )
             } catch (anfe: ActivityNotFoundException) {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")))
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")
+                    )
+                )
             }
             finish()
         }
 
         //세로화면
         @JavascriptInterface
-        fun callPortrait(){
+        fun callPortrait() {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
 
         //가로화면
         @JavascriptInterface
-        fun callLandscape(){
+        fun callLandscape() {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         }
 
@@ -657,10 +700,10 @@ class WebViewActivity : AppCompatActivity() {
                     Log.e("kakao login", "error >>> $error")
                 } else if (token != null) {
                     Log.d("kakao login", "카카오계정으로 로그인 성공 ${token.accessToken}")
-                    UserApiClient.instance.me{ user, error ->
-                        if (error != null){
+                    UserApiClient.instance.me { user, error ->
+                        if (error != null) {
                             Log.d("kakao login", "error >>> $error")
-                        } else if (user != null){
+                        } else if (user != null) {
                             Log.d("kakao login", "name >>> ${user.kakaoAccount?.name}")
                             Log.d("kakao login", "id >>> ${user.id}")
                             Log.d("kakao login", "ci >>> ${user.kakaoAccount?.ci}")
@@ -675,13 +718,7 @@ class WebViewActivity : AppCompatActivity() {
                                 jsonObject.put("echannelId", user.id)
                                 jsonObject.put("userCi", user.kakaoAccount?.ci)
                                 webview.post {
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                                        webview.evaluateJavascript(
-                                            "javascript:getKakaoInfo($jsonObject)", null
-                                        )
-                                    } else {
-                                        webview.loadUrl("javascript:getKakaoInfo($jsonObject)")
-                                    }
+                                    webview.loadUrl("javascript:getKakaoInfo($jsonObject)")
                                 }
                             } catch (e: java.lang.Exception) {
                                 e.printStackTrace()
@@ -703,15 +740,17 @@ class WebViewActivity : AppCompatActivity() {
                             return@loginWithKakaoTalk
                         } else {
                             // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
-                            UserApiClient.instance.loginWithKakaoAccount(mContext, callback = callback)
+                            UserApiClient.instance.loginWithKakaoAccount(
+                                mContext,
+                                callback = callback
+                            )
                         }
                     } else if (token != null) {
                         Log.d("kakao login", "카카오계정으로 로그인 성공 ${token.accessToken}")
                         UserApiClient.instance.me { user, error ->
                             if (error != null) {
                                 Log.d("kakao login", "사용자 정보 요청 실패", error)
-                            }
-                            else if (user != null) {
+                            } else if (user != null) {
                                 Log.d("kakao login", "name >>> ${user.kakaoAccount?.name}")
                                 Log.d("kakao login", "id >>> ${user.id}")
                                 Log.d("kakao login", "ci >>> ${user.kakaoAccount?.ci}")
@@ -723,13 +762,7 @@ class WebViewActivity : AppCompatActivity() {
                                     jsonObject.put("echannelId", user.id)
                                     jsonObject.put("userCi", user.kakaoAccount?.ci)
                                     webview.post {
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                                            webview.evaluateJavascript(
-                                                "javascript:getKakaoInfo($jsonObject)", null
-                                            )
-                                        } else {
-                                            webview.loadUrl("javascript:getKakaoInfo($jsonObject)")
-                                        }
+                                        webview.loadUrl("javascript:getKakaoInfo($jsonObject)")
                                     }
                                 } catch (e: java.lang.Exception) {
                                     e.printStackTrace()
