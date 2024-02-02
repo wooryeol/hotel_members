@@ -1,5 +1,6 @@
 package kr.co.parnashotel.rewards.common
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -8,12 +9,47 @@ import android.os.Build
 import android.os.Handler
 import android.provider.Settings
 import android.util.TypedValue
+import com.gun0912.tedpermission.PermissionListener
+import com.gun0912.tedpermission.normal.TedPermission
 import kr.co.parnashotel.BuildConfig
 import kr.co.parnashotel.rewards.menu.webview.WebViewActivity
 import java.io.UnsupportedEncodingException
 import java.util.*
 
 object Utils {
+
+    /**
+     * 테드 퍼미션으로 권한 체크
+     * .setPermission( )에 얻으려는 권한을
+     * @param context
+     * @param permissions = arrayOf(CAMERA, STORAGE 등등) 형태로 만들어서 넣기
+     * @return
+     */
+    fun requestPermission(context: Context) {
+        TedPermission.create()
+            .setPermissionListener(object : PermissionListener {
+                override fun onPermissionGranted() {
+                }
+
+                override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
+                }
+
+            })
+            /*.setRationaleMessage("권한을 허용으로 설정해주세요.") */
+            /* 항상 허용으로 해주어야하는 권한이 있을 경우 위의 코드를 추가하자 */
+            .setDeniedMessage("권한을 허용해주세요. \n [설정] > [앱 및 알림] > [고급] > [앱 권한]")
+            .setDeniedCloseButtonText("닫기")
+            .setGotoSettingButtonText("설정")
+            .setPermissions(
+                Manifest.permission.CAMERA,
+                Manifest.permission.READ_MEDIA_AUDIO,
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            )
+            .check()
+    }
 
     /**
      * 네이티브에서 인 앱 웹뷰 url로 이동할 때 사용

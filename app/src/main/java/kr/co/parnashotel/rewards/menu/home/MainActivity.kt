@@ -1,5 +1,6 @@
 package kr.co.parnashotel.rewards.menu.home
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
@@ -15,6 +16,7 @@ import kr.co.parnashotel.R
 import kr.co.parnashotel.databinding.ActMainBinding
 import kr.co.parnashotel.databinding.CellHotelBinding
 import kr.co.parnashotel.rewards.common.Define
+import kr.co.parnashotel.rewards.common.UtilPermission
 import kr.co.parnashotel.rewards.common.Utils
 import kr.co.parnashotel.rewards.menu.myPage.RewardActivity
 import kr.co.parnashotel.rewards.model.HotelModel
@@ -81,6 +83,9 @@ class MainActivity : AppCompatActivity() {
         }
         mBinding.reservationCheck.setOnClickListener {
             Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.reservationCheck}")
+        }
+        mBinding.mainPopup.setOnClickListener {
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.membershipIntroduction}")
         }
     }
 }

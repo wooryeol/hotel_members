@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.media.AudioAttributes
@@ -18,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -25,13 +27,17 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.util.Util
 import com.google.firebase.messaging.FirebaseMessaging
 import kr.co.parnashotel.R
 import kr.co.parnashotel.rewards.common.SharedData
 import kr.co.parnashotel.databinding.ActSplashBinding
 import kr.co.parnashotel.rewards.common.Define
+import kr.co.parnashotel.rewards.common.GlobalApplication
+import kr.co.parnashotel.rewards.common.UtilPermission
 import kr.co.parnashotel.rewards.common.Utils
 import kr.co.parnashotel.rewards.menu.home.MainActivity
+import kr.co.parnashotel.rewards.menu.myPage.RewardActivity
 import kr.co.parnashotel.rewards.net.ApiClientService
 import retrofit2.Call
 import retrofit2.Callback
@@ -111,7 +117,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun confirmPlease(){
-        kr.co.parnashotel.rewards.common.PopupFactory.drawSystemPopup(this, "알림설정을 하지 않으면 앱을 사용할 수 없습니다.\n설정창으로 가시겠습니까?", "설정으로 이동", "앱 종료",
+        kr.co.parnashotel.rewards.common.PopupFactory.drawSystemPopup(this, "권한 설정을 허용하지 않으면 앱을 사용할 수 없습니다.\n설정창으로 가시겠습니까?", "설정으로 이동", "앱 종료",
             object : Handler(Looper.getMainLooper()) {
                 override fun handleMessage(msg: Message) {
                     if (msg.what == kr.co.parnashotel.rewards.common.Define.EVENT_OK) {
@@ -165,16 +171,31 @@ class SplashActivity : AppCompatActivity() {
 
     private fun nextPage(){
         // val handler = Handler(Looper.getMainLooper())
-        val r = Runnable {
-            val intent = Intent(this, MainActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-            mUrl.let {
-                intent.putExtra("index", it)
+        val savedUserInfo = SharedData.getSharedData(this, "userInfo", "")
+        Log.d("test log", "savedUserInfo >>> $savedUserInfo")
+        if (savedUserInfo != "") {
+            val r = Runnable {
+                val intent = Intent(this, RewardActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                mUrl.let {
+                    intent.putExtra("index", it)
+                }
+                startActivity(intent)
             }
-            startActivity(intent)
+            r.run()
+            // handler.postDelayed(r, 3000)
+        } else {
+            val r = Runnable {
+                val intent = Intent(this, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                mUrl.let {
+                    intent.putExtra("index", it)
+                }
+                startActivity(intent)
+            }
+            r.run()
+            // handler.postDelayed(r, 3000)
         }
-        r.run()
-        // handler.postDelayed(r, 3000)
     }
 
     private fun gifSplash() {

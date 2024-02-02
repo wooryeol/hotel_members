@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">parnas</string>
+    <string name="app_name">파르나스호텔 리워즈 - 호텔예약</string>
 
     <string name="main_finish_toast">뒤로 버튼을 한번 더 누르시면 종료됩니다.</string>
     <string name="error_camera_permission">카메라 사용 권한을 허용해야 사용할 수 있습니다.</string>

@@ -12,7 +12,7 @@ android {
         applicationId "kr.co.parnashotel.rewards"
         minSdkVersion 28
         targetSdkVersion 33
-        versionCode 24012401
+        versionCode 24020201
         versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -125,4 +125,7 @@ dependencies {
     //fcm
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    //테드 퍼미션
+    implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
 }

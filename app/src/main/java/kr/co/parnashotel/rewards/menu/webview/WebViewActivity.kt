@@ -10,15 +10,18 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.Bitmap
 import android.net.Uri
-import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.os.Message
+import android.provider.MediaStore
+import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
@@ -30,28 +33,41 @@ import android.webkit.DownloadListener
 import android.webkit.JavascriptInterface
 import android.webkit.JsPromptResult
 import android.webkit.JsResult
-import android.webkit.SslErrorHandler
+import android.webkit.URLUtil
+import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
+import android.webkit.WebView.WebViewTransport
 import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.google.zxing.integration.android.IntentIntegrator
+import com.google.zxing.integration.android.IntentResult
 import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kr.co.parnashotel.R
 import kr.co.parnashotel.databinding.ActWebviewBinding
 import kr.co.parnashotel.rewards.common.Define
 import kr.co.parnashotel.rewards.common.GlobalApplication
+import kr.co.parnashotel.rewards.common.PopupFactory
 import kr.co.parnashotel.rewards.common.SharedData
 import kr.co.parnashotel.rewards.common.UtilPermission
 import kr.co.parnashotel.rewards.common.Utils
@@ -60,7 +76,12 @@ import kr.co.parnashotel.rewards.menu.myPage.RewardActivity
 import kr.co.parnashotel.rewards.model.MembershipUserInfo
 import kr.co.parnashotel.rewards.model.TierModel
 import org.json.JSONObject
+import java.io.File
+import java.io.IOException
+import java.net.URISyntaxException
 import java.net.URLDecoder
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class WebViewActivity : AppCompatActivity() {
     private lateinit var mBinding: ActWebviewBinding
@@ -69,6 +90,10 @@ class WebViewActivity : AppCompatActivity() {
     private lateinit var webview: WebView
     private var isTwo = false
     private var mUrl :String? = null
+
+    // 사진 업로드 관련
+    var cameraPath = ""
+    var mWebViewImageUpload: ValueCallback<Array<Uri>>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,11 +107,19 @@ class WebViewActivity : AppCompatActivity() {
         //앱 사용중 화면 켜짐
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
+        //카카오 로그인
+        KakaoSdk.init(this, getString(R.string.kakao_app_key))
+
         val pushUrl = intent.getStringExtra("index")
         mUrl = pushUrl ?: Define.DOMAIN
         initWebview(mUrl!!)
 
         setMembershipNo()
+
+        // 뒤로가기 버튼
+        mBinding.backBtn.setOnClickListener {
+            onBackPressed()
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
@@ -96,6 +129,7 @@ class WebViewActivity : AppCompatActivity() {
         //settings.pluginState = WebSettings.PluginState.ON
         // window.open 메서드를 이용할 때의 동작을 설정할 수 있게 한다
         settings.setSupportMultipleWindows(true)
+        settings.supportMultipleWindows()
         settings.javaScriptCanOpenWindowsAutomatically = true
         //캐시 설정
         settings.cacheMode = WebSettings.LOAD_DEFAULT
@@ -132,7 +166,129 @@ class WebViewActivity : AppCompatActivity() {
         settings.domStorageEnabled = true
 
         //동영상 전체 화면을 위해 추가
-        webview.webChromeClient = FullscreenableChromeClient(this)
+        // webview.webChromeClient = FullscreenableChromeClient(this)
+
+        webview.webViewClient = object : WebViewClient() {
+            @Deprecated("Deprecated in Java")
+            override fun shouldOverrideUrlLoading(
+                view: WebView,
+                url: String
+            ): Boolean {
+
+                if (url != "about:blank") {
+                    if (url.startsWith("http://") || url.startsWith("https://")) {
+                        if (url.startsWith("intent:") ||
+                            url.contains("http://market.android.com") ||
+                            url.contains("http://m.ahnlab.com/kr/site/download") ||
+                            url.contains("market://") ||
+                            url.contains("vguard") ||
+                            url.contains("droidxantivirus") ||
+                            url.contains("v3mobile") ||
+                            url.contains(".apk") ||
+                            url.contains("mvaccine") ||
+                            url.contains("smartwall://") ||
+                            url.contains("nidlogin://") ||
+                            url.contains("http://m.ahnlab.com/kr/site/download") ||
+                            url.endsWith(".apk")
+                        ) {
+                            return urlSchemeIntent(view, url)
+                        } else {
+                            view.loadUrl(url)
+                        }
+                    } else return if (url.startsWith("mailto:")) {
+                        return false
+                    } else if (url.startsWith("tel:")) {
+                        false
+                    } else {
+                        url.let {
+                            if (it.startsWith("intent:#Intent;action=com.kakao.talk.intent.action")){
+                                try {
+                                    val intent = Intent.parseUri(it, Intent.URI_INTENT_SCHEME)
+                                    intent?.let {
+                                        view.context.startActivity(it)
+                                        return true
+                                    }
+                                } catch (e: Exception) {
+                                    Toast.makeText(mContext, "카카오톡이 설치되어 있지 않습니다.", Toast.LENGTH_LONG).show()
+                                    val marketLaunch = Intent(Intent.ACTION_VIEW)
+                                    marketLaunch.data = Uri.parse("https://play.google.com/store/apps/details?id=com.kakao.talk&hl=ko&gl=US")
+                                    startActivity(marketLaunch)
+                                    finish()
+                                    return false
+                                }
+                            }
+                        }
+                        return urlSchemeIntent(view, url)
+                    }
+                }
+                return super.shouldOverrideUrlLoading(view, url)
+            }
+        }
+
+        webview.webChromeClient = object : WebChromeClient() {
+
+            val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == RESULT_OK) {
+                    val intent = result.data
+
+                    if(intent == null){ //바로 사진을 찍어서 올리는 경우
+                        val results = arrayOf(Uri.parse(cameraPath))
+                        mWebViewImageUpload!!.onReceiveValue(results!!)
+                    }
+                    else{ //사진 앱을 통해 사진을 가져온 경우
+                        val results = intent!!.data!!
+                        mWebViewImageUpload!!.onReceiveValue(arrayOf(results!!))
+                    }
+                }
+                else{ //취소 한 경우 초기화
+                    mWebViewImageUpload!!.onReceiveValue(null)
+                    mWebViewImageUpload = null
+                }
+            }
+
+            override fun onShowFileChooser(webView: WebView?, filePathCallback: ValueCallback<Array<Uri>>?, fileChooserParams: FileChooserParams?): Boolean {
+                try {
+                    try{
+                        mWebViewImageUpload = filePathCallback!!
+                        var takePictureIntent : Intent?
+                        takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                        if(takePictureIntent.resolveActivity(packageManager) != null){
+                            var photoFile : File?
+
+                            photoFile = createImageFile()
+                            takePictureIntent.putExtra("PhotoPath",cameraPath)
+
+                            if(photoFile != null){
+                                cameraPath = "file:${photoFile.absolutePath}"
+                                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(photoFile))
+                            }
+                            else takePictureIntent = null
+                        }
+                        val contentSelectionIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                        contentSelectionIntent.type = "image/*"
+
+                        var intentArray: Array<Intent?>
+
+                        if(takePictureIntent != null) intentArray = arrayOf(takePictureIntent)
+                        else intentArray = takePictureIntent?.get(0)!!
+
+                        val chooserIntent = Intent(Intent.ACTION_CHOOSER)
+                        chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent)
+                        chooserIntent.putExtra(Intent.EXTRA_TITLE,"사용할 앱을 선택해주세요.")
+                        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray)
+                        launcher.launch(chooserIntent)
+                    }
+                    catch (e : Exception){
+                        Log.d("wooryeol", "error >>> $e")
+                    }
+
+                } catch (e: Exception) {
+                    Log.d("wooryeol", "error >>> $e")
+                }
+                return true
+            }
+        }
+
         //파일 다운로드 리스너
         webview.setDownloadListener(CustomDownloadListener(this))
         webview.setOnTouchListener { v, event -> // TODO Auto-generated method stub
@@ -143,53 +299,53 @@ class WebViewActivity : AppCompatActivity() {
             }
             false
         }
-        webview.webViewClient = object : WebViewClient() {
-            // 유효하지 않은 것으로 판단되는 인증서의 문제가 없는지 판단하고 문제가 없을 경우 preceed()를 호출
-            // 아닌 경우 cancel을 처리해야만 구글에서 업데이트를 허락함
-            @SuppressLint("WebViewClientOnReceivedSslError")
-            override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError) {
-                //기존에 인증서가 유효하지 않아도 그냥 통과시켰다.
-                //handler.proceed();
-                //인증
-                try {
-                    //AlertDialog.Builder 뜨기전에 웹뷰 종류시 강제종류가 일어나
-                    val builder = AlertDialog.Builder(mContext)
-                    builder.setMessage("신뢰하는 보안 인증서가 아닙니다.\n계속 진행 하시겠습니까?")
-                    builder.setPositiveButton("진행") { _, _ -> handler.proceed() }
-                    builder.setNegativeButton("취소") { _, _ -> handler.cancel() }
-                    val dialog = builder.create()
-                    dialog.show()
-                } catch (e: Exception) {
-                    Utils.LogLine(e.message.toString())
-                }
+        webview.loadUrl(url)
+    }
+
+    fun createImageFile(): File? {
+        @SuppressLint("SimpleDateFormat")
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val imageFileName = "img_" + timeStamp + "_"
+        val storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(imageFileName, ".jpg", storageDir)
+    }
+
+    fun urlSchemeIntent(view: WebView, url: String): Boolean {
+        if (url.startsWith("intent")) {
+            var intent: Intent? = null
+            intent = try {
+                Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
+            } catch (ex: URISyntaxException) {
+                return false
             }
 
-            override fun onPageFinished(view: WebView, url: String) {
-                // TODO Auto-generated method stub
-                super.onPageFinished(view, url)
-                CookieManager.getInstance().flush()
-            }
-
-            override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
-                // TODO Auto-generated method stub
-                super.onPageStarted(view, url, favicon)
-            }
-
-            @Deprecated("Deprecated in Java")
-            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                //Utils.Log("url ==> : "+url)
-                if (url.startsWith("se://")) {
-                    val uri = Uri.parse(url)
-                    val param = uri.getQueryParameter("view")
-                    if (param == "close") setResult(RESULT_OK)
-                    finish()
+            if (intent?.let { packageManager.resolveActivity(it, 0) } == null) {
+                val packagename = intent?.getPackage()
+                if (packagename != null) {
+                    startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("market://search?q=pname:$packagename")
+                        )
+                    )
                     return true
                 }
+            }
+            intent = Intent(Intent.ACTION_VIEW, Uri.parse(intent?.getDataString()))
+            try {
+                startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
                 return false
+            }
+        } else {
+            try {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            } catch (e: java.lang.Exception) {
+                Toast.makeText(mContext, "에러가 발생하였습니다.", Toast.LENGTH_LONG).show()
             }
         }
 
-        webview.loadUrl(url)
+        return true
     }
 
     //쿠키 가져오기
@@ -213,6 +369,25 @@ class WebViewActivity : AppCompatActivity() {
             }
         }
         return value
+    }
+
+    inner class FileChooser(
+        private val context: Context,
+    ) {
+        fun show() {
+            val chooserIntent = createChooserIntent()
+            context.startActivity(chooserIntent)
+        }
+
+        private fun createChooserIntent(): Intent {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "*/*"
+                val mimeTypes = arrayOf("image/*", "application/pdf")
+                putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
+            }
+            return Intent.createChooser(intent, "첨부파일 선택")
+        }
     }
 
     inner class CustomDownloadListener(val activity: Activity): DownloadListener {
@@ -271,193 +446,11 @@ class WebViewActivity : AppCompatActivity() {
                                 Manifest.permission.READ_EXTERNAL_STORAGE,
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE
                             ),
-                            kr.co.parnashotel.rewards.common.Define.STORAGE_REQUEST_CODE
+                            Define.STORAGE_REQUEST_CODE
                         )
                     }
                 }
             }
-        }
-    }
-
-    inner class FullscreenableChromeClient(var mActivity: Activity) : WebChromeClient() {
-        private var mCustomView: View? = null
-        private var mCustomViewCallback: CustomViewCallback? = null
-        private var mOriginalOrientation = 0
-        private var mFullscreenContainer: FrameLayout? = null
-        private val COVER_SCREEN_PARAMS = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-
-
-        @SuppressLint("SetJavaScriptEnabled")
-        override fun onCreateWindow(view: WebView, dialog: Boolean, userGesture: Boolean, resultMsg: Message): Boolean {
-            val newWebView = WebView(mActivity)
-            val settings = newWebView.settings
-            settings.javaScriptEnabled = true
-            settings.javaScriptCanOpenWindowsAutomatically = true
-            settings.setSupportMultipleWindows(true)
-            settings.builtInZoomControls = true
-            settings.setSupportZoom(true)
-            settings.useWideViewPort = true
-            val transport = resultMsg.obj as WebView.WebViewTransport
-            transport.webView = newWebView
-            resultMsg.sendToTarget()
-            newWebView.webViewClient = object : WebViewClient() {
-                override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                    val browserIntent = Intent(Intent.ACTION_VIEW)
-                    browserIntent.data = Uri.parse(url)
-                    mActivity.startActivity(browserIntent)
-                    //return super.shouldOverrideUrlLoading(view, url);
-                    return true
-                }
-            }
-            return true
-            //return super.onCreateWindow(view, dialog, userGesture, resultMsg);
-        }
-
-        override fun onCloseWindow(view: WebView) {
-            super.onCloseWindow(view)
-        }
-
-        override fun onJsAlert(view: WebView, url: String, message: String, result: JsResult): Boolean {
-            drawPopup(message, result)
-            return true
-        }
-
-        override fun onJsBeforeUnload(view: WebView, url: String,
-                                      message: String, result: JsResult
-        ): Boolean {
-            // TODO Auto-generated method stub
-            return super.onJsBeforeUnload(view, url, message, result)
-        }
-
-        override fun onJsConfirm(view: WebView, url: String, message: String, result: JsResult): Boolean {
-            // TODO Auto-generated method stub
-            drawConfirmPopup(message, result)
-            return true
-        }
-
-        override fun onJsPrompt(view: WebView, url: String, message: String, defaultValue: String, result: JsPromptResult): Boolean {
-            // TODO Auto-generated method stub
-            return super.onJsPrompt(view, url, message, defaultValue, result)
-        }
-
-        override fun onJsTimeout(): Boolean {
-            // TODO Auto-generated method stub
-            return super.onJsTimeout()
-        }
-
-        /* 동영상 전체보기를 위한 셋팅 */
-        override fun onShowCustomView(view: View, callback: CustomViewCallback) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                if (mCustomView != null) {
-                    callback.onCustomViewHidden()
-                    return
-                }
-
-                //영상 전체화면 가로모드
-                mOriginalOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                val decor = mActivity.window.decorView as FrameLayout
-                mFullscreenContainer = FullscreenHolder(mActivity)
-                mFullscreenContainer?.addView(view, COVER_SCREEN_PARAMS)
-                decor.addView(mFullscreenContainer, COVER_SCREEN_PARAMS)
-                mCustomView = view
-                setFullscreen(true)
-                mCustomViewCallback = callback
-                mActivity.requestedOrientation = mOriginalOrientation
-            }
-            super.onShowCustomView(view, callback)
-        }
-
-        override fun onShowCustomView(view: View, requestedOrientation: Int, callback: CustomViewCallback) {
-            this.onShowCustomView(view, callback)
-        }
-
-        override fun onHideCustomView() {
-            if (mCustomView == null) {
-                return
-            }
-
-            //영상 전체화면 종료 후 원상태로 복귀
-            mOriginalOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            setFullscreen(false)
-            val decor = mActivity.window.decorView as FrameLayout
-            decor.removeView(mFullscreenContainer)
-            mFullscreenContainer = null
-            mCustomView = null
-            mCustomViewCallback?.onCustomViewHidden()
-            mActivity.requestedOrientation = mOriginalOrientation
-        }
-
-        private fun setFullscreen(enabled: Boolean) {
-            val win = mActivity.window
-            val winParams = win.attributes
-            val bits = WindowManager.LayoutParams.FLAG_FULLSCREEN
-            if (enabled) {
-                winParams.flags = winParams.flags or bits
-                //상태바와 하단 소프트키 숨기기/보여주기
-                mCustomView?.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            } else {
-                winParams.flags = winParams.flags and bits.inv()
-                if (mCustomView != null) {
-                    mCustomView?.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
-                }
-            }
-            win.attributes = winParams
-        }
-
-        inner class FullscreenHolder(ctx: Context) : FrameLayout(ctx) {
-            override fun onTouchEvent(evt: MotionEvent): Boolean {
-                return true
-            }
-
-            init {
-                setBackgroundColor(ContextCompat.getColor(ctx, android.R.color.black))
-            }
-        }
-
-        private fun drawPopup(msg: String, result: JsResult) {
-            val popup = AlertDialog.Builder(ContextThemeWrapper(mActivity, R.style.DialogTheme))
-            popup.setTitle("알림")
-            popup.setMessage(msg)
-            popup.setPositiveButton("확인") { dialog, which -> // TODO Auto-generated method stub
-                result.confirm()
-            }
-            popup.setOnCancelListener { result.cancel() }
-            popup.setCancelable(true)
-            val dialog = popup.show()
-            //메세지 크기
-            val textView = dialog.findViewById<View>(android.R.id.message) as TextView
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18f)
-            //버튼 크기와 색상
-            val positive: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-            positive.setTextColor(Utils.getColor(mActivity, R.color.black))
-            positive.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15f)
-            dialog.show()
-        }
-
-        private fun drawConfirmPopup(msg: String, result: JsResult) {
-            val popup = AlertDialog.Builder(ContextThemeWrapper(mActivity, R.style.DialogTheme))
-            popup.setTitle("알림")
-            popup.setMessage(msg)
-            popup.setPositiveButton("확인") { dialog, which -> // TODO Auto-generated method stub
-                result.confirm()
-            }
-            popup.setNegativeButton("취소") { dialog, which -> // TODO Auto-generated method stub
-                result.cancel()
-            }
-            popup.setOnCancelListener { result.cancel() }
-            popup.setCancelable(true)
-            val dialog = popup.show()
-            //메세지 크기
-            val textView = dialog.findViewById<View>(android.R.id.message) as TextView
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18f)
-            //버튼 크기와 색상
-            val positive: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-            positive.setTextColor(Utils.getColor(mActivity, R.color.black))
-            positive.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15f)
-            val negative: Button = dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
-            negative.setTextColor(Utils.getColor(mActivity, R.color.black))
-            negative.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15f)
-            dialog.show()
         }
     }
 
@@ -535,8 +528,6 @@ class WebViewActivity : AppCompatActivity() {
         }
     }
 
-
-
     inner class AppScript {
         //종료하기
         @JavascriptInterface
@@ -554,17 +545,19 @@ class WebViewActivity : AppCompatActivity() {
         fun setMembershipUserInfo(data: String) {
             runOnUiThread {
                 Log.d("test log", "setMembershipUserInfo >>> $data")
+                SharedData.setSharedData(mContext, "membershipUserInfo", GlobalApplication.membershipUserInfo.toString())
                 GlobalApplication.membershipUserInfo = Gson().fromJson(data, MembershipUserInfo::class.java)
                 //Log.d("test log", "GlobalApplication.membershipUserInfo >>> ${GlobalApplication.membershipUserInfo}")
             }
         }
 
         @JavascriptInterface
-        fun callAccessToken() {
+        fun callAccessToken(data : String) {
             val accessToken = GlobalApplication.userInfo?.accessToken
             val membershipUserInfo = GlobalApplication.membershipUserInfo
 
             Log.d("test log", "membershipUserInfo >>> $membershipUserInfo")
+            SharedData.setSharedData(mContext, "membershipUserInfo", GlobalApplication.membershipUserInfo.toString())
 
             runOnUiThread {
                 webview.post(Runnable {
@@ -611,9 +604,7 @@ class WebViewActivity : AppCompatActivity() {
             runOnUiThread {
                 RewardActivity.rewardActivity!!.finish()
                 this@WebViewActivity.finish()
-                /*userData = null*/
                 GlobalApplication.userInfo = null
-                Log.d("test log", "userData >>> ${GlobalApplication.userInfo}")
                 val intent = Intent(mContext, MainActivity::class.java)
                 intent.putExtra("userData", GlobalApplication.userInfo)
                 startActivity(intent)
@@ -632,10 +623,11 @@ class WebViewActivity : AppCompatActivity() {
                 val membershipNo = json.get("membershipNo").toString()
                 val point = json.get("point").toString().toInt()
                 val accessToken = json.get("accessToken").toString()
-                // Log.d("test log", "111 accessToken >>> $accessToken")
 
                 GlobalApplication.userInfo =
                     TierModel(name, membershipNo, point, gradeName, accessToken)
+
+                SharedData.setSharedData(mContext, "userInfo", GlobalApplication.userInfo.toString())
 
                 val intent = Intent(mContext, RewardActivity::class.java)
 
@@ -775,6 +767,91 @@ class WebViewActivity : AppCompatActivity() {
             } else {
                 UserApiClient.instance.loginWithKakaoAccount(mContext, callback = callback)
             }
+        }
+    }
+
+    fun kakaoLogin() {
+        Log.d("kakao login", "카카오 로그인 들어옴")
+
+        val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+            if (error != null) {
+                Log.e("kakao login", "error >>> $error")
+            } else if (token != null) {
+                Log.d("kakao login", "카카오계정으로 로그인 성공 ${token.accessToken}")
+                UserApiClient.instance.me { user, error ->
+                    if (error != null) {
+                        Log.d("kakao login", "error >>> $error")
+                    } else if (user != null) {
+                        Log.d("kakao login", "name >>> ${user.kakaoAccount?.name}")
+                        Log.d("kakao login", "id >>> ${user.id}")
+                        Log.d("kakao login", "ci >>> ${user.kakaoAccount?.ci}")
+
+                        // 여기에 던져주는 JSON 설정하기
+                        val user1 = user.kakaoAccount
+                        Log.d("", "사용자 계정$user1")
+
+                        try {
+                            val jsonObject = JSONObject()
+                            jsonObject.put("userName", user.kakaoAccount?.name)
+                            jsonObject.put("echannelId", user.id)
+                            jsonObject.put("userCi", user.kakaoAccount?.ci)
+                            webview.post {
+                                webview.loadUrl("javascript:getKakaoInfo($jsonObject)")
+                            }
+                        } catch (e: java.lang.Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+            }
+        }
+
+        // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
+        if (UserApiClient.instance.isKakaoTalkLoginAvailable(mContext)) {
+            UserApiClient.instance.loginWithKakaoTalk(mContext) { token, error ->
+                if (error != null) {
+                    Log.d("kakao login", "카카오톡으로 로그인 실패", error)
+
+                    // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
+                    // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
+                    if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
+                        return@loginWithKakaoTalk
+                    } else {
+                        // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
+                        UserApiClient.instance.loginWithKakaoAccount(
+                            mContext,
+                            callback = callback
+                        )
+                    }
+                } else if (token != null) {
+                    Log.d("kakao login", "카카오계정으로 로그인 성공 ${token.accessToken}")
+                    UserApiClient.instance.me { user, error ->
+                        if (error != null) {
+                            Log.d("kakao login", "사용자 정보 요청 실패", error)
+                        } else if (user != null) {
+                            Log.d("kakao login", "name >>> ${user.kakaoAccount?.name}")
+                            Log.d("kakao login", "id >>> ${user.id}")
+                            Log.d("kakao login", "ci >>> ${user.kakaoAccount?.ci}")
+
+                            // 여기에 던져주는 JSON 설정하기
+                            try {
+                                val jsonObject = JSONObject()
+                                jsonObject.put("userName", user.kakaoAccount?.name)
+                                jsonObject.put("echannelId", user.id)
+                                jsonObject.put("userCi", user.kakaoAccount?.ci)
+                                webview.post {
+                                    webview.loadUrl("javascript:getKakaoInfo($jsonObject)")
+                                }
+                            } catch (e: java.lang.Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                    }
+
+                }
+            }
+        } else {
+            UserApiClient.instance.loginWithKakaoAccount(mContext, callback = callback)
         }
     }
 

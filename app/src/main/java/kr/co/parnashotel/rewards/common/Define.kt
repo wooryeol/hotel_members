@@ -1,8 +1,8 @@
 package kr.co.parnashotel.rewards.common
 
 object Define {
-    var DOMAIN = "https://www.parnashotel.com"
-    // var DOMAIN = "http://192.168.0.29:3000" // 대리님 로컬
+    // var DOMAIN = "https://www.parnashotel.com"
+    var DOMAIN = "http://192.168.0.29:3000" // 대리님 로컬
     // val DOMAIN = "http://121.138.151.6:12402" // 개발
 
     const val login = "/membershipLogin?isApp=true"
@@ -10,9 +10,11 @@ object Define {
     const val rsvn = "/reservationSchedule?tab=0"
     const val search = "/reservationSchedule?tab=1"
     const val dining = "/reservationDining"
-    const val myPage = "/myPage/dashboard/"
     const val reservationCheck = "/reservationCheck"
+    const val loggedInReservationCheck = "/myPage/reservationCheck/roomReservation"
     const val dashBoard = "/myPage"
+    const val membershipIntroduction = "/membershipIntroduction"
+
 
 
     const val SUCCESS = "success"

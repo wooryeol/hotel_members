@@ -65,7 +65,7 @@ class RewardActivity : AppCompatActivity() {
             loginMove(Define.DOMAIN+Define.search)
         }
         mBinding.reservationCheck.setOnClickListener {
-            loginMove(Define.DOMAIN+Define.reservationCheck)
+            loginMove(Define.DOMAIN+Define.loggedInReservationCheck)
         }
         mBinding.dashBoard.setOnClickListener{
             loginMove(Define.DOMAIN+Define.dashBoard)
@@ -122,6 +122,11 @@ class RewardActivity : AppCompatActivity() {
         val gradeName  = GlobalApplication.userInfo?.gradeName
         val membershipNo  = GlobalApplication.userInfo?.membershipNo
         val point  = GlobalApplication.userInfo?.point
+
+        /*val name  = "김우렬"
+        val gradeName  = "v3"
+        val membershipNo  = "PM00011050"
+        val point  = 125305648*/
 
         // 회원명
         mBinding.userName.text = name
