@@ -26,7 +26,9 @@ import kr.co.parnashotel.rewards.common.GlobalApplication
 import kr.co.parnashotel.rewards.common.SharedData
 import kr.co.parnashotel.rewards.menu.home.MainActivity
 import kr.co.parnashotel.rewards.menu.webview.WebViewActivity
+import kr.co.parnashotel.rewards.menu.webview.WebViewActivity_V2
 import kr.co.parnashotel.rewards.model.HotelModel
+import kr.co.parnashotel.rewards.model.UserInfoModel_V2
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -106,7 +108,7 @@ class RewardActivity : AppCompatActivity() {
     }
 
     private fun loginMove(domain: String){
-        val intent = Intent(mContext, WebViewActivity::class.java)
+        val intent = Intent(mContext, WebViewActivity_V2::class.java)
         intent.putExtra("index", domain)
         startActivity(intent)
     }
@@ -117,22 +119,11 @@ class RewardActivity : AppCompatActivity() {
 
         MainActivity.isLoginButtonClicked = false
 
-        var name  = GlobalApplication.userInfo?.name
-        var gradeName  = GlobalApplication.userInfo?.gradeName
-        var membershipNo  = GlobalApplication.userInfo?.membershipNo
-        var point  = GlobalApplication.userInfo?.point
-
-        if (name.isNullOrEmpty() && gradeName.isNullOrEmpty() && membershipNo.isNullOrEmpty()){
-            name = SharedData.getSharedData(mContext, "name", "")
-            gradeName = SharedData.getSharedData(mContext, "gradeName", "")
-            membershipNo = SharedData.getSharedData(mContext, "membershipNo", "")
-            point = SharedData.getSharedData(mContext, "point", 0)
-        }
-
-        /*val name  = "김우렬"
-        val gradeName  = "v3"
-        val membershipNo  = "PM00011050"
-        val point  = 125305648*/
+        val userInfoModel = UserInfoModel_V2().loadUserInfo(mContext)
+        val name  = userInfoModel?.name
+        val gradeName  = userInfoModel?.gradeName
+        val membershipNo  = userInfoModel?.membershipNo
+        val point  = userInfoModel?.point
 
         // 회원명
         mBinding.userName.text = name

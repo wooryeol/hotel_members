@@ -50,7 +50,9 @@ import kr.co.parnashotel.rewards.common.Utils
 import kr.co.parnashotel.rewards.menu.home.MainActivity
 import kr.co.parnashotel.rewards.menu.myPage.RewardActivity
 import kr.co.parnashotel.rewards.model.MembershipUserInfoModel
+import kr.co.parnashotel.rewards.model.MembershipUserInfoModel_V2
 import kr.co.parnashotel.rewards.model.UserInfoModel
+import kr.co.parnashotel.rewards.model.UserInfoModel_V2
 import org.json.JSONObject
 import java.io.File
 import java.io.IOException
@@ -59,7 +61,7 @@ import java.net.URLDecoder
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class WebViewActivity : AppCompatActivity() {
+class WebViewActivity_V2 : AppCompatActivity() {
     private lateinit var mBinding: ActWebviewBinding
     private lateinit var mContext: Context
     private lateinit var mActivity: Activity
@@ -92,12 +94,15 @@ class WebViewActivity : AppCompatActivity() {
         mUrl = pushUrl ?: Define.DOMAIN
         initWebview(mUrl!!)
 
-        setMembershipNo()
+        // setMembershipNo()
 
         // 뒤로가기 버튼
         mBinding.backBtn.setOnClickListener {
             onBackPressed()
         }
+
+        val loadedUserInfo = MembershipUserInfoModel_V2()
+        Log.d("wooryeol", "loadedUserInfo >>> ${loadedUserInfo.LoadMembershipUserInfo(mContext)}")
     }
 
     @SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
@@ -500,22 +505,10 @@ class WebViewActivity : AppCompatActivity() {
 
     // 멤버십 번호 전달
     private fun setMembershipNo() {
-        var membershipNo = GlobalApplication.userInfo?.membershipNo
-        var accessToken = GlobalApplication.userInfo?.accessToken
-        if (accessToken == null) {
-            accessToken = GlobalApplication.sharedAccessToken
-            membershipNo = GlobalApplication.sharedMembershipNo
+        val userInfoModel = UserInfoModel_V2().loadUserInfo(mContext)
 
-            // Log.d("wooryeol", "membershipNo >>> $membershipNo")
-            Log.d("wooryeol", "accessToken >>> $accessToken")
-            Log.d("wooryeol", "membershipNo >>> $membershipNo")
-        }
-
-        if (membershipNo?.isNotEmpty() == true && accessToken.isNotEmpty()) {
-            webview.post(Runnable {
-                // Log.d("wooryeol", "222 accessToken >>> $accessToken")
-                webview.loadUrl("javascript:getMembershipNo('$membershipNo', '$accessToken')")
-            })
+        if(userInfoModel?.accessToken != "") {
+            webview.loadUrl("javascript:getMembershipNo('${userInfoModel?.membershipNo}', '${userInfoModel?.accessToken}')")
         }
     }
 
@@ -534,67 +527,60 @@ class WebViewActivity : AppCompatActivity() {
 
         @JavascriptInterface
         fun setMembershipUserInfo(data: String) {
+            Log.d("wooryeol", "111111")
             runOnUiThread {
-                GlobalApplication.membershipUserInfo = Gson().fromJson(data, MembershipUserInfoModel::class.java)
-                Log.d("wooryeol", "membershipUserInfo >>> ${GlobalApplication.membershipUserInfo}")
+                Log.d("wooryeol", "membershipUserInfo >>> $data")
+                // GlobalApplication.membershipUserInfo = Gson().fromJson(data, MembershipUserInfoModel::class.java)
+
+                val json = JSONObject(data)
+                val membershipYn = json.get("membershipYn").toString()
+                val membershipId = json.get("membershipId").toString()
+                val membershipNo = json.get("membershipNo").toString()
+                val memberName = json.get("memberName").toString()
+                val memberGender = json.get("memberGender").toString()
+                val memberEmail = json.get("memberEmail").toString()
+                val memberMobile = json.get("memberMobile").toString()
+                val memberFirstName = json.get("memberFirstName").toString()
+                val memberLastName = json.get("memberLastName").toString()
+                val employeeStatus = json.get("employeeStatus").toString()
+                val recommenderStatus = json.get("recommenderStatus").toString()
+                val temporaryYn = json.get("temporaryYn").toString()
+
+                val membershipUserInfoModelV2 = MembershipUserInfoModel_V2(
+                    membershipYn,
+                    membershipId,
+                    membershipNo,
+                    memberName,
+                    memberGender,
+                    memberEmail,
+                    memberMobile,
+                    memberFirstName,
+                    memberLastName,
+                    employeeStatus,
+                    recommenderStatus,
+                    temporaryYn,
+                )
+                membershipUserInfoModelV2.save(mContext)
             }
         }
 
         @JavascriptInterface
         fun callAccessToken() {
-
-            val sharedMembershipUserInfo = GlobalApplication.sharedMembershipUserInfo
-            val membershipUserInfo = GlobalApplication.membershipUserInfo
-            var accessToken = GlobalApplication.userInfo?.accessToken
-            Log.d("wooryeol", "accessToken 111 >>> $accessToken")
-
-            if (accessToken.isNullOrEmpty()){
-                accessToken = GlobalApplication.sharedAccessToken
-                Log.d("wooryeol", "accessToken 222 >>> $accessToken")
-            }
-
-            /*if (data.isNotEmpty()) {
-                val json = JSONObject(data)
-                val employeeRecommenderStatus = json.get("employeeRecommenderStatus").toString()
-                val employeeStatus = json.get("employeeStatus").toString()
-                val gradeName = json.get("gradeName").toString()
-                val memberEmail = json.get("memberEmail").toString()
-                val memberFirstName = json.get("memberFirstName").toString()
-                val memberGender = json.get("memberGender").toString()
-                val memberLastName = json.get("memberLastName").toString()
-                val memberMobile = json.get("memberMobile").toString()
-                val memberName = json.get("memberName").toString()
-                val membershipId = json.get("membershipId").toString()
-                val membershipNo = json.get("membershipNo").toString()
-                val membershipYn = json.get("membershipYn").toString()
-                val recommenderStatus = json.get("recommenderStatus").toString()
-
-                Log.d("wooryeol", "kakao login data 222 >>> $data")
-            }*/
-
-            // Log.d("wooryeol", "membershipUserInfo >>> $membershipUserInfo")
-            // Log.d("wooryeol", "accessToken >>> $accessToken")
-
             runOnUiThread {
-                webview.post(Runnable {
-                    if (accessToken != null) {
-                        // Log.d("wooryeol", "333 accessToken >>> $accessToken")
-                        webview.loadUrl("javascript:setAccessToken('$accessToken')")
-                    }
+                val userInfoModel = UserInfoModel_V2()
+                val membershipUserInfo = MembershipUserInfoModel_V2()
 
-                    // if (membershipUserInfo != "") {
-                    if (membershipUserInfo != null && !GlobalApplication.isLoggedIn) {
-                        val gsonMembershipUserInfo = Gson().toJson(membershipUserInfo)
-                        SharedData.setSharedData(mContext, "membershipUserInfo", gsonMembershipUserInfo)
-                        Log.d("wooryeol", "111")
-                        Log.d("wooryeol", "gsonMembershipUserInfo >>> $gsonMembershipUserInfo")
-                        webview.loadUrl("javascript:setUserMembershipInfo($gsonMembershipUserInfo)")
-                    } else if (GlobalApplication.isLoggedIn) {
-                        Log.d("wooryeol", "222")
-                        Log.d("wooryeol", "sharedMembershipUserInfo >>> $sharedMembershipUserInfo")
-                        webview.loadUrl("javascript:setUserMembershipInfo($sharedMembershipUserInfo)")
-                    }
-                })
+                Log.d("wooryeol", "222222")
+                Log.d("wooryeol", "userInfoModel.accessToken >>> ${userInfoModel.loadUserInfo(mContext)?.accessToken}")
+
+                if(userInfoModel.loadUserInfo(mContext)?.accessToken != null) {
+                    webview.loadUrl("javascript:setAccessToken('${userInfoModel.loadUserInfo(mContext)?.accessToken}')")
+                }
+
+                if(membershipUserInfo.LoadMembershipUserInfo(mContext) != null) {
+                    val gsonMembershipUserInfo = Gson().toJson(membershipUserInfo.LoadMembershipUserInfo(mContext))
+                    webview.loadUrl("javascript:setUserMembershipInfo($gsonMembershipUserInfo)")
+                }
             }
         }
 
@@ -627,7 +613,7 @@ class WebViewActivity : AppCompatActivity() {
                 if (!GlobalApplication.isLoggedIn) {
                     RewardActivity.rewardActivity!!.finish()
                 }
-                this@WebViewActivity.finish()
+                this@WebViewActivity_V2.finish()
 
                 GlobalApplication.userInfo = null
                 GlobalApplication.isLoggedIn = false
@@ -646,32 +632,36 @@ class WebViewActivity : AppCompatActivity() {
         //유저(로그인) 정보 저장
         @JavascriptInterface
         fun setUserInfo(data: String) {
+            Log.d("wooryeol", "333333")
             runOnUiThread {
                 Log.d("wooryeol", "setUserInfo >>> $data")
+                // GlobalApplication.userInfo = Gson().fromJson(data, UserInfoModel_V2::class.java)
+
                 val json = JSONObject(data)
                 val name = json.get("name").toString()
                 val gradeName = json.get("gradeName").toString()
                 val membershipNo = json.get("membershipNo").toString()
+                val coupon = json.get("coupon").toString().toInt()
                 val point = json.get("point").toString().toInt()
                 val accessToken = json.get("accessToken").toString()
-                // Log.d("wooryeol", "accessToken >>> $accessToken")
+                val userInfoModel = UserInfoModel_V2(
+                    name,
+                    gradeName,
+                    membershipNo,
+                    coupon,
+                    point,
+                    accessToken,
+                )
+                userInfoModel.save(mContext)
 
-                SharedData.setSharedData(mContext, "name", name)
-                SharedData.setSharedData(mContext, "gradeName", gradeName)
-                SharedData.setSharedData(mContext, "membershipNo", membershipNo)
-                SharedData.setSharedData(mContext, "point", point)
-                SharedData.setSharedData(mContext, "accessToken", accessToken)
-
-                // GlobalApplication.userInfo = UserInfoModel(name, membershipNo, point, gradeName, accessToken)
-
-                val intent = Intent(mContext, RewardActivity::class.java)
                 // 메인 액티비티 종료
                 MainActivity.mainActivity!!.finishAffinity()
 
                 if (MainActivity.isLoginButtonClicked) {
+                    val intent = Intent(mContext, RewardActivity::class.java)
                     intent.putExtra("userData", GlobalApplication.userInfo)
-                    this@WebViewActivity.finish()
                     startActivity(intent)
+                    finish()
                 }
             }
         }

@@ -13,6 +13,7 @@ import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
 import kr.co.parnashotel.BuildConfig
 import kr.co.parnashotel.rewards.menu.webview.WebViewActivity
+import kr.co.parnashotel.rewards.menu.webview.WebViewActivity_V2
 import java.io.UnsupportedEncodingException
 import java.util.*
 
@@ -57,7 +58,7 @@ object Utils {
      * @param url : 이동하려는 url 주소
      */
     fun moveToPage(context: Context, url: String) {
-        val intent = Intent(context, WebViewActivity::class.java)
+        val intent = Intent(context, WebViewActivity_V2::class.java)
         intent.putExtra("index", url)
         context.startActivity(intent)
     }

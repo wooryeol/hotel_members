@@ -26,6 +26,8 @@ import kr.co.parnashotel.rewards.common.Utils
 import kr.co.parnashotel.rewards.menu.myPage.RewardActivity
 import kr.co.parnashotel.rewards.menu.webview.WebViewActivity
 import kr.co.parnashotel.rewards.model.HotelModel
+import kr.co.parnashotel.rewards.model.MembershipUserInfoModel_V2
+import kr.co.parnashotel.rewards.model.UserInfoModel_V2
 import java.util.*
 
 
@@ -116,11 +118,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun logout() {
         runOnUiThread {
-            GlobalApplication.userInfo = null
             GlobalApplication.isLoggedIn = false
-            SharedData.setSharedData(mContext, "accessToken", "")
-            SharedData.setSharedData(mContext, "membershipNo", "")
-            SharedData.setSharedData(mContext, "membershipUserInfo", "")
+            UserInfoModel_V2().clearUserInfo(mContext)
+            MembershipUserInfoModel_V2().clearMembershipUserInfo(mContext)
             mBinding.loginTv.visibility = View.VISIBLE
             mBinding.regTv.text = getString(R.string.main_reg_tv)
 
