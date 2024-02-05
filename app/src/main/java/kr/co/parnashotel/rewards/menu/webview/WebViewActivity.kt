@@ -500,18 +500,20 @@ class WebViewActivity : AppCompatActivity() {
 
     // 멤버십 번호 전달
     private fun setMembershipNo() {
-        val membershipNo = GlobalApplication.userInfo?.membershipNo
+        var membershipNo = GlobalApplication.userInfo?.membershipNo
         var accessToken = GlobalApplication.userInfo?.accessToken
         if (accessToken == null) {
             accessToken = GlobalApplication.sharedAccessToken
+            membershipNo = GlobalApplication.sharedMembershipNo
 
-            // Log.d("test log", "membershipNo >>> $membershipNo")
-                Log.d("test log", "accessToken >>> $accessToken")
+            // Log.d("wooryeol", "membershipNo >>> $membershipNo")
+            Log.d("wooryeol", "accessToken >>> $accessToken")
+            Log.d("wooryeol", "membershipNo >>> $membershipNo")
         }
 
-        if (membershipNo?.isNotEmpty() == true && accessToken?.isNotEmpty() == true) {
+        if (membershipNo?.isNotEmpty() == true && accessToken.isNotEmpty()) {
             webview.post(Runnable {
-                // Log.d("test log", "222 accessToken >>> $accessToken")
+                // Log.d("wooryeol", "222 accessToken >>> $accessToken")
                 webview.loadUrl("javascript:getMembershipNo('$membershipNo', '$accessToken')")
             })
         }
@@ -543,7 +545,13 @@ class WebViewActivity : AppCompatActivity() {
 
             val sharedMembershipUserInfo = GlobalApplication.sharedMembershipUserInfo
             val membershipUserInfo = GlobalApplication.membershipUserInfo
-            val accessToken = GlobalApplication.userInfo?.accessToken
+            var accessToken = GlobalApplication.userInfo?.accessToken
+            Log.d("wooryeol", "accessToken 111 >>> $accessToken")
+
+            if (accessToken.isNullOrEmpty()){
+                accessToken = GlobalApplication.sharedAccessToken
+                Log.d("wooryeol", "accessToken 222 >>> $accessToken")
+            }
 
             /*if (data.isNotEmpty()) {
                 val json = JSONObject(data)
@@ -570,7 +578,7 @@ class WebViewActivity : AppCompatActivity() {
             runOnUiThread {
                 webview.post(Runnable {
                     if (accessToken != null) {
-                        // Log.d("test log", "333 accessToken >>> $accessToken")
+                        // Log.d("wooryeol", "333 accessToken >>> $accessToken")
                         webview.loadUrl("javascript:setAccessToken('$accessToken')")
                     }
 
@@ -578,14 +586,13 @@ class WebViewActivity : AppCompatActivity() {
                     if (membershipUserInfo != null && !GlobalApplication.isLoggedIn) {
                         val gsonMembershipUserInfo = Gson().toJson(membershipUserInfo)
                         SharedData.setSharedData(mContext, "membershipUserInfo", gsonMembershipUserInfo)
-                        Log.d("test log", "111")
-                        Log.d("test log", "gsonMembershipUserInfo >>> $gsonMembershipUserInfo")
+                        Log.d("wooryeol", "111")
+                        Log.d("wooryeol", "gsonMembershipUserInfo >>> $gsonMembershipUserInfo")
                         webview.loadUrl("javascript:setUserMembershipInfo($gsonMembershipUserInfo)")
                     } else if (GlobalApplication.isLoggedIn) {
-                        Log.d("test log", "222")
-                        Log.d("test log", "sharedMembershipUserInfo >>> $sharedMembershipUserInfo")
-                        val gsonMembershipUserInfo = Gson().toJson(membershipUserInfo)
-                        webview.loadUrl("javascript:setUserMembershipInfo($gsonMembershipUserInfo)")
+                        Log.d("wooryeol", "222")
+                        Log.d("wooryeol", "sharedMembershipUserInfo >>> $sharedMembershipUserInfo")
+                        webview.loadUrl("javascript:setUserMembershipInfo($sharedMembershipUserInfo)")
                     }
                 })
             }

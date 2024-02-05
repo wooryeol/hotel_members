@@ -108,14 +108,12 @@ class RewardActivity : AppCompatActivity() {
     private fun loginMove(domain: String){
         val intent = Intent(mContext, WebViewActivity::class.java)
         intent.putExtra("index", domain)
-        intent.putExtra("membershipNo", GlobalApplication.userInfo?.membershipNo)
-        intent.putExtra("accessToken", GlobalApplication.userInfo?.accessToken)
         startActivity(intent)
     }
     private fun getSetting(){
         /*val userDataIntent = intent
         val userData = userDataIntent.getSerializableExtra("userData") as TierModel*/
-        // Log.d("test log", "userData >>> ${GlobalApplication.userInfo}")
+        // Log.d("wooryeol", "userData >>> ${GlobalApplication.userInfo}")
 
         MainActivity.isLoginButtonClicked = false
 

@@ -35,7 +35,8 @@ class GlobalApplication:Application() {
         Log.d("wooryeol", "GlobalApplication membershipNo >>> $sharedMembershipNo")
         Log.d("wooryeol", "GlobalApplication isLoggedIn >>> $isLoggedIn")
 
-        if (sharedAccessToken != "" && sharedMembershipUserInfo != "" && sharedMembershipNo != "") {
+        // if (sharedAccessToken != "" && sharedMembershipUserInfo != "" && sharedMembershipNo != "") {
+        if (sharedMembershipUserInfo != "" && sharedMembershipNo != "") {
             isLoggedIn = true
             Log.d("wooryeol", "GlobalApplication isLoggedIn >>> $isLoggedIn")
         }

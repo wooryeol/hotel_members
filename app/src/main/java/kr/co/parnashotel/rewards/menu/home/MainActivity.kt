@@ -20,6 +20,7 @@ import kr.co.parnashotel.databinding.ActMainBinding
 import kr.co.parnashotel.databinding.CellHotelBinding
 import kr.co.parnashotel.rewards.common.Define
 import kr.co.parnashotel.rewards.common.GlobalApplication
+import kr.co.parnashotel.rewards.common.SharedData
 import kr.co.parnashotel.rewards.common.UtilPermission
 import kr.co.parnashotel.rewards.common.Utils
 import kr.co.parnashotel.rewards.menu.myPage.RewardActivity
@@ -76,9 +77,9 @@ class MainActivity : AppCompatActivity() {
 
         if (GlobalApplication.isLoggedIn){
             mBinding.loginTv.visibility = View.GONE
-            mBinding.regTv.text =getString(R.string.dashBoard)
+            mBinding.regTv.text = getString(R.string.btn_logout)
             mBinding.regTv.setOnClickListener {
-                isLoggedIn(Define.DOMAIN+Define.dashBoard)
+                logout()
             }
         } else {
             mBinding.regTv.setOnClickListener {
@@ -109,11 +110,21 @@ class MainActivity : AppCompatActivity() {
         mBinding.regTv.setOnClickListener {
             val intent = Intent(mContext, WebViewActivity::class.java)
             intent.putExtra("index", domain)
-            intent.putExtra("membershipNo", GlobalApplication.sharedMembershipNo)
-            intent.putExtra("accessToken", GlobalApplication.sharedAccessToken)
             startActivity(intent)
         }
+    }
 
+    private fun logout() {
+        runOnUiThread {
+            GlobalApplication.userInfo = null
+            GlobalApplication.isLoggedIn = false
+            SharedData.setSharedData(mContext, "accessToken", "")
+            SharedData.setSharedData(mContext, "membershipNo", "")
+            SharedData.setSharedData(mContext, "membershipUserInfo", "")
+            mBinding.loginTv.visibility = View.VISIBLE
+            mBinding.regTv.text = getString(R.string.main_reg_tv)
+
+        }
     }
 }
 
