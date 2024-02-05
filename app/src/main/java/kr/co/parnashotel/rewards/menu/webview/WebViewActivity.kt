@@ -18,6 +18,7 @@ import android.os.Message
 import android.provider.MediaStore
 import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import android.view.WindowManager
 import android.webkit.CookieManager
 import android.webkit.DownloadListener
@@ -502,20 +503,22 @@ class WebViewActivity : AppCompatActivity() {
     private fun setMembershipNo() {
         var membershipNo = GlobalApplication.userInfo?.membershipNo
         var accessToken = GlobalApplication.userInfo?.accessToken
-        if (accessToken == null) {
+        /*if (accessToken == null) {
             accessToken = GlobalApplication.sharedAccessToken
             membershipNo = GlobalApplication.sharedMembershipNo
 
             // Log.d("wooryeol", "membershipNo >>> $membershipNo")
             Log.d("wooryeol", "accessToken >>> $accessToken")
             Log.d("wooryeol", "membershipNo >>> $membershipNo")
-        }
+        }*/
 
-        if (membershipNo?.isNotEmpty() == true && accessToken.isNotEmpty()) {
-            webview.post(Runnable {
-                // Log.d("wooryeol", "222 accessToken >>> $accessToken")
-                webview.loadUrl("javascript:getMembershipNo('$membershipNo', '$accessToken')")
-            })
+        if (accessToken != null) {
+            if (membershipNo?.isNotEmpty() == true && accessToken.isNotEmpty()) {
+                webview.post(Runnable {
+                    // Log.d("wooryeol", "222 accessToken >>> $accessToken")
+                    webview.loadUrl("javascript:getMembershipNo('$membershipNo', '$accessToken')")
+                })
+            }
         }
     }
 
@@ -543,13 +546,11 @@ class WebViewActivity : AppCompatActivity() {
         @JavascriptInterface
         fun callAccessToken() {
 
-            val sharedMembershipUserInfo = GlobalApplication.sharedMembershipUserInfo
             val membershipUserInfo = GlobalApplication.membershipUserInfo
             var accessToken = GlobalApplication.userInfo?.accessToken
             Log.d("wooryeol", "accessToken 111 >>> $accessToken")
 
             if (accessToken.isNullOrEmpty()){
-                accessToken = GlobalApplication.sharedAccessToken
                 Log.d("wooryeol", "accessToken 222 >>> $accessToken")
             }
 
@@ -591,8 +592,7 @@ class WebViewActivity : AppCompatActivity() {
                         webview.loadUrl("javascript:setUserMembershipInfo($gsonMembershipUserInfo)")
                     } else if (GlobalApplication.isLoggedIn) {
                         Log.d("wooryeol", "222")
-                        Log.d("wooryeol", "sharedMembershipUserInfo >>> $sharedMembershipUserInfo")
-                        webview.loadUrl("javascript:setUserMembershipInfo($sharedMembershipUserInfo)")
+                        //webview.loadUrl("javascript:setUserMembershipInfo($sharedMembershipUserInfo)")
                     }
                 })
             }

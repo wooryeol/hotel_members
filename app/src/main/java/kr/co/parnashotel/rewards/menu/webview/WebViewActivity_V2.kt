@@ -18,6 +18,7 @@ import android.os.Message
 import android.provider.MediaStore
 import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import android.view.WindowManager
 import android.webkit.CookieManager
 import android.webkit.DownloadListener
@@ -153,14 +154,20 @@ class WebViewActivity_V2 : AppCompatActivity() {
         // webview.webChromeClient = FullscreenableChromeClient(this)
 
         webview.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                Log.d("webViewClient", "onPageFinished >>> $url")
+                if (url?.startsWith("https://www.parnashotel.com") == true){
+                    mBinding.backBtn.visibility = View.VISIBLE
+                }
+                super.onPageFinished(view, url)
+            }
+
             @Deprecated("Deprecated in Java")
             override fun shouldOverrideUrlLoading(
                 view: WebView,
                 url: String
             ): Boolean {
-
-                Log.d("webViewClient", "webViewClient >>> $url")
-
+                Log.d("webViewClient", "shouldOverrideUrlLoading >>> $url")
                 if (url != "about:blank") {
                     if (url.startsWith("http://") || url.startsWith("https://")) {
                         if (url.startsWith("intent:") ||
@@ -178,6 +185,10 @@ class WebViewActivity_V2 : AppCompatActivity() {
                             url.endsWith(".apk")
                         ) {
                             return urlSchemeIntent(view, url)
+                        } else if(url.startsWith("https://pgapi.easypay.co.kr")) {
+                            mBinding.backBtn.visibility = View.GONE
+                        } else if(url.startsWith("https://www.parnashotel.com/myPage/myPoint/pointsAdjustment/#")) {
+                            view.loadUrl("https://www.parnashotel.com/myPage/myPoint/pointsAdjustment/")
                         } else {
                             view.loadUrl(url)
                         }
@@ -527,7 +538,6 @@ class WebViewActivity_V2 : AppCompatActivity() {
 
         @JavascriptInterface
         fun setMembershipUserInfo(data: String) {
-            Log.d("wooryeol", "111111")
             runOnUiThread {
                 Log.d("wooryeol", "membershipUserInfo >>> $data")
                 // GlobalApplication.membershipUserInfo = Gson().fromJson(data, MembershipUserInfoModel::class.java)
@@ -570,7 +580,6 @@ class WebViewActivity_V2 : AppCompatActivity() {
                 val userInfoModel = UserInfoModel_V2()
                 val membershipUserInfo = MembershipUserInfoModel_V2()
 
-                Log.d("wooryeol", "222222")
                 Log.d("wooryeol", "userInfoModel.accessToken >>> ${userInfoModel.loadUserInfo(mContext)?.accessToken}")
 
                 if(userInfoModel.loadUserInfo(mContext)?.accessToken != null) {
@@ -615,12 +624,9 @@ class WebViewActivity_V2 : AppCompatActivity() {
                 }
                 this@WebViewActivity_V2.finish()
 
-                GlobalApplication.userInfo = null
                 GlobalApplication.isLoggedIn = false
-
-                SharedData.setSharedData(mContext, "accessToken", "")
-                SharedData.setSharedData(mContext, "membershipNo", "")
-                SharedData.setSharedData(mContext, "membershipUserInfo", "")
+                UserInfoModel_V2().clearUserInfo(mContext)
+                MembershipUserInfoModel_V2().clearMembershipUserInfo(mContext)
 
                 val intent = Intent(mContext, MainActivity::class.java)
                 intent.putExtra("userData", GlobalApplication.userInfo)
@@ -632,7 +638,6 @@ class WebViewActivity_V2 : AppCompatActivity() {
         //유저(로그인) 정보 저장
         @JavascriptInterface
         fun setUserInfo(data: String) {
-            Log.d("wooryeol", "333333")
             runOnUiThread {
                 Log.d("wooryeol", "setUserInfo >>> $data")
                 // GlobalApplication.userInfo = Gson().fromJson(data, UserInfoModel_V2::class.java)
@@ -648,8 +653,8 @@ class WebViewActivity_V2 : AppCompatActivity() {
                     name,
                     gradeName,
                     membershipNo,
-                    coupon,
                     point,
+                    coupon,
                     accessToken,
                 )
                 userInfoModel.save(mContext)

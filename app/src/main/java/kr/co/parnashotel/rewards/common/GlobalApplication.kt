@@ -17,11 +17,7 @@ class GlobalApplication:Application() {
     companion object{
         var userInfo: UserInfoModel_V2? = null
         var membershipUserInfo: MembershipUserInfoModel? = null
-        var userKakaoMembershipInfo: UserKakaoMembershipInfoModel? = null
-
-        var sharedAccessToken = ""
-        var sharedMembershipUserInfo = ""
-        var sharedMembershipNo = ""
+        //var userKakaoMembershipInfo: UserKakaoMembershipInfoModel? = null
 
         var isLoggedIn = false
     }
@@ -29,19 +25,12 @@ class GlobalApplication:Application() {
     override fun onCreate() {
         super.onCreate()
 
-        /*sharedAccessToken = SharedData.getSharedData(this, "accessToken", "")
-        sharedMembershipUserInfo = SharedData.getSharedData(this, "membershipUserInfo", "")
-        sharedMembershipNo = SharedData.getSharedData(this, "membershipNo", "")
-
-        Log.d("wooryeol", "GlobalApplication accessToken >>> $sharedAccessToken")
-        Log.d("wooryeol", "GlobalApplication membershipUserInfo >>> $sharedMembershipUserInfo")
-        Log.d("wooryeol", "GlobalApplication membershipNo >>> $sharedMembershipNo")
-        Log.d("wooryeol", "GlobalApplication isLoggedIn >>> $isLoggedIn")*/
-
         val userInfoModel = UserInfoModel_V2()
+        Log.d("wooryeol", "isLoggedIn >>> $isLoggedIn")
         Log.d("wooryeol", "userInfoModel.loadUserInfo(this) >>> ${userInfoModel.loadUserInfo(this)}")
         if(userInfoModel.loadUserInfo(this) != null) {
             isLoggedIn = true
+            Log.d("wooryeol", "isLoggedIn >>> $isLoggedIn")
         }
 
         //카카오 로그인

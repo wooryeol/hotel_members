@@ -108,14 +108,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun isLoggedIn(domain: String){
-        mBinding.regTv.setOnClickListener {
-            val intent = Intent(mContext, WebViewActivity::class.java)
-            intent.putExtra("index", domain)
-            startActivity(intent)
-        }
-    }
-
     private fun logout() {
         runOnUiThread {
             GlobalApplication.isLoggedIn = false
@@ -123,7 +115,6 @@ class MainActivity : AppCompatActivity() {
             MembershipUserInfoModel_V2().clearMembershipUserInfo(mContext)
             mBinding.loginTv.visibility = View.VISIBLE
             mBinding.regTv.text = getString(R.string.main_reg_tv)
-
         }
     }
 }
