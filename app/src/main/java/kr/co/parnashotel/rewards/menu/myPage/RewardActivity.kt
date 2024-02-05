@@ -23,6 +23,7 @@ import kr.co.parnashotel.databinding.ActivityRewardBinding
 import kr.co.parnashotel.databinding.CellRewardBinding
 import kr.co.parnashotel.rewards.common.Define
 import kr.co.parnashotel.rewards.common.GlobalApplication
+import kr.co.parnashotel.rewards.common.SharedData
 import kr.co.parnashotel.rewards.menu.home.MainActivity
 import kr.co.parnashotel.rewards.menu.webview.WebViewActivity
 import kr.co.parnashotel.rewards.model.HotelModel
@@ -114,14 +115,21 @@ class RewardActivity : AppCompatActivity() {
     private fun getSetting(){
         /*val userDataIntent = intent
         val userData = userDataIntent.getSerializableExtra("userData") as TierModel*/
-        Log.d("test log", "userData >>> ${GlobalApplication.userInfo}")
+        // Log.d("test log", "userData >>> ${GlobalApplication.userInfo}")
 
         MainActivity.isLoginButtonClicked = false
 
-        val name  = GlobalApplication.userInfo?.name
-        val gradeName  = GlobalApplication.userInfo?.gradeName
-        val membershipNo  = GlobalApplication.userInfo?.membershipNo
-        val point  = GlobalApplication.userInfo?.point
+        var name  = GlobalApplication.userInfo?.name
+        var gradeName  = GlobalApplication.userInfo?.gradeName
+        var membershipNo  = GlobalApplication.userInfo?.membershipNo
+        var point  = GlobalApplication.userInfo?.point
+
+        if (name.isNullOrEmpty() && gradeName.isNullOrEmpty() && membershipNo.isNullOrEmpty()){
+            name = SharedData.getSharedData(mContext, "name", "")
+            gradeName = SharedData.getSharedData(mContext, "gradeName", "")
+            membershipNo = SharedData.getSharedData(mContext, "membershipNo", "")
+            point = SharedData.getSharedData(mContext, "point", 0)
+        }
 
         /*val name  = "김우렬"
         val gradeName  = "v3"
@@ -158,21 +166,21 @@ class RewardActivity : AppCompatActivity() {
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_club)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_club)
             }
-            "v1" -> {
+            "V1" -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v1))
                 window.statusBarColor = mContext.resources.getColor(R.color.grade_v1)
                 mBinding.gradeImg.setImageResource(R.drawable.grade_v1)
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_v1)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_v1)
             }
-            "v2" -> {
+            "V2" -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v2))
                 window.statusBarColor = mContext.resources.getColor(R.color.grade_v2)
                 mBinding.gradeImg.setImageResource(R.drawable.grade_v2)
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_v2)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_v2)
             }
-            "v3" -> {
+            "V3" -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v3))
                 window.statusBarColor = mContext.resources.getColor(R.color.grade_v3)
                 mBinding.gradeImg.setImageResource(R.drawable.grade_v3)

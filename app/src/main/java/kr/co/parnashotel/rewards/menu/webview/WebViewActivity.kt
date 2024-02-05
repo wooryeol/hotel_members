@@ -3,78 +3,54 @@ package kr.co.parnashotel.rewards.menu.webview
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.DownloadManager
 import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Environment
-import android.os.Handler
-import android.os.Looper
 import android.os.Message
 import android.provider.MediaStore
-import android.provider.Settings
 import android.util.Log
-import android.util.TypedValue
 import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
 import android.webkit.CookieManager
 import android.webkit.DownloadListener
 import android.webkit.JavascriptInterface
-import android.webkit.JsPromptResult
 import android.webkit.JsResult
-import android.webkit.URLUtil
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
-import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
-import android.webkit.WebView.WebViewTransport
 import android.webkit.WebViewClient
-import android.widget.Button
-import android.widget.FrameLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.google.zxing.integration.android.IntentIntegrator
-import com.google.zxing.integration.android.IntentResult
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kr.co.parnashotel.R
 import kr.co.parnashotel.databinding.ActWebviewBinding
 import kr.co.parnashotel.rewards.common.Define
 import kr.co.parnashotel.rewards.common.GlobalApplication
-import kr.co.parnashotel.rewards.common.PopupFactory
 import kr.co.parnashotel.rewards.common.SharedData
 import kr.co.parnashotel.rewards.common.UtilPermission
 import kr.co.parnashotel.rewards.common.Utils
 import kr.co.parnashotel.rewards.menu.home.MainActivity
 import kr.co.parnashotel.rewards.menu.myPage.RewardActivity
-import kr.co.parnashotel.rewards.model.MembershipUserInfo
-import kr.co.parnashotel.rewards.model.TierModel
+import kr.co.parnashotel.rewards.model.MembershipUserInfoModel
+import kr.co.parnashotel.rewards.model.UserInfoModel
 import org.json.JSONObject
 import java.io.File
 import java.io.IOException
@@ -92,8 +68,10 @@ class WebViewActivity : AppCompatActivity() {
     private var mUrl :String? = null
 
     // 사진 업로드 관련
-    var cameraPath = ""
-    var mWebViewImageUpload: ValueCallback<Array<Uri>>? = null
+    /*var cameraPath = ""
+    var mWebViewImageUpload: ValueCallback<Array<Uri>>? = null*/
+    private var mUploadMessage: ValueCallback<Array<Uri>>? = null
+    private var mUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -154,6 +132,7 @@ class WebViewActivity : AppCompatActivity() {
             WebView.setWebContentsDebuggingEnabled(true)
         }*/
 
+        WebView.setWebContentsDebuggingEnabled(true)
         //userAgent 추가
         val userAgent = settings.userAgentString
         settings.userAgentString = "$userAgent parnashotel_AOS"
@@ -174,6 +153,8 @@ class WebViewActivity : AppCompatActivity() {
                 view: WebView,
                 url: String
             ): Boolean {
+
+                Log.d("webViewClient", "webViewClient >>> $url")
 
                 if (url != "about:blank") {
                     if (url.startsWith("http://") || url.startsWith("https://")) {
@@ -226,64 +207,27 @@ class WebViewActivity : AppCompatActivity() {
         }
 
         webview.webChromeClient = object : WebChromeClient() {
-
-            val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == RESULT_OK) {
-                    val intent = result.data
-
-                    if(intent == null){ //바로 사진을 찍어서 올리는 경우
-                        val results = arrayOf(Uri.parse(cameraPath))
-                        mWebViewImageUpload!!.onReceiveValue(results!!)
-                    }
-                    else{ //사진 앱을 통해 사진을 가져온 경우
-                        val results = intent!!.data!!
-                        mWebViewImageUpload!!.onReceiveValue(arrayOf(results!!))
-                    }
+            override fun onShowFileChooser(webView: WebView, filePathCallback: ValueCallback<Array<Uri>>?, fileChooserParams: FileChooserParams): Boolean {
+                Log.d("download Log", "111")
+                if (mUploadMessage != null) {
+                    Log.d("download Log", "222")
+                    mUploadMessage?.onReceiveValue(null)
+                    mUploadMessage = null
                 }
-                else{ //취소 한 경우 초기화
-                    mWebViewImageUpload!!.onReceiveValue(null)
-                    mWebViewImageUpload = null
-                }
-            }
+                Log.d("download Log", "333")
+                mUploadMessage = filePathCallback
 
-            override fun onShowFileChooser(webView: WebView?, filePathCallback: ValueCallback<Array<Uri>>?, fileChooserParams: FileChooserParams?): Boolean {
-                try {
-                    try{
-                        mWebViewImageUpload = filePathCallback!!
-                        var takePictureIntent : Intent?
-                        takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                        if(takePictureIntent.resolveActivity(packageManager) != null){
-                            var photoFile : File?
-
-                            photoFile = createImageFile()
-                            takePictureIntent.putExtra("PhotoPath",cameraPath)
-
-                            if(photoFile != null){
-                                cameraPath = "file:${photoFile.absolutePath}"
-                                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(photoFile))
-                            }
-                            else takePictureIntent = null
-                        }
-                        val contentSelectionIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                        contentSelectionIntent.type = "image/*"
-
-                        var intentArray: Array<Intent?>
-
-                        if(takePictureIntent != null) intentArray = arrayOf(takePictureIntent)
-                        else intentArray = takePictureIntent?.get(0)!!
-
-                        val chooserIntent = Intent(Intent.ACTION_CHOOSER)
-                        chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent)
-                        chooserIntent.putExtra(Intent.EXTRA_TITLE,"사용할 앱을 선택해주세요.")
-                        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray)
-                        launcher.launch(chooserIntent)
-                    }
-                    catch (e : Exception){
-                        Log.d("wooryeol", "error >>> $e")
+                if (UtilPermission.isCameraPermission(mActivity)) {
+                    Log.d("download Log", "444")
+                    chooserPicture()
+                } else {
+                    if (mUploadMessage != null) {
+                        Log.d("download Log", "555")
+                        mUploadMessage?.onReceiveValue(null)
+                        mUploadMessage = null
                     }
 
-                } catch (e: Exception) {
-                    Log.d("wooryeol", "error >>> $e")
+                    mActivity.requestPermissions(arrayOf(Manifest.permission.CAMERA), Define.STORAGE_REQUEST_CODE)
                 }
                 return true
             }
@@ -302,12 +246,54 @@ class WebViewActivity : AppCompatActivity() {
         webview.loadUrl(url)
     }
 
-    fun createImageFile(): File? {
+    /*fun createImageFile(): File? {
         @SuppressLint("SimpleDateFormat")
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val imageFileName = "img_" + timeStamp + "_"
         val storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(imageFileName, ".jpg", storageDir)
+    }*/
+
+    @SuppressLint("QueryPermissionsNeeded")
+    fun chooserPicture(){
+        var takePictureIntent: Intent? = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (takePictureIntent?.resolveActivity(packageManager) != null) {
+            // Create the File where the photo should go
+            val photoFile: File? = try {
+                createImageFile(mContext)
+            } catch (ex: IOException) {
+                // Error occurred while creating the File
+                ex.message?.let { it1 -> Utils.Toast(mContext, it1) }
+                null
+            }
+            // Continue only if the File was successfully created
+            photoFile?.also {
+                mUri = FileProvider.getUriForFile(mContext, Define.AUTHORITY, it)
+                takePictureIntent?.putExtra(MediaStore.EXTRA_OUTPUT, mUri)
+            }
+        }
+
+        val contentSelectionIntent = Intent(Intent.ACTION_GET_CONTENT)
+        contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE)
+        contentSelectionIntent.type = "image/*"
+
+        val intentArray: Array<Intent?>
+        intentArray = takePictureIntent?.let { arrayOf(it) } ?: arrayOfNulls(0)
+
+        val chooserIntent = Intent(Intent.ACTION_CHOOSER)
+        chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent)
+        chooserIntent.putExtra(Intent.EXTRA_TITLE, "사진 가져올 방법을 선택해 주세요.")
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray)
+
+        startActivityForResult(chooserIntent, Define.GET_PHOTO_REQUEST_CODE)
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    fun createImageFile(context: Context): File? {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMddHHmmss").format(Date())
+        val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile("SE_${timeStamp}", ".jpg",storageDir)
     }
 
     fun urlSchemeIntent(view: WebView, url: String): Boolean {
@@ -515,10 +501,13 @@ class WebViewActivity : AppCompatActivity() {
     // 멤버십 번호 전달
     private fun setMembershipNo() {
         val membershipNo = GlobalApplication.userInfo?.membershipNo
-        val accessToken = GlobalApplication.userInfo?.accessToken
+        var accessToken = GlobalApplication.userInfo?.accessToken
+        if (accessToken == null) {
+            accessToken = GlobalApplication.sharedAccessToken
 
-        Log.d("test log", "membershipNo >>> $membershipNo")
-        Log.d("test log", "accessToken >>> $accessToken")
+            // Log.d("test log", "membershipNo >>> $membershipNo")
+                Log.d("test log", "accessToken >>> $accessToken")
+        }
 
         if (membershipNo?.isNotEmpty() == true && accessToken?.isNotEmpty() == true) {
             webview.post(Runnable {
@@ -544,31 +533,58 @@ class WebViewActivity : AppCompatActivity() {
         @JavascriptInterface
         fun setMembershipUserInfo(data: String) {
             runOnUiThread {
-                Log.d("test log", "setMembershipUserInfo >>> $data")
-                SharedData.setSharedData(mContext, "membershipUserInfo", GlobalApplication.membershipUserInfo.toString())
-                GlobalApplication.membershipUserInfo = Gson().fromJson(data, MembershipUserInfo::class.java)
-                //Log.d("test log", "GlobalApplication.membershipUserInfo >>> ${GlobalApplication.membershipUserInfo}")
+                GlobalApplication.membershipUserInfo = Gson().fromJson(data, MembershipUserInfoModel::class.java)
+                Log.d("wooryeol", "membershipUserInfo >>> ${GlobalApplication.membershipUserInfo}")
             }
         }
 
         @JavascriptInterface
-        fun callAccessToken(data : String) {
-            val accessToken = GlobalApplication.userInfo?.accessToken
-            val membershipUserInfo = GlobalApplication.membershipUserInfo
+        fun callAccessToken() {
 
-            Log.d("test log", "membershipUserInfo >>> $membershipUserInfo")
-            SharedData.setSharedData(mContext, "membershipUserInfo", GlobalApplication.membershipUserInfo.toString())
+            val sharedMembershipUserInfo = GlobalApplication.sharedMembershipUserInfo
+            val membershipUserInfo = GlobalApplication.membershipUserInfo
+            val accessToken = GlobalApplication.userInfo?.accessToken
+
+            /*if (data.isNotEmpty()) {
+                val json = JSONObject(data)
+                val employeeRecommenderStatus = json.get("employeeRecommenderStatus").toString()
+                val employeeStatus = json.get("employeeStatus").toString()
+                val gradeName = json.get("gradeName").toString()
+                val memberEmail = json.get("memberEmail").toString()
+                val memberFirstName = json.get("memberFirstName").toString()
+                val memberGender = json.get("memberGender").toString()
+                val memberLastName = json.get("memberLastName").toString()
+                val memberMobile = json.get("memberMobile").toString()
+                val memberName = json.get("memberName").toString()
+                val membershipId = json.get("membershipId").toString()
+                val membershipNo = json.get("membershipNo").toString()
+                val membershipYn = json.get("membershipYn").toString()
+                val recommenderStatus = json.get("recommenderStatus").toString()
+
+                Log.d("wooryeol", "kakao login data 222 >>> $data")
+            }*/
+
+            // Log.d("wooryeol", "membershipUserInfo >>> $membershipUserInfo")
+            // Log.d("wooryeol", "accessToken >>> $accessToken")
 
             runOnUiThread {
                 webview.post(Runnable {
                     if (accessToken != null) {
-                        Log.d("test log", "333 accessToken >>> $accessToken")
+                        // Log.d("test log", "333 accessToken >>> $accessToken")
                         webview.loadUrl("javascript:setAccessToken('$accessToken')")
                     }
 
-                    if (membershipUserInfo != null) {
+                    // if (membershipUserInfo != "") {
+                    if (membershipUserInfo != null && !GlobalApplication.isLoggedIn) {
                         val gsonMembershipUserInfo = Gson().toJson(membershipUserInfo)
-                        Log.d("test log", "json membershipUserInfo >>> $gsonMembershipUserInfo")
+                        SharedData.setSharedData(mContext, "membershipUserInfo", gsonMembershipUserInfo)
+                        Log.d("test log", "111")
+                        Log.d("test log", "gsonMembershipUserInfo >>> $gsonMembershipUserInfo")
+                        webview.loadUrl("javascript:setUserMembershipInfo($gsonMembershipUserInfo)")
+                    } else if (GlobalApplication.isLoggedIn) {
+                        Log.d("test log", "222")
+                        Log.d("test log", "sharedMembershipUserInfo >>> $sharedMembershipUserInfo")
+                        val gsonMembershipUserInfo = Gson().toJson(membershipUserInfo)
                         webview.loadUrl("javascript:setUserMembershipInfo($gsonMembershipUserInfo)")
                     }
                 })
@@ -580,7 +596,6 @@ class WebViewActivity : AppCompatActivity() {
             runOnUiThread {
                 val intent = Intent(mContext, RewardActivity::class.java)
                 /*intent.putExtra("userData", userData)*/
-                intent.putExtra("userData", GlobalApplication.userInfo)
                 startActivity(intent)
             }
         }
@@ -602,9 +617,18 @@ class WebViewActivity : AppCompatActivity() {
         @JavascriptInterface
         fun logout() {
             runOnUiThread {
-                RewardActivity.rewardActivity!!.finish()
+                if (!GlobalApplication.isLoggedIn) {
+                    RewardActivity.rewardActivity!!.finish()
+                }
                 this@WebViewActivity.finish()
+
                 GlobalApplication.userInfo = null
+                GlobalApplication.isLoggedIn = false
+
+                SharedData.setSharedData(mContext, "accessToken", "")
+                SharedData.setSharedData(mContext, "membershipNo", "")
+                SharedData.setSharedData(mContext, "membershipUserInfo", "")
+
                 val intent = Intent(mContext, MainActivity::class.java)
                 intent.putExtra("userData", GlobalApplication.userInfo)
                 startActivity(intent)
@@ -616,21 +640,24 @@ class WebViewActivity : AppCompatActivity() {
         @JavascriptInterface
         fun setUserInfo(data: String) {
             runOnUiThread {
-                Log.d("test log", "setUserInfo >>> $data")
+                Log.d("wooryeol", "setUserInfo >>> $data")
                 val json = JSONObject(data)
                 val name = json.get("name").toString()
                 val gradeName = json.get("gradeName").toString()
                 val membershipNo = json.get("membershipNo").toString()
                 val point = json.get("point").toString().toInt()
                 val accessToken = json.get("accessToken").toString()
+                // Log.d("wooryeol", "accessToken >>> $accessToken")
 
-                GlobalApplication.userInfo =
-                    TierModel(name, membershipNo, point, gradeName, accessToken)
+                SharedData.setSharedData(mContext, "name", name)
+                SharedData.setSharedData(mContext, "gradeName", gradeName)
+                SharedData.setSharedData(mContext, "membershipNo", membershipNo)
+                SharedData.setSharedData(mContext, "point", point)
+                SharedData.setSharedData(mContext, "accessToken", accessToken)
 
-                SharedData.setSharedData(mContext, "userInfo", GlobalApplication.userInfo.toString())
+                GlobalApplication.userInfo = UserInfoModel(name, membershipNo, point, gradeName, accessToken)
 
                 val intent = Intent(mContext, RewardActivity::class.java)
-
                 // 메인 액티비티 종료
                 MainActivity.mainActivity!!.finishAffinity()
 
@@ -852,6 +879,33 @@ class WebViewActivity : AppCompatActivity() {
             }
         } else {
             UserApiClient.instance.loginWithKakaoAccount(mContext, callback = callback)
+        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == Define.GET_PHOTO_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (mUploadMessage == null) {
+                    super.onActivityResult(requestCode, resultCode, data)
+                    return
+                }
+
+                if (data == null) {    //카메라 촬영
+                    mUri?.let {
+                        mUploadMessage?.onReceiveValue(arrayOf(it))
+                    }
+                } else {    //앨범 가져오기
+                    mUploadMessage?.onReceiveValue(
+                        WebChromeClient.FileChooserParams.parseResult(
+                            resultCode,
+                            data
+                        )
+                    )
+                }
+                mUploadMessage = null
+            }
         }
     }
 

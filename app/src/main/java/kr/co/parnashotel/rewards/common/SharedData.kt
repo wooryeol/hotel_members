@@ -3,6 +3,7 @@ package kr.co.parnashotel.rewards.common
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
+import kr.co.parnashotel.rewards.model.MembershipUserInfoModel
 
 object SharedData {
     private const val SHARED_NAME = "PARNAS"

@@ -5,5 +5,5 @@ data class HotelModel(
     var thumbUrl: String,
     var title: String,
     var url: String,
-    val data: List<TierModel>? = null
+    val data: List<UserInfoModel>? = null
 )

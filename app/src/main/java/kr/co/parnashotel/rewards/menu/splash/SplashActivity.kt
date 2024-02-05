@@ -37,7 +37,6 @@ import kr.co.parnashotel.rewards.common.GlobalApplication
 import kr.co.parnashotel.rewards.common.UtilPermission
 import kr.co.parnashotel.rewards.common.Utils
 import kr.co.parnashotel.rewards.menu.home.MainActivity
-import kr.co.parnashotel.rewards.menu.myPage.RewardActivity
 import kr.co.parnashotel.rewards.net.ApiClientService
 import retrofit2.Call
 import retrofit2.Callback
@@ -171,31 +170,17 @@ class SplashActivity : AppCompatActivity() {
 
     private fun nextPage(){
         // val handler = Handler(Looper.getMainLooper())
-        val savedUserInfo = SharedData.getSharedData(this, "userInfo", "")
-        Log.d("test log", "savedUserInfo >>> $savedUserInfo")
-        if (savedUserInfo != "") {
-            val r = Runnable {
-                val intent = Intent(this, RewardActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                mUrl.let {
-                    intent.putExtra("index", it)
-                }
-                startActivity(intent)
+
+        val r = Runnable {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            mUrl.let {
+                intent.putExtra("index", it)
             }
-            r.run()
-            // handler.postDelayed(r, 3000)
-        } else {
-            val r = Runnable {
-                val intent = Intent(this, MainActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                mUrl.let {
-                    intent.putExtra("index", it)
-                }
-                startActivity(intent)
-            }
-            r.run()
-            // handler.postDelayed(r, 3000)
+            startActivity(intent)
         }
+        r.run()
+        // handler.postDelayed(r, 3000)
     }
 
     private fun gifSplash() {

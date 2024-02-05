@@ -4,9 +4,12 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
+import android.content.Intent
 import android.os.*
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
@@ -16,9 +19,11 @@ import kr.co.parnashotel.R
 import kr.co.parnashotel.databinding.ActMainBinding
 import kr.co.parnashotel.databinding.CellHotelBinding
 import kr.co.parnashotel.rewards.common.Define
+import kr.co.parnashotel.rewards.common.GlobalApplication
 import kr.co.parnashotel.rewards.common.UtilPermission
 import kr.co.parnashotel.rewards.common.Utils
 import kr.co.parnashotel.rewards.menu.myPage.RewardActivity
+import kr.co.parnashotel.rewards.menu.webview.WebViewActivity
 import kr.co.parnashotel.rewards.model.HotelModel
 import java.util.*
 
@@ -45,6 +50,8 @@ class MainActivity : AppCompatActivity() {
         mContext = this
         mainActivity = this
 
+
+
         val list: List<HotelModel> = arrayListOf(
             HotelModel(R.drawable.grand, "", "그랜드 인터컨티넨탈 서울 파르나스", "${Define.DOMAIN}?hotelCode=21&lang=kor"),
             HotelModel(R.drawable.coex, "", "인터컨티넨탈 서울 코엑스", "${Define.DOMAIN}?hotelCode=23&lang=kor"),
@@ -66,8 +73,17 @@ class MainActivity : AppCompatActivity() {
             isLoginButtonClicked = true
             Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.login}")
         }
-        mBinding.regTv.setOnClickListener {
-            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.signUp}")
+
+        if (GlobalApplication.isLoggedIn){
+            mBinding.loginTv.visibility = View.GONE
+            mBinding.regTv.text =getString(R.string.dashBoard)
+            mBinding.regTv.setOnClickListener {
+                isLoggedIn(Define.DOMAIN+Define.dashBoard)
+            }
+        } else {
+            mBinding.regTv.setOnClickListener {
+                Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.signUp}")
+            }
         }
         mBinding.overlayView.setOnClickListener {
             Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.rsvn}")
@@ -87,6 +103,17 @@ class MainActivity : AppCompatActivity() {
         mBinding.mainPopup.setOnClickListener {
             Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.membershipIntroduction}")
         }
+    }
+
+    private fun isLoggedIn(domain: String){
+        mBinding.regTv.setOnClickListener {
+            val intent = Intent(mContext, WebViewActivity::class.java)
+            intent.putExtra("index", domain)
+            intent.putExtra("membershipNo", GlobalApplication.sharedMembershipNo)
+            intent.putExtra("accessToken", GlobalApplication.sharedAccessToken)
+            startActivity(intent)
+        }
+
     }
 }
 

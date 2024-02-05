@@ -1,82 +1,43 @@
 package kr.co.parnashotel.rewards.common
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.util.Log
-import com.google.gson.JsonObject
 import com.kakao.sdk.common.KakaoSdk
+import com.kakao.sdk.user.model.User
 import kr.co.parnashotel.R
-import kr.co.parnashotel.rewards.menu.home.MainActivity
-import kr.co.parnashotel.rewards.model.MembershipUserInfo
-import kr.co.parnashotel.rewards.model.TierModel
-import org.json.JSONObject
+import kr.co.parnashotel.rewards.model.MembershipUserInfoModel
+import kr.co.parnashotel.rewards.model.UserInfoModel
+import kr.co.parnashotel.rewards.model.UserKakaoMembershipInfoModel
 
 class GlobalApplication:Application() {
 
     companion object{
-        var userInfo: TierModel? = null
-        var membershipUserInfo: MembershipUserInfo? = null
+        var userInfo: UserInfoModel? = null
+        var membershipUserInfo: MembershipUserInfoModel? = null
+        var userKakaoMembershipInfo: UserKakaoMembershipInfoModel? = null
+
+        var sharedAccessToken = ""
+        var sharedMembershipUserInfo = ""
+        var sharedMembershipNo = ""
+
+        var isLoggedIn = false
     }
 
     override fun onCreate() {
         super.onCreate()
 
-        // 유저 정보 저장
-        /*if(userInfo != null || membershipUserInfo != null) {
-            val savedUserInfo = SharedData.getSharedData(this, "userInfo", "")
+        sharedAccessToken = SharedData.getSharedData(this, "accessToken", "")
+        sharedMembershipUserInfo = SharedData.getSharedData(this, "membershipUserInfo", "")
+        sharedMembershipNo = SharedData.getSharedData(this, "membershipNo", "")
 
-            val userInfoJson = JSONObject(savedUserInfo)
-            val name = userInfoJson.get("name").toString()
-            val gradeName = userInfoJson.get("gradeName").toString()
-            val membershipNo = userInfoJson.get("membershipNo").toString()
-            val point = userInfoJson.get("point").toString().toInt()
-            val accessToken = userInfoJson.get("accessToken").toString()
+        Log.d("wooryeol", "GlobalApplication accessToken >>> $sharedAccessToken")
+        Log.d("wooryeol", "GlobalApplication membershipUserInfo >>> $sharedMembershipUserInfo")
+        Log.d("wooryeol", "GlobalApplication membershipNo >>> $sharedMembershipNo")
+        Log.d("wooryeol", "GlobalApplication isLoggedIn >>> $isLoggedIn")
 
-            userInfo = TierModel(name, membershipNo, point, gradeName, accessToken)
-
-            // 멤버십 정보 저장
-            val savedMembershipUserInfo = SharedData.getSharedData(this, "membershipUserInfo", "")
-
-            val membershipUserInfoJson = JSONObject(savedMembershipUserInfo)
-            val membershipYn = membershipUserInfoJson.get("membershipYn").toString()
-            val membershipId = membershipUserInfoJson.get("membershipId").toString()
-            val memberName = membershipUserInfoJson.get("memberName").toString()
-            val memberGender = membershipUserInfoJson.get("memberGender").toString()
-            val memberEmail = membershipUserInfoJson.get("memberEmail").toString()
-            val memberMobile = membershipUserInfoJson.get("memberMobile").toString()
-            val memberFirstName = membershipUserInfoJson.get("memberFirstName").toString()
-            val memberLastName = membershipUserInfoJson.get("memberLastName").toString()
-            val employeeStatus = membershipUserInfoJson.get("employeeStatus").toString()
-            val recommenderStatus = membershipUserInfoJson.get("recommenderStatus").toString()
-            val temporaryYn = membershipUserInfoJson.get("temporaryYn").toString()
-
-            membershipUserInfo = MembershipUserInfo(
-                membershipYn,
-                membershipId,
-                membershipNo,
-                memberName,
-                memberGender,
-                memberEmail,
-                memberMobile,
-                memberFirstName,
-                memberLastName,
-                employeeStatus,
-                recommenderStatus,
-                temporaryYn
-            )
-        }*/
-
-        if(userInfo != null) {
-            val savedUserInfo = SharedData.getSharedData(this, "userInfo", "")
-
-            val userInfoJson = JSONObject(savedUserInfo)
-            val name = userInfoJson.get("name").toString()
-            val gradeName = userInfoJson.get("gradeName").toString()
-            val membershipNo = userInfoJson.get("membershipNo").toString()
-            val point = userInfoJson.get("point").toString().toInt()
-            val accessToken = userInfoJson.get("accessToken").toString()
-
-            userInfo = TierModel(name, membershipNo, point, gradeName, accessToken)
+        if (sharedAccessToken != "" && sharedMembershipUserInfo != "" && sharedMembershipNo != "") {
+            isLoggedIn = true
+            Log.d("wooryeol", "GlobalApplication isLoggedIn >>> $isLoggedIn")
         }
 
         //카카오 로그인
