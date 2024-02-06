@@ -647,7 +647,7 @@ class WebViewActivity : AppCompatActivity() {
         @JavascriptInterface
         fun setUserInfo(data: String) {
             runOnUiThread {
-                Log.d("wooryeol", "setUserInfo >>> $data")
+                Log.d("wooryeol", "setUserInfo111 >>> $data")
                 val json = JSONObject(data)
                 val name = json.get("name").toString()
                 val gradeName = json.get("gradeName").toString()

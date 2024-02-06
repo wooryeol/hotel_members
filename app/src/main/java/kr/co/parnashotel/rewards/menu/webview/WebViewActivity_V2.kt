@@ -93,17 +93,17 @@ class WebViewActivity_V2 : AppCompatActivity() {
 
         val pushUrl = intent.getStringExtra("index")
         mUrl = pushUrl ?: Define.DOMAIN
+        Log.d("wooryeol", "mUrl >>> $mUrl")
         initWebview(mUrl!!)
 
-        // setMembershipNo()
+        if(pushUrl != null) {
+            setMembershipNo()
+        }
 
         // 뒤로가기 버튼
         mBinding.backBtn.setOnClickListener {
             onBackPressed()
         }
-
-        val loadedUserInfo = MembershipUserInfoModel_V2()
-        Log.d("wooryeol", "loadedUserInfo >>> ${loadedUserInfo.LoadMembershipUserInfo(mContext)}")
     }
 
     @SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
@@ -167,7 +167,7 @@ class WebViewActivity_V2 : AppCompatActivity() {
                 view: WebView,
                 url: String
             ): Boolean {
-                Log.d("webViewClient", "shouldOverrideUrlLoading >>> $url")
+                Log.d("wooryeol", "shouldOverrideUrlLoading >>> $url")
                 if (url != "about:blank") {
                     if (url.startsWith("http://") || url.startsWith("https://")) {
                         if (url.startsWith("intent:") ||
@@ -554,7 +554,11 @@ class WebViewActivity_V2 : AppCompatActivity() {
                 val memberLastName = json.get("memberLastName").toString()
                 val employeeStatus = json.get("employeeStatus").toString()
                 val recommenderStatus = json.get("recommenderStatus").toString()
-                val temporaryYn = json.get("temporaryYn").toString()
+                val temporaryYn = if(data.contains("temporaryYn")) {
+                    json.get("temporaryYn").toString()
+                } else {
+                    json.get("gradeName").toString()
+                }
 
                 val membershipUserInfoModelV2 = MembershipUserInfoModel_V2(
                     membershipYn,
@@ -570,6 +574,7 @@ class WebViewActivity_V2 : AppCompatActivity() {
                     recommenderStatus,
                     temporaryYn,
                 )
+
                 membershipUserInfoModelV2.save(mContext)
             }
         }
@@ -580,6 +585,7 @@ class WebViewActivity_V2 : AppCompatActivity() {
                 val userInfoModel = UserInfoModel_V2()
                 val membershipUserInfo = MembershipUserInfoModel_V2()
 
+                // Log.d("wooryeol", "callAccessToken data >>> $data")
                 Log.d("wooryeol", "userInfoModel.accessToken >>> ${userInfoModel.loadUserInfo(mContext)?.accessToken}")
 
                 if(userInfoModel.loadUserInfo(mContext)?.accessToken != null) {
@@ -635,12 +641,17 @@ class WebViewActivity_V2 : AppCompatActivity() {
         }
 
 
+        @JavascriptInterface
+        fun setUserInfoTest(data: String) {
+            Log.d("wooryeol", "setUserInfo222 >>> $data")
+        }
+
         //유저(로그인) 정보 저장
         @JavascriptInterface
         fun setUserInfo(data: String) {
             runOnUiThread {
-                Log.d("wooryeol", "setUserInfo >>> $data")
-                // GlobalApplication.userInfo = Gson().fromJson(data, UserInfoModel_V2::class.java)
+                Log.d("wooryeol", "setUserInfo02 >>> $data")
+                GlobalApplication.userInfo = Gson().fromJson(data, UserInfoModel_V2::class.java)
 
                 val json = JSONObject(data)
                 val name = json.get("name").toString()
@@ -664,7 +675,7 @@ class WebViewActivity_V2 : AppCompatActivity() {
 
                 if (MainActivity.isLoginButtonClicked) {
                     val intent = Intent(mContext, RewardActivity::class.java)
-                    intent.putExtra("userData", GlobalApplication.userInfo)
+                    intent.putExtra("userData", userInfoModel)
                     startActivity(intent)
                     finish()
                 }

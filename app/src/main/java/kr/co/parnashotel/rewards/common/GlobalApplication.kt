@@ -26,8 +26,8 @@ class GlobalApplication:Application() {
         super.onCreate()
 
         val userInfoModel = UserInfoModel_V2()
-        Log.d("wooryeol", "isLoggedIn >>> $isLoggedIn")
-        Log.d("wooryeol", "userInfoModel.loadUserInfo(this) >>> ${userInfoModel.loadUserInfo(this)}")
+        // Log.d("wooryeol", "isLoggedIn >>> $isLoggedIn")
+        // Log.d("wooryeol", "userInfoModel.loadUserInfo(this) >>> ${userInfoModel.loadUserInfo(this)}")
         if(userInfoModel.loadUserInfo(this) != null) {
             isLoggedIn = true
             Log.d("wooryeol", "isLoggedIn >>> $isLoggedIn")
