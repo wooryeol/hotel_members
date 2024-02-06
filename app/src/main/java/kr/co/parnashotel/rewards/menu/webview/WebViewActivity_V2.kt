@@ -156,7 +156,9 @@ class WebViewActivity_V2 : AppCompatActivity() {
         webview.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 Log.d("webViewClient", "onPageFinished >>> $url")
-                if (url?.startsWith("https://www.parnashotel.com") == true){
+                if (url?.let { backPressedUrl(it) } == false) {
+                    mBinding.backBtn.visibility = View.GONE
+                } else if (url?.let { backPressedUrl(it) } == true) {
                     mBinding.backBtn.visibility = View.VISIBLE
                 }
                 super.onPageFinished(view, url)
@@ -167,7 +169,7 @@ class WebViewActivity_V2 : AppCompatActivity() {
                 view: WebView,
                 url: String
             ): Boolean {
-                Log.d("wooryeol", "shouldOverrideUrlLoading >>> $url")
+                Log.d("webViewClient", "shouldOverrideUrlLoading >>> $url")
                 if (url != "about:blank") {
                     if (url.startsWith("http://") || url.startsWith("https://")) {
                         if (url.startsWith("intent:") ||
@@ -185,9 +187,7 @@ class WebViewActivity_V2 : AppCompatActivity() {
                             url.endsWith(".apk")
                         ) {
                             return urlSchemeIntent(view, url)
-                        } else if(url.startsWith("https://pgapi.easypay.co.kr")) {
-                            mBinding.backBtn.visibility = View.GONE
-                        } else if(url.startsWith("https://www.parnashotel.com/myPage/myPoint/pointsAdjustment/#")) {
+                        }  else if(url.startsWith("https://www.parnashotel.com/myPage/myPoint/pointsAdjustment/#")) {
                             view.loadUrl("https://www.parnashotel.com/myPage/myPoint/pointsAdjustment/")
                         } else {
                             view.loadUrl(url)
@@ -456,9 +456,36 @@ class WebViewActivity_V2 : AppCompatActivity() {
         }
     }
 
+    private fun backPressedUrl(url: String):Boolean {
+        val urlList = arrayOf(
+            "&errorCode=&orderNo=",
+            "errorCode=400_0",
+            "easypay.co.kr",
+            "online-pay.kakao.com",
+            "ansimclick.hyundaicard.com",
+            "acs.hanacard.co.kr",
+            "ui.vpay.co.kr",
+            "dacs.wooricard.com",
+            "vbv.shinhancard.com",
+            "sps.lottecard.co.kr",
+            "vbv.samsungcard.co.kr",
+            "accesscontrol.citibank.co.kr",
+            "pay.kbcard.com",
+            "?resCd=0000&errorCode=0000&"
+            )
+        for (it in urlList) {
+            if (url.contains(it)) {
+                return false
+            }
+        }
+        return true
+    }
+
     override fun onBackPressed() {
         if(canGoBack() == true){
-            goBack()
+            if (webview.url?.let { backPressedUrl(it) } == true) {
+                goBack()
+            }
         }else {
             finish()
             /*if (!isTwo) {

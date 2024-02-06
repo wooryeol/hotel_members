@@ -12,7 +12,7 @@ android {
         applicationId "kr.co.parnashotel.rewards"
         minSdkVersion 28
         targetSdkVersion 33
-        versionCode 24020503
+        versionCode 24020601
         versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
