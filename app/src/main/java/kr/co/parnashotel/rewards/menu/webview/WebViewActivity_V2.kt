@@ -3,9 +3,11 @@ package kr.co.parnashotel.rewards.menu.webview
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.DownloadManager
 import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
@@ -222,7 +224,7 @@ class WebViewActivity_V2 : AppCompatActivity() {
             }
         }
 
-        webview.webChromeClient = object : WebChromeClient() {
+        /*webview.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(webView: WebView, filePathCallback: ValueCallback<Array<Uri>>?, fileChooserParams: FileChooserParams): Boolean {
                 Log.d("download Log", "111")
                 if (mUploadMessage != null) {
@@ -243,6 +245,23 @@ class WebViewActivity_V2 : AppCompatActivity() {
                         mUploadMessage = null
                     }
 
+                    mActivity.requestPermissions(arrayOf(Manifest.permission.CAMERA), Define.STORAGE_REQUEST_CODE)
+                }
+                return true
+            }
+        }*/
+
+        webview.webChromeClient = object : WebChromeClient() {
+            override fun onShowFileChooser(webView: WebView, filePathCallback: ValueCallback<Array<Uri>>?, fileChooserParams: FileChooserParams): Boolean {
+                if (mUploadMessage != null) {
+                    clearUploadMessage() // 이전 선택 취소
+                }
+                mUploadMessage = filePathCallback
+
+                if (UtilPermission.isCameraPermission(mActivity)) {
+                    chooserPicture()
+                } else {
+                    clearUploadMessage() // 권한 요청 전 이전 선택 취소
                     mActivity.requestPermissions(arrayOf(Manifest.permission.CAMERA), Define.STORAGE_REQUEST_CODE)
                 }
                 return true
@@ -649,6 +668,19 @@ class WebViewActivity_V2 : AppCompatActivity() {
             }
         }
 
+        // 토큰 만료 시
+        @JavascriptInterface
+        fun accessTokenExpir(){
+            val builder = AlertDialog.Builder(mContext).apply {
+                setMessage("로그인이 만료되어 메인화면으로 이동합니다.")
+                setCancelable(false)
+                setPositiveButton("확인", DialogInterface.OnClickListener{ _, _ ->
+                    logout()
+                } )
+            }
+            builder.show()
+        }
+
         @JavascriptInterface
         fun logout() {
             runOnUiThread {
@@ -922,6 +954,11 @@ class WebViewActivity_V2 : AppCompatActivity() {
         }
     }
 
+    private fun clearUploadMessage() {
+        mUploadMessage?.onReceiveValue(null)
+        mUploadMessage = null
+    }
+
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -931,6 +968,7 @@ class WebViewActivity_V2 : AppCompatActivity() {
                     super.onActivityResult(requestCode, resultCode, data)
                     return
                 }
+
 
                 if (data == null) {    //카메라 촬영
                     mUri?.let {
@@ -945,6 +983,12 @@ class WebViewActivity_V2 : AppCompatActivity() {
                     )
                 }
                 mUploadMessage = null
+            } else {
+                if(mUploadMessage != null) {
+                    mUploadMessage?.onReceiveValue(null)
+                    mUploadMessage = null;
+                }
+                Log.d("wooryeol", "dfdf >>>")
             }
         }
     }

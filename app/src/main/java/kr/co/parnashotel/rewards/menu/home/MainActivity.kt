@@ -25,6 +25,7 @@ import kr.co.parnashotel.rewards.common.UtilPermission
 import kr.co.parnashotel.rewards.common.Utils
 import kr.co.parnashotel.rewards.menu.myPage.RewardActivity
 import kr.co.parnashotel.rewards.menu.webview.WebViewActivity
+import kr.co.parnashotel.rewards.menu.webview.WebViewActivity_V2
 import kr.co.parnashotel.rewards.model.HotelModel
 import kr.co.parnashotel.rewards.model.MembershipUserInfoModel_V2
 import kr.co.parnashotel.rewards.model.UserInfoModel_V2
@@ -101,7 +102,11 @@ class MainActivity : AppCompatActivity() {
             Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.search}")
         }
         mBinding.reservationCheck.setOnClickListener {
-            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.reservationCheck}")
+            if (GlobalApplication.isLoggedIn) {
+                loginMove(Define.DOMAIN+Define.loggedInReservationCheck)
+            } else {
+                Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.reservationCheck}")
+            }
         }
         mBinding.mainPopup.setOnClickListener {
             Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.membershipIntroduction}")
@@ -116,6 +121,12 @@ class MainActivity : AppCompatActivity() {
             mBinding.loginTv.visibility = View.VISIBLE
             mBinding.regTv.text = getString(R.string.main_reg_tv)
         }
+    }
+
+    private fun loginMove(domain: String){
+        val intent = Intent(mContext, WebViewActivity_V2::class.java)
+        intent.putExtra("index", domain)
+        startActivity(intent)
     }
 }
 
