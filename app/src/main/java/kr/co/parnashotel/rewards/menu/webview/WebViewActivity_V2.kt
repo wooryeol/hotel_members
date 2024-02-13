@@ -43,6 +43,7 @@ import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
+import kr.co.parnashotel.BuildConfig
 import kr.co.parnashotel.R
 import kr.co.parnashotel.databinding.ActWebviewBinding
 import kr.co.parnashotel.rewards.common.Define
@@ -73,10 +74,9 @@ class WebViewActivity_V2 : AppCompatActivity() {
     private var mUrl :String? = null
 
     // 사진 업로드 관련
-    /*var cameraPath = ""
-    var mWebViewImageUpload: ValueCallback<Array<Uri>>? = null*/
+    private var cameraPath = ""
     private var mUploadMessage: ValueCallback<Array<Uri>>? = null
-    private var mUri: Uri? = null
+    private var lastSelectedUris: Array<Uri>? = null // 사용자가 마지막으로 선택한 파일의 Uri들을 저장
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -252,17 +252,46 @@ class WebViewActivity_V2 : AppCompatActivity() {
         }*/
 
         webview.webChromeClient = object : WebChromeClient() {
-            override fun onShowFileChooser(webView: WebView, filePathCallback: ValueCallback<Array<Uri>>?, fileChooserParams: FileChooserParams): Boolean {
-                if (mUploadMessage != null) {
-                    clearUploadMessage() // 이전 선택 취소
-                }
-                mUploadMessage = filePathCallback
+            @SuppressLint("IntentReset")
+            override fun onShowFileChooser(webView: WebView?, filePathCallback: ValueCallback<Array<Uri>>?, fileChooserParams: FileChooserParams?): Boolean {
+                try{
+                    mUploadMessage = filePathCallback!!
+                    var takePictureIntent : Intent?
+                    takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    if(takePictureIntent.resolveActivity(packageManager) != null){
+                        val photoFile = createImageFile()
+                        takePictureIntent.putExtra("PhotoPath", cameraPath)
+                        takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        takePictureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
 
-                if (UtilPermission.isCameraPermission(mActivity)) {
-                    chooserPicture()
-                } else {
-                    clearUploadMessage() // 권한 요청 전 이전 선택 취소
-                    mActivity.requestPermissions(arrayOf(Manifest.permission.CAMERA), Define.STORAGE_REQUEST_CODE)
+                        if(photoFile != null){
+                            val photoURI: Uri = FileProvider.getUriForFile(mContext, Define.AUTHORITY, photoFile)
+                            cameraPath = photoURI.toString()
+                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                        } else {
+                            takePictureIntent = null
+                        }
+                    }
+
+                    val contentSelectionIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                    contentSelectionIntent.type = "image/*"
+
+                    Log.d("wooryeol", "cameraPath >>> $cameraPath")
+
+                    val intentArray = if(takePictureIntent != null) {
+                        arrayOf(takePictureIntent)
+                    } else {
+                        // arrayOf<Intent>()
+                        takePictureIntent?.get(0)
+                    }
+
+                    val chooserIntent = Intent(Intent.ACTION_CHOOSER)
+                    chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent)
+                    chooserIntent.putExtra(Intent.EXTRA_TITLE,"사용할 앱을 선택해주세요.")
+                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray)
+                    launcher.launch(chooserIntent)
+                } catch (e : Exception) {
+                    e.printStackTrace()
                 }
                 return true
             }
@@ -281,54 +310,12 @@ class WebViewActivity_V2 : AppCompatActivity() {
         webview.loadUrl(url)
     }
 
-    /*fun createImageFile(): File? {
-        @SuppressLint("SimpleDateFormat")
+    @SuppressLint("SimpleDateFormat")
+    fun createImageFile(): File? {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val imageFileName = "img_" + timeStamp + "_"
         val storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(imageFileName, ".jpg", storageDir)
-    }*/
-
-    @SuppressLint("QueryPermissionsNeeded")
-    fun chooserPicture(){
-        var takePictureIntent: Intent? = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (takePictureIntent?.resolveActivity(packageManager) != null) {
-            // Create the File where the photo should go
-            val photoFile: File? = try {
-                createImageFile(mContext)
-            } catch (ex: IOException) {
-                // Error occurred while creating the File
-                ex.message?.let { it1 -> Utils.Toast(mContext, it1) }
-                null
-            }
-            // Continue only if the File was successfully created
-            photoFile?.also {
-                mUri = FileProvider.getUriForFile(mContext, Define.AUTHORITY, it)
-                takePictureIntent?.putExtra(MediaStore.EXTRA_OUTPUT, mUri)
-            }
-        }
-
-        val contentSelectionIntent = Intent(Intent.ACTION_GET_CONTENT)
-        contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE)
-        contentSelectionIntent.type = "image/*"
-
-        val intentArray: Array<Intent?>
-        intentArray = takePictureIntent?.let { arrayOf(it) } ?: arrayOfNulls(0)
-
-        val chooserIntent = Intent(Intent.ACTION_CHOOSER)
-        chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent)
-        chooserIntent.putExtra(Intent.EXTRA_TITLE, "사진 가져올 방법을 선택해 주세요.")
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray)
-
-        startActivityForResult(chooserIntent, Define.GET_PHOTO_REQUEST_CODE)
-    }
-
-    @SuppressLint("SimpleDateFormat")
-    fun createImageFile(context: Context): File? {
-        // Create an image file name
-        val timeStamp: String = SimpleDateFormat("yyyyMMddHHmmss").format(Date())
-        val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        return File.createTempFile("SE_${timeStamp}", ".jpg",storageDir)
     }
 
     fun urlSchemeIntent(view: WebView, url: String): Boolean {
@@ -408,6 +395,33 @@ class WebViewActivity_V2 : AppCompatActivity() {
                 putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
             }
             return Intent.createChooser(intent, "첨부파일 선택")
+        }
+    }
+
+    val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val intent = result.data
+
+            if(intent == null){ //바로 사진을 찍어서 올리는 경우
+                val results = arrayOf(Uri.parse(cameraPath))
+                lastSelectedUris = results
+                mUploadMessage!!.onReceiveValue(results)
+            } else{ //사진 앱을 통해 사진을 가져온 경우
+                val results = intent.data!!
+                lastSelectedUris = arrayOf(results)
+                mUploadMessage!!.onReceiveValue(arrayOf(results))
+            }
+        } else if (result.resultCode == RESULT_CANCELED) {
+            // 사용자가 선택을 취소한 경우, 기존 선택 유지
+            if (lastSelectedUris != null) {
+                mUploadMessage?.onReceiveValue(lastSelectedUris)
+            } else {
+                // 기존에 선택된 파일이 없는 경우, null을 전달하여 선택이 취소되었음을 알림
+                mUploadMessage?.onReceiveValue(null)
+            }
+        } else{ //취소 한 경우 초기화
+            mUploadMessage!!.onReceiveValue(null)
+            mUploadMessage = null
         }
     }
 
@@ -957,40 +971,6 @@ class WebViewActivity_V2 : AppCompatActivity() {
     private fun clearUploadMessage() {
         mUploadMessage?.onReceiveValue(null)
         mUploadMessage = null
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == Define.GET_PHOTO_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                if (mUploadMessage == null) {
-                    super.onActivityResult(requestCode, resultCode, data)
-                    return
-                }
-
-
-                if (data == null) {    //카메라 촬영
-                    mUri?.let {
-                        mUploadMessage?.onReceiveValue(arrayOf(it))
-                    }
-                } else {    //앨범 가져오기
-                    mUploadMessage?.onReceiveValue(
-                        WebChromeClient.FileChooserParams.parseResult(
-                            resultCode,
-                            data
-                        )
-                    )
-                }
-                mUploadMessage = null
-            } else {
-                if(mUploadMessage != null) {
-                    mUploadMessage?.onReceiveValue(null)
-                    mUploadMessage = null;
-                }
-                Log.d("wooryeol", "dfdf >>>")
-            }
-        }
     }
 
     override fun onResume() {
