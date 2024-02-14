@@ -76,14 +76,14 @@ class RewardActivity : AppCompatActivity() {
 
         //뷰 페이저
         val list: List<HotelModel> = arrayListOf(
-            HotelModel(R.drawable.grand, "", "그랜드인터컨티넨탈", "${Define.DOMAIN}?hotelCode=21&lang=kor&prodID=163"),
-            HotelModel(R.drawable.coex, "", "인터컨티넨탈 코엑스", "${Define.DOMAIN}?hotelCode=23&lang=kor&prodID=164"),
-            HotelModel(R.drawable.parnas_jeju, "", "파르나스 호텔 제주", "${Define.DOMAIN}?hotelCode=26&lang=kor&prodID=170"),
-            HotelModel(R.drawable.pangyo, "", "나인트리 판교", "${Define.DOMAIN}?hotelCode=27&lang=kor&prodID=165"),
-            HotelModel(R.drawable.myoungdong_2, "", "나인트리 명동2", "${Define.DOMAIN}?hotelCode=29&lang=kor&prodID=167"),
-            HotelModel(R.drawable.insadong, "", "나인트리 인사동", "${Define.DOMAIN}?hotelCode=30&lang=kor&prodID=168"),
-            HotelModel(R.drawable.myoungdong_1, "", "나인트리 명동", "${Define.DOMAIN}?hotelCode=28&lang=kor&prodID=166"),
-            HotelModel(R.drawable.dongdaemoon, "", "나인트리 동대문", "${Define.DOMAIN}?hotelCode=31&lang=kor&prodID=169")
+            HotelModel(R.drawable.grand, "", "그랜드인터컨티넨탈", "${Define.DOMAIN}?hotelCode=21&lang=kor"),
+            HotelModel(R.drawable.coex, "", "인터컨티넨탈 코엑스", "${Define.DOMAIN}?hotelCode=23&lang=kor&"),
+            HotelModel(R.drawable.parnas_jeju, "", "파르나스 호텔 제주", "${Define.DOMAIN}?hotelCode=26&lang=kor"),
+            HotelModel(R.drawable.pangyo, "", "나인트리 판교", "${Define.DOMAIN}?hotelCode=27&lang=kor"),
+            HotelModel(R.drawable.myoungdong_2, "", "나인트리 명동2", "${Define.DOMAIN}?hotelCode=29&lang=kor"),
+            HotelModel(R.drawable.insadong, "", "나인트리 인사동", "${Define.DOMAIN}?hotelCode=30&lang=kor"),
+            HotelModel(R.drawable.myoungdong_1, "", "나인트리 명동", "${Define.DOMAIN}?hotelCode=28&lang=kor"),
+            HotelModel(R.drawable.dongdaemoon, "", "나인트리 동대문", "${Define.DOMAIN}?hotelCode=31&lang=kor")
         )
 
         val viewPagerAdapter = ViewPagerAdapter(mContext)
