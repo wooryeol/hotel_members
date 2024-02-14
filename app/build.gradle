@@ -42,7 +42,7 @@ android {
 
             android.applicationVariants.all { variant ->
                 variant.outputs.all {
-                    outputFileName = "SE(" + defaultConfig.versionName + ")_test.apk"
+                    outputFileName = "parnas(" + defaultConfig.versionName + ")_test.apk"
                 }
             }
         }
@@ -54,7 +54,7 @@ android {
 
             android.applicationVariants.all { variant ->
                 variant.outputs.all {
-                    outputFileName = "SE(" + defaultConfig.versionName + ")_release.apk"
+                    outputFileName = "parnas(" + defaultConfig.versionName + ")_release.apk"
                 }
             }
         }
