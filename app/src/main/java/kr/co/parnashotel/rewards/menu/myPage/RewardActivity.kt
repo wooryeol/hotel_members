@@ -1,36 +1,47 @@
 package kr.co.parnashotel.rewards.menu.myPage
 
+import android.animation.Animator
+import android.animation.TimeInterpolator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.Message
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.AccelerateInterpolator
 import android.widget.LinearLayout
+import android.widget.Scroller
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kr.co.parnashotel.R
 import kr.co.parnashotel.rewards.common.Utils
 import kr.co.parnashotel.databinding.ActivityRewardBinding
 import kr.co.parnashotel.databinding.CellRewardBinding
 import kr.co.parnashotel.rewards.common.Define
-import kr.co.parnashotel.rewards.common.GlobalApplication
-import kr.co.parnashotel.rewards.common.SharedData
 import kr.co.parnashotel.rewards.menu.home.MainActivity
-import kr.co.parnashotel.rewards.menu.webview.WebViewActivity
 import kr.co.parnashotel.rewards.menu.webview.WebViewActivity_V2
 import kr.co.parnashotel.rewards.model.HotelModel
 import kr.co.parnashotel.rewards.model.UserInfoModel_V2
 import java.text.NumberFormat
 import java.util.Locale
+import kotlin.math.abs
 
 class RewardActivity : AppCompatActivity() {
 
@@ -46,7 +57,7 @@ class RewardActivity : AppCompatActivity() {
 
     private var currentPosition = 0
     private var myHandler = MyHandler()
-    private val intervalTime = 1500.toLong()
+    private val intervalTime = 3000L
 
     @SuppressLint("ResourceType", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,7 +112,25 @@ class RewardActivity : AppCompatActivity() {
                         ViewPager2.SCROLL_STATE_DRAGGING -> autoScrollStop()
                     }
                 }
+
+                override fun onPageSelected(position: Int) {
+                    super.onPageSelected(position)
+                    // 사용자가 페이지를 변경할 때마다 currentPosition 업데이트
+                    currentPosition = position
+                }
             })
+        }
+
+        mBinding.viewPager.setPageTransformer { page, position ->
+            page.apply {
+                translationX = width * -position
+                alpha = when {
+                    position <= -1.0F || position >= 1.0F -> 0.0F
+                    position == 0.0F -> 1.0F
+                    else -> 1.0F - abs(position)
+                }
+            }
+            Log.d("ViewPagerTransform", "Page position: $position, Alpha: ${page.alpha}")
         }
 
         getSetting()
@@ -211,16 +240,20 @@ class RewardActivity : AppCompatActivity() {
         myHandler.removeMessages(0)
     }
 
-    private inner class MyHandler: Handler() {
+    @SuppressLint("HandlerLeak")
+    private inner class MyHandler: Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
             if (currentPosition == 7) {
-                mBinding.viewPager.setCurrentItem(0, true)
+                mBinding.viewPager.setCurrentItem(0, 500, false)
                 currentPosition = 0
             } else {
-                mBinding.viewPager.setCurrentItem(++currentPosition, true)
+                mBinding.viewPager.setCurrentItem(++currentPosition, 500)
                 autoScrollStart(intervalTime)
             }
+
+            // 다음 자동 슬라이드 시작
+            autoScrollStart(intervalTime)
         }
     }
 
@@ -263,8 +296,9 @@ class RewardActivity : AppCompatActivity() {
         var datalist: List<HotelModel> = java.util.ArrayList()
         var mContext = context
 
-        inner class PagerViewHolder(private val binding: CellRewardBinding) : RecyclerView.ViewHolder(binding.root){
-            fun bind(itemModel: HotelModel){
+        inner class PagerViewHolder(private val binding: CellRewardBinding) :
+            RecyclerView.ViewHolder(binding.root) {
+            fun bind(itemModel: HotelModel) {
 
                 itemView.setOnClickListener {
                     Utils.moveToPage(mContext, itemModel.url)
@@ -276,23 +310,29 @@ class RewardActivity : AppCompatActivity() {
                     "클럽" -> {
                         binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_c))
                     }
+
                     "v1" -> {
                         binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_v1))
                     }
+
                     "v2" -> {
                         binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_v2))
                     }
+
                     "v3" -> {
                         binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_v3))
                     }
+
                     else -> {
                         binding.cellTitle.setBackgroundColor(mContext.resources.getColor(R.color.grade_v4))
                     }
                 }
             }
         }
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):PagerViewHolder {
-            val binding = CellRewardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PagerViewHolder {
+            val binding =
+                CellRewardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             return PagerViewHolder(binding)
         }
 
@@ -300,6 +340,51 @@ class RewardActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: PagerViewHolder, position: Int) {
             holder.bind(datalist[position])
+        }
+    }
+
+    fun ViewPager2.setCurrentItem(
+        item: Int,
+        duration: Long,
+        smooth: Boolean = true, // smooth 파라미터 추가
+        interpolator: TimeInterpolator = AccelerateDecelerateInterpolator(),
+        pagePxWidth: Int = width, // Default value taken from getWidth() from ViewPager2 view
+        pagePxHeight: Int = height
+    ) {
+        if (smooth) {
+            val pxToDrag: Int = if (orientation == ViewPager2.ORIENTATION_HORIZONTAL) {
+                pagePxWidth * (item - currentItem)
+            } else {
+                pagePxHeight * (item - currentItem)
+            }
+
+            val animator = ValueAnimator.ofInt(0, pxToDrag).apply {
+                var previousValue = 0
+                addUpdateListener { valueAnimator ->
+                    val currentValue = valueAnimator.animatedValue as Int
+                    val currentPxToDrag = (currentValue - previousValue).toFloat()
+                    fakeDragBy(-currentPxToDrag)
+                    previousValue = currentValue
+                }
+                addListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator) {
+                        beginFakeDrag()
+                    }
+
+                    override fun onAnimationEnd(animation: Animator) {
+                        endFakeDrag()
+                    }
+
+                    override fun onAnimationCancel(animation: Animator) {}
+                    override fun onAnimationRepeat(animation: Animator) {}
+                })
+                this.interpolator = interpolator
+                this.duration = duration
+            }
+            animator.start()
+        } else {
+            // smooth가 false일 경우 기본 전환 메커니즘 사용
+            setCurrentItem(item, false)
         }
     }
 }

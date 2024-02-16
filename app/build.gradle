@@ -128,4 +128,6 @@ dependencies {
 
     //테드 퍼미션
     implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
 }
