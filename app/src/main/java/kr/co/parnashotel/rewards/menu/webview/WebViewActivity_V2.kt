@@ -732,6 +732,7 @@ class WebViewActivity_V2 : AppCompatActivity() {
                 val membershipNo = json.get("membershipNo").toString()
                 val coupon = json.get("coupon").toString().toInt()
                 val point = json.get("point").toString().toInt()
+                val percent = json.get("percent").toString().toInt()
                 val accessToken = json.get("accessToken").toString()
                 val userInfoModel = UserInfoModel_V2(
                     name,
@@ -739,6 +740,7 @@ class WebViewActivity_V2 : AppCompatActivity() {
                     membershipNo,
                     point,
                     coupon,
+                    percent,
                     accessToken,
                 )
                 userInfoModel.save(mContext)

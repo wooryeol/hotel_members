@@ -27,6 +27,7 @@
                     android:id="@+id/main_logo"
                     android:layout_width="100dp"
                     android:layout_height="60dp"
+                    android:layout_centerHorizontal="true"
                     android:contentDescription="@string/todo"
                     android:src="@drawable/header_title" />
 
@@ -125,7 +126,7 @@
             android:textAlignment="center"
             android:fontFamily="@font/noto_sans_kr_regular"
             android:textColor="@color/black"
-            android:textSize="12dp"
+            android:textSize="13dp"
             android:background="@drawable/background_border_59c4c8" />
 
     </FrameLayout>
@@ -262,21 +263,17 @@
     <RelativeLayout
         android:id="@+id/footer"
         android:layout_width="match_parent"
-        android:layout_height="75dp">
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="75dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/recommend_sample"/>
+        android:layout_height="75dp"
+        android:background="@color/color_F3F4F4">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
             android:fontFamily="@font/noto_sans_kr_regular"
             android:text="@string/main_footer_msg"
-            android:textColor="@color/white"
+            android:textColor="@color/color_171717"
             android:textSize="13dp"
             android:textStyle="bold"
             tools:ignore="RelativeOverlap" />

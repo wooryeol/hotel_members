@@ -10,6 +10,7 @@ data class UserInfoModel_V2(
     var membershipNo: String? = "",
     var point: Int? = 0,
     var coupon: Int? = 0,
+    var percent: Int? = 0,
     var accessToken: String? = ""
 ):Serializable {
     fun save(mContext: Context) {

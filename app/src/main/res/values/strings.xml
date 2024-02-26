@@ -32,7 +32,7 @@
     <string name="dining_reservations">다이닝 예약</string>
     <string name="hotel_search">호텔 찾기</string>
     <string name="reservation_inquiry">예약 조회</string>
-    <string name="main_footer_msg">리워즈 회원이 되어 전용 상품을 누려보세요</string>
+    <string name="main_footer_msg">리워즈 회원 전용 상품과 혜택을 만나보세요</string>
 
     <!--마이페이지-->
     <string name="page_name">REWARD</string>

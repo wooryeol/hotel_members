@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
             HotelModel(R.drawable.coex, "", "인터컨티넨탈 서울 코엑스", "${Define.DOMAIN}?hotelCode=23&lang=kor"),
             HotelModel(R.drawable.parnas_jeju, "", "파르나스 호텔 제주", "${Define.DOMAIN}?hotelCode=26&lang=kor"),
             HotelModel(R.drawable.pangyo, "", "나인트리 프리미어 호텔 서울 판교", "${Define.DOMAIN}?hotelCode=27&lang=kor"),
-            HotelModel(R.drawable.myoungdong_2, "", "나인트리 프리미어 호텔 명동2", "${Define.DOMAIN}?hotelCode=29&lang=kor"),
+            HotelModel(R.drawable.myoungdong_2, "", "나인트리 프리미어 호텔 명동 II", "${Define.DOMAIN}?hotelCode=29&lang=kor"),
             HotelModel(R.drawable.insadong, "", "나인트리 프리미어 호텔 인사동", "${Define.DOMAIN}?hotelCode=30&lang=kor"),
             HotelModel(R.drawable.myoungdong_1, "", "나인트리 호텔 명동", "${Define.DOMAIN}?hotelCode=28&lang=kor"),
             HotelModel(R.drawable.dongdaemoon, "", "나인트리 호텔 동대문", "${Define.DOMAIN}?hotelCode=31&lang=kor")
@@ -110,6 +110,10 @@ class MainActivity : AppCompatActivity() {
         }
         mBinding.mainPopup.setOnClickListener {
             Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.membershipIntroduction}")
+        }
+
+        mBinding.footer.setOnClickListener {
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.login}")
         }
     }
 

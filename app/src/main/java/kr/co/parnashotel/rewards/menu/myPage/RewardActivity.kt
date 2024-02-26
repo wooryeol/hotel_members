@@ -53,9 +53,9 @@ class RewardActivity : AppCompatActivity() {
 
     private lateinit var mContext: Context
     private var _mBinding: ActivityRewardBinding? = null
-    private val mBinding get() = _mBinding!!
-
     private var currentPosition = 0
+    private var userInfoModel: UserInfoModel_V2? = null
+    private val mBinding get() = _mBinding!!
     private var myHandler = MyHandler()
     private val intervalTime = 3000L
 
@@ -87,14 +87,14 @@ class RewardActivity : AppCompatActivity() {
 
         //뷰 페이저
         val list: List<HotelModel> = arrayListOf(
-            HotelModel(R.drawable.grand, "", "그랜드인터컨티넨탈", "${Define.DOMAIN}?hotelCode=21&lang=kor"),
-            HotelModel(R.drawable.coex, "", "인터컨티넨탈 코엑스", "${Define.DOMAIN}?hotelCode=23&lang=kor&"),
+            HotelModel(R.drawable.grand, "", "그랜드 인터컨티넨탈 서울 파르나스", "${Define.DOMAIN}?hotelCode=21&lang=kor"),
+            HotelModel(R.drawable.coex, "", "인터컨티넨탈 서울 코엑스", "${Define.DOMAIN}?hotelCode=23&lang=kor&"),
             HotelModel(R.drawable.parnas_jeju, "", "파르나스 호텔 제주", "${Define.DOMAIN}?hotelCode=26&lang=kor"),
-            HotelModel(R.drawable.pangyo, "", "나인트리 판교", "${Define.DOMAIN}?hotelCode=27&lang=kor"),
-            HotelModel(R.drawable.myoungdong_2, "", "나인트리 명동2", "${Define.DOMAIN}?hotelCode=29&lang=kor"),
-            HotelModel(R.drawable.insadong, "", "나인트리 인사동", "${Define.DOMAIN}?hotelCode=30&lang=kor"),
-            HotelModel(R.drawable.myoungdong_1, "", "나인트리 명동", "${Define.DOMAIN}?hotelCode=28&lang=kor"),
-            HotelModel(R.drawable.dongdaemoon, "", "나인트리 동대문", "${Define.DOMAIN}?hotelCode=31&lang=kor")
+            HotelModel(R.drawable.pangyo, "", "나인트리 프리미어 호텔 서울 판교", "${Define.DOMAIN}?hotelCode=27&lang=kor"),
+            HotelModel(R.drawable.myoungdong_2, "", "나인트리 프리미어 호텔 명동 II", "${Define.DOMAIN}?hotelCode=29&lang=kor"),
+            HotelModel(R.drawable.insadong, "", "나인트리 프리미어 호텔 인사동", "${Define.DOMAIN}?hotelCode=30&lang=kor"),
+            HotelModel(R.drawable.myoungdong_1, "", "나인트리 호텔 명동", "${Define.DOMAIN}?hotelCode=28&lang=kor"),
+            HotelModel(R.drawable.dongdaemoon, "", "나인트리 호텔 동대문", "${Define.DOMAIN}?hotelCode=31&lang=kor")
         )
 
         val viewPagerAdapter = ViewPagerAdapter(mContext)
@@ -148,11 +148,12 @@ class RewardActivity : AppCompatActivity() {
 
         MainActivity.isLoginButtonClicked = false
 
-        val userInfoModel = UserInfoModel_V2().loadUserInfo(mContext)
+        userInfoModel = UserInfoModel_V2().loadUserInfo(mContext)
         val name  = userInfoModel?.name
         val gradeName  = userInfoModel?.gradeName
         val membershipNo  = userInfoModel?.membershipNo
         val point  = userInfoModel?.point
+        val percent  = userInfoModel?.percent
 
         // 회원명
         mBinding.userName.text = name
@@ -164,17 +165,14 @@ class RewardActivity : AppCompatActivity() {
         val formattedPoint = NumberFormat.getNumberInstance(Locale.getDefault()).format(point)
         mBinding.btmSheetPoint.text = formattedPoint
 
-        // 현재 grade bubble 위치
-        currentGrade(50)
-
         // 바코드 생성
         createBarcode(membershipNo!!)
 
         // 티어별 ui 설정
-        tierSetting(gradeName!!)
+        tierSetting(gradeName!!, percent)
     }
 
-    private fun tierSetting(gradeName: String){
+    private fun tierSetting(gradeName: String, percent: Int?){
         when (gradeName) {
             "클럽" -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_c))
@@ -183,6 +181,8 @@ class RewardActivity : AppCompatActivity() {
                 mBinding.gradeImg.setImageResource(R.drawable.grade_c)
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_club)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_club)
+
+                gradeSetting(percent!!)
             }
             "V1" -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v1))
@@ -190,6 +190,8 @@ class RewardActivity : AppCompatActivity() {
                 mBinding.gradeImg.setImageResource(R.drawable.grade_v1)
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_v1)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_v1)
+
+                gradeSetting(25)
             }
             "V2" -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v2))
@@ -197,6 +199,8 @@ class RewardActivity : AppCompatActivity() {
                 mBinding.gradeImg.setImageResource(R.drawable.grade_v2)
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_v2)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_v2)
+
+                gradeSetting(50)
             }
             "V3" -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v3))
@@ -204,6 +208,8 @@ class RewardActivity : AppCompatActivity() {
                 mBinding.gradeImg.setImageResource(R.drawable.grade_v3)
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_v3)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_v3)
+
+                gradeSetting(75)
             }
             else -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v4))
@@ -211,6 +217,20 @@ class RewardActivity : AppCompatActivity() {
                 mBinding.gradeImg.setImageResource(R.drawable.grade_v4)
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_v4)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_v4)
+
+                gradeSetting(100)
+            }
+        }
+    }
+
+    private fun gradeSetting(grade: Int) {
+        val percent  = userInfoModel?.percent
+
+        if (percent != null) {
+            if(percent > grade) {
+                currentGrade(percent - grade)
+            } else {
+                currentGrade(percent)
             }
         }
     }
