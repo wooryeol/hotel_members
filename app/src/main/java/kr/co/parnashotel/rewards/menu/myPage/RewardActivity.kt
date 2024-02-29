@@ -228,7 +228,7 @@ class RewardActivity : AppCompatActivity() {
 
         if (percent != null) {
             if(percent > grade) {
-                currentGrade(percent - grade)
+                currentGrade((percent - grade) * 4)
             } else {
                 currentGrade(percent)
             }
