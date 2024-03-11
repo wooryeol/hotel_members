@@ -182,7 +182,7 @@ class RewardActivity : AppCompatActivity() {
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_club)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_club)
 
-                gradeSetting(percent!!)
+                gradeSetting(percent!!.toFloat(), 25f)
             }
             "V1" -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v1))
@@ -191,7 +191,7 @@ class RewardActivity : AppCompatActivity() {
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_v1)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_v1)
 
-                gradeSetting(25)
+                gradeSetting(25f, 50f)
             }
             "V2" -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v2))
@@ -200,7 +200,7 @@ class RewardActivity : AppCompatActivity() {
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_v2)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_v2)
 
-                gradeSetting(50)
+                gradeSetting(50f, 75f)
             }
             "V3" -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v3))
@@ -209,7 +209,7 @@ class RewardActivity : AppCompatActivity() {
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_v3)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_v3)
 
-                gradeSetting(75)
+                gradeSetting(75f, 100f)
             }
             else -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v4))
@@ -218,20 +218,27 @@ class RewardActivity : AppCompatActivity() {
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_v4)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_v4)
 
-                gradeSetting(100)
+                // gradeSetting(100)
+                currentGrade(100)
             }
         }
     }
 
-    private fun gradeSetting(grade: Int) {
+    private fun gradeSetting(startGrade: Float, maxGrade: Float) {
         val percent  = userInfoModel?.percent
+        // let rangePercent: CGFloat = 25 // 각 등급의 퍼센트 범위
+        // let totalValue: CGFloat = ((CGFloat(percent) - startGrade) / rangePercent) * 100
 
         if (percent != null) {
-            if(percent > grade) {
+            /*if(percent > grade) {
                 currentGrade((percent - grade) * 4)
             } else {
                 currentGrade(percent)
-            }
+            }*/
+
+            val rangePercent = 25f
+            val totalValue = ((percent.toFloat() - startGrade) / rangePercent) * 100
+            currentGrade(totalValue.toInt())
         }
     }
 
