@@ -104,7 +104,11 @@ class WebViewActivity_V2 : AppCompatActivity() {
 
         // 뒤로가기 버튼
         mBinding.backBtn.setOnClickListener {
-            onBackPressed()
+            if (webview.canGoBack()) {
+                webview.goBack()
+            } else {
+                finish()
+            }
         }
     }
 
@@ -533,15 +537,11 @@ class WebViewActivity_V2 : AppCompatActivity() {
     }
 
     private fun canGoBack(): Boolean? {
-        return if (webview != null) {
-            webview?.canGoBack()
-        } else false
+        return webview.canGoBack()
     }
 
     private fun goBack() {
-        if (webview != null) {
-            webview?.goBack()
-        }
+        webview.goBack()
     }
 
     inner class FinishTimer(millisInFuture: Long, countDownInterval: Long) : CountDownTimer(millisInFuture, countDownInterval) {

@@ -1,13 +1,10 @@
 package kr.co.parnashotel.rewards.menu.home
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.*
-import android.util.DisplayMetrics
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,11 +17,7 @@ import kr.co.parnashotel.databinding.ActMainBinding
 import kr.co.parnashotel.databinding.CellHotelBinding
 import kr.co.parnashotel.rewards.common.Define
 import kr.co.parnashotel.rewards.common.GlobalApplication
-import kr.co.parnashotel.rewards.common.SharedData
-import kr.co.parnashotel.rewards.common.UtilPermission
 import kr.co.parnashotel.rewards.common.Utils
-import kr.co.parnashotel.rewards.menu.myPage.RewardActivity
-import kr.co.parnashotel.rewards.menu.webview.WebViewActivity
 import kr.co.parnashotel.rewards.menu.webview.WebViewActivity_V2
 import kr.co.parnashotel.rewards.model.HotelModel
 import kr.co.parnashotel.rewards.model.MembershipUserInfoModel_V2
@@ -81,6 +74,8 @@ class MainActivity : AppCompatActivity() {
         if (GlobalApplication.isLoggedIn){
             mBinding.loginTv.visibility = View.GONE
             mBinding.regTv.text = getString(R.string.btn_logout)
+
+            mBinding.tvReservationCheck.text = getString(R.string.dashBoard)
             mBinding.regTv.setOnClickListener {
                 logout()
             }
@@ -113,7 +108,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         mBinding.footer.setOnClickListener {
-            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.login}")
+            if (GlobalApplication.isLoggedIn) {
+                Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.membershipIntroduction}")
+            } else {
+                Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.login}")
+            }
         }
     }
 

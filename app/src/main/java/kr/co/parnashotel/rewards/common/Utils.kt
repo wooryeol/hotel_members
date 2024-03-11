@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Handler
 import android.provider.Settings
 import android.util.TypedValue
+import androidx.appcompat.app.AppCompatActivity
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
 import kr.co.parnashotel.BuildConfig
