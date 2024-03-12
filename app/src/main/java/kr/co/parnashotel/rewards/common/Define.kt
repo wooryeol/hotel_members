@@ -15,6 +15,7 @@ object Define {
     const val loggedInReservationCheck = "/myPage/reservationCheck/roomReservation"
     const val dashBoard = "/myPage"
     const val membershipIntroduction = "/membershipIntroduction"
+    const val rewardProduct = "/membershipIntroduction/MemberOnlyProduct/"
 
     const val SUCCESS = "success"
     //파일 프로바이더

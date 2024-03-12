@@ -18,6 +18,7 @@ import kr.co.parnashotel.databinding.CellHotelBinding
 import kr.co.parnashotel.rewards.common.Define
 import kr.co.parnashotel.rewards.common.GlobalApplication
 import kr.co.parnashotel.rewards.common.Utils
+import kr.co.parnashotel.rewards.menu.myPage.RewardActivity
 import kr.co.parnashotel.rewards.menu.webview.WebViewActivity_V2
 import kr.co.parnashotel.rewards.model.HotelModel
 import kr.co.parnashotel.rewards.model.MembershipUserInfoModel_V2
@@ -76,8 +77,11 @@ class MainActivity : AppCompatActivity() {
             mBinding.regTv.text = getString(R.string.btn_logout)
 
             mBinding.tvReservationCheck.text = getString(R.string.dashBoard)
+            mBinding.icon.setImageResource(R.drawable.icon_my_page)
             mBinding.regTv.setOnClickListener {
                 logout()
+                mBinding.tvReservationCheck.text = getString(R.string.reservation_inquiry)
+                mBinding.icon.setImageResource(R.drawable.icon_search_rsv_status)
             }
         } else {
             mBinding.regTv.setOnClickListener {
@@ -98,7 +102,10 @@ class MainActivity : AppCompatActivity() {
         }
         mBinding.reservationCheck.setOnClickListener {
             if (GlobalApplication.isLoggedIn) {
-                loginMove(Define.DOMAIN+Define.loggedInReservationCheck)
+                val userInfoModel = UserInfoModel_V2().loadUserInfo(mContext)
+                val intent = Intent(mContext, RewardActivity::class.java)
+                intent.putExtra("userData", userInfoModel)
+                startActivity(intent)
             } else {
                 Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.reservationCheck}")
             }
@@ -108,11 +115,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         mBinding.footer.setOnClickListener {
-            if (GlobalApplication.isLoggedIn) {
-                Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.membershipIntroduction}")
+            /*if (GlobalApplication.isLoggedIn){
+                val userInfoModel = UserInfoModel_V2().loadUserInfo(mContext)
+                val intent = Intent(mContext, RewardActivity::class.java)
+                intent.putExtra("userData", userInfoModel)
+                startActivity(intent)
             } else {
                 Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.login}")
-            }
+            }*/
+            Utils.moveToPage(mContext, "${Define.DOMAIN}${Define.rewardProduct}")
         }
     }
 
