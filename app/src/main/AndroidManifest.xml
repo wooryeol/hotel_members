@@ -54,7 +54,7 @@
         <activity android:name="kr.co.parnashotel.rewards.menu.myPage.RewardActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/RewardActionBar">
+            android:theme="@style/WhiteActionBar">
 
         </activity>
 
@@ -68,8 +68,14 @@
                 <action android:name="android.intent.action.MAIN" />
                 <!-- 백그라운드에서 푸시오는 경우 이벤트 처리-->
                 <action android:name="NOTIFICATION_CLICK" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:host="action" android:scheme="parnashotelappaos"/>
             </intent-filter>
 
         </activity>

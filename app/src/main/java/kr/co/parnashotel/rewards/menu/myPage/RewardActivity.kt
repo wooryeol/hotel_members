@@ -14,6 +14,7 @@ import android.os.Message
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -35,10 +36,17 @@ import kr.co.parnashotel.rewards.common.Utils
 import kr.co.parnashotel.databinding.ActivityRewardBinding
 import kr.co.parnashotel.databinding.CellRewardBinding
 import kr.co.parnashotel.rewards.common.Define
+import kr.co.parnashotel.rewards.common.SharedData
 import kr.co.parnashotel.rewards.menu.home.MainActivity
 import kr.co.parnashotel.rewards.menu.webview.WebViewActivity_V2
 import kr.co.parnashotel.rewards.model.HotelModel
 import kr.co.parnashotel.rewards.model.UserInfoModel_V2
+import kr.co.parnashotel.rewards.net.ApiClientService
+import kr.co.parnashotel.rewards.net.model.DashboardInfoModel
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.create
 import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.abs
@@ -50,20 +58,22 @@ class RewardActivity : AppCompatActivity() {
         var rewardActivity: RewardActivity? = null
     }
 
-
     private lateinit var mContext: Context
-    private var _mBinding: ActivityRewardBinding? = null
+    //private var _mBinding: ActivityRewardBinding? = null
     private var currentPosition = 0
     private var userInfoModel: UserInfoModel_V2? = null
-    private val mBinding get() = _mBinding!!
+    //private val mBinding get() = _mBinding!!
+    private lateinit var mBinding: ActivityRewardBinding
     private var myHandler = MyHandler()
     private val intervalTime = 3000L
 
     @SuppressLint("ResourceType", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        _mBinding = ActivityRewardBinding.inflate(layoutInflater)
-        setContentView(_mBinding!!.root)
+        //_mBinding = ActivityRewardBinding.inflate(layoutInflater)
+        //setContentView(_mBinding!!.root)
+        mBinding = ActivityRewardBinding.inflate(layoutInflater)
+        setContentView(mBinding.root)
 
         mContext = this
         rewardActivity = this
@@ -87,14 +97,14 @@ class RewardActivity : AppCompatActivity() {
 
         //뷰 페이저
         val list: List<HotelModel> = arrayListOf(
-            HotelModel(R.drawable.grand_1, "", "그랜드 인터컨티넨탈 서울 파르나스", "${Define.DOMAIN}?hotelCode=21&lang=kor"),
-            HotelModel(R.drawable.coex_2, "", "인터컨티넨탈 서울 코엑스", "${Define.DOMAIN}?hotelCode=23&lang=kor&"),
-            HotelModel(R.drawable.parnas_jeju_3, "", "파르나스 호텔 제주", "${Define.DOMAIN}?hotelCode=26&lang=kor"),
-            HotelModel(R.drawable.pangyo, "", "나인트리 프리미어 호텔 서울 판교", "${Define.DOMAIN}?hotelCode=27&lang=kor"),
-            HotelModel(R.drawable.myoungdong_2, "", "나인트리 프리미어 호텔 명동 II", "${Define.DOMAIN}?hotelCode=29&lang=kor"),
-            HotelModel(R.drawable.insadong, "", "나인트리 프리미어 호텔 인사동", "${Define.DOMAIN}?hotelCode=30&lang=kor"),
-            HotelModel(R.drawable.myoungdong_1, "", "나인트리 호텔 명동", "${Define.DOMAIN}?hotelCode=28&lang=kor"),
-            HotelModel(R.drawable.dongdaemoon, "", "나인트리 호텔 동대문", "${Define.DOMAIN}?hotelCode=31&lang=kor")
+            HotelModel(R.drawable.my_page_grand, "", "그랜드 인터컨티넨탈 서울 파르나스", "${Define.DOMAIN}?hotelCode=21&lang=kor"),
+            HotelModel(R.drawable.my_page_coex, "", "인터컨티넨탈 서울 코엑스", "${Define.DOMAIN}?hotelCode=23&lang=kor&"),
+            HotelModel(R.drawable.my_page_parnas_jeju, "", "파르나스 호텔 제주", "${Define.DOMAIN}?hotelCode=26&lang=kor"),
+            HotelModel(R.drawable.my_page_pangyo, "", "나인트리 프리미어 호텔 서울 판교", "${Define.DOMAIN}?hotelCode=27&lang=kor"),
+            HotelModel(R.drawable.my_page_myoungdong_2, "", "나인트리 프리미어 호텔 명동 II", "${Define.DOMAIN}?hotelCode=29&lang=kor"),
+            HotelModel(R.drawable.my_page_insadong, "", "나인트리 프리미어 호텔 인사동", "${Define.DOMAIN}?hotelCode=30&lang=kor"),
+            HotelModel(R.drawable.my_page_myoungdong_1, "", "나인트리 호텔 명동", "${Define.DOMAIN}?hotelCode=28&lang=kor"),
+            HotelModel(R.drawable.my_page_dongdaemoon, "", "나인트리 호텔 동대문", "${Define.DOMAIN}?hotelCode=31&lang=kor")
         )
 
         val viewPagerAdapter = ViewPagerAdapter(mContext)
@@ -142,10 +152,7 @@ class RewardActivity : AppCompatActivity() {
         startActivity(intent)
     }
     private fun getSetting(){
-        /*val userDataIntent = intent
-        val userData = userDataIntent.getSerializableExtra("userData") as TierModel*/
-        // Log.d("wooryeol", "userData >>> ${GlobalApplication.userInfo}")
-
+        requestDashboardInfo()
         MainActivity.isLoginButtonClicked = false
 
         userInfoModel = UserInfoModel_V2().loadUserInfo(mContext)
@@ -162,8 +169,8 @@ class RewardActivity : AppCompatActivity() {
         mBinding.memNumber.text = membershipNo
 
         // 포인트
-        val formattedPoint = NumberFormat.getNumberInstance(Locale.getDefault()).format(point)
-        mBinding.btmSheetPoint.text = formattedPoint
+        //val formattedPoint = NumberFormat.getNumberInstance(Locale.getDefault()).format(point)
+        //mBinding.btmSheetPoint.text = formattedPoint
 
         // 바코드 생성
         createBarcode(membershipNo!!)
@@ -176,8 +183,7 @@ class RewardActivity : AppCompatActivity() {
         when (gradeName) {
             "클럽" -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_c))
-                //window.statusBarColor = Color.parseColor(getString(R.color.grade_c))
-                window.statusBarColor = mContext.resources.getColor(R.color.grade_c)
+                //window.statusBarColor = mContext.resources.getColor(R.color.grade_c)
                 mBinding.gradeImg.setImageResource(R.drawable.grade_c)
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_club)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_club)
@@ -186,7 +192,7 @@ class RewardActivity : AppCompatActivity() {
             }
             "V1" -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v1))
-                window.statusBarColor = mContext.resources.getColor(R.color.grade_v1)
+                //window.statusBarColor = mContext.resources.getColor(R.color.grade_v1)
                 mBinding.gradeImg.setImageResource(R.drawable.grade_v1)
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_v1)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_v1)
@@ -195,7 +201,7 @@ class RewardActivity : AppCompatActivity() {
             }
             "V2" -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v2))
-                window.statusBarColor = mContext.resources.getColor(R.color.grade_v2)
+                //window.statusBarColor = mContext.resources.getColor(R.color.grade_v2)
                 mBinding.gradeImg.setImageResource(R.drawable.grade_v2)
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_v2)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_v2)
@@ -204,7 +210,7 @@ class RewardActivity : AppCompatActivity() {
             }
             "V3" -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v3))
-                window.statusBarColor = mContext.resources.getColor(R.color.grade_v3)
+                //window.statusBarColor = mContext.resources.getColor(R.color.grade_v3)
                 mBinding.gradeImg.setImageResource(R.drawable.grade_v3)
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_v3)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_v3)
@@ -213,7 +219,7 @@ class RewardActivity : AppCompatActivity() {
             }
             else -> {
                 mBinding.header.setBackgroundColor(mContext.resources.getColor(R.color.grade_v4))
-                window.statusBarColor = mContext.resources.getColor(R.color.grade_v4)
+                //window.statusBarColor = mContext.resources.getColor(R.color.grade_v4)
                 mBinding.gradeImg.setImageResource(R.drawable.grade_v4)
                 mBinding.grade.setImageResource(R.drawable.speech_bubble_v4)
                 mBinding.progressBar.setImageResource(R.drawable.progress_bar_v4)
@@ -245,6 +251,7 @@ class RewardActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         autoScrollStart(intervalTime)
+        requestDashboardInfo()
     }
 
     override fun onPause() {
@@ -252,10 +259,10 @@ class RewardActivity : AppCompatActivity() {
         autoScrollStop()
     }
 
-    override fun onDestroy() {
+    /*override fun onDestroy() {
         super.onDestroy()
-        _mBinding = null
-    }
+        mBinding = null
+    }*/
 
     // 뷰페이저 자동스크롤
     private fun autoScrollStart(intervalTime: Long) {
@@ -414,4 +421,30 @@ class RewardActivity : AppCompatActivity() {
             setCurrentItem(item, false)
         }
     }
+
+    private fun requestDashboardInfo() {
+        mBinding.loadingLayout.bringToFront()
+        val accessToken = userInfoModel?.loadUserInfo(mContext)?.accessToken
+        val membershipNo  = userInfoModel?.membershipNo
+        val service = ApiClientService.retrofit.create(ApiClientService::class.java)
+        val call = service.requestDashboardInfo(accessToken, membershipNo)
+        call.enqueue(object : Callback<DashboardInfoModel> {
+            override fun onResponse(call: Call<DashboardInfoModel>, response: Response<DashboardInfoModel>) {
+                Log.d("wooryeol retrofit", "$response")
+                val body = response.body()
+                if (body?.code == "200") {
+                    mBinding.loadingLayout.visibility = View.GONE
+                    Log.d("wooryeol retrofit", "$body")
+                    val formattedPoint = NumberFormat.getNumberInstance(Locale.getDefault()).format(body.data.gradeInfo.point)
+                    mBinding.btmSheetPoint.text = formattedPoint
+                }
+            }
+
+            override fun onFailure(call: Call<DashboardInfoModel>, t: Throwable) {
+                Log.d("wooryeol retrofit", "RetrofitManager - getTodo() - onFailure() called / t: $t")
+            }
+        })
+    }
+
+
 }

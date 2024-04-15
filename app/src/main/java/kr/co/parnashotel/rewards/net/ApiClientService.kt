@@ -2,10 +2,7 @@ package kr.co.parnashotel.rewards.net
 
 import kr.co.parnashotel.BuildConfig
 import kr.co.parnashotel.rewards.common.Define
-import kr.co.parnashotel.rewards.net.model.MemoInfoModel
-import kr.co.parnashotel.rewards.net.model.PhotoListModel
-import kr.co.parnashotel.rewards.net.model.ResultModel
-import okhttp3.MultipartBody
+import kr.co.parnashotel.rewards.net.model.DashboardInfoModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -15,16 +12,11 @@ import retrofit2.http.*
 import java.util.concurrent.TimeUnit
 
 interface ApiClientService {
-    //푸시키값 넘기기
-    @FormUrlEncoded
-    @POST
-    fun requestAppInfo(
-        @Url url: String?,
-        @Field("device_token") token_id: String?,
-        @Field("user_id") user_id: String?,
-        @Field("device_OS") os: String?,
-        @Field("push_yn") push: String?
-    ): Call<ResultModel>
+    @GET(Define.DASHBOARD_INFO)
+    fun requestDashboardInfo(
+        @Header("Authorization") authorization: String?,
+        @Query("membershipNo") membershipNo: String?,
+    ):Call<DashboardInfoModel>
 
     //푸시키값 넘기기
     @FormUrlEncoded
@@ -35,50 +27,6 @@ interface ApiClientService {
         @Field("device_OS") os: String?,
         @Field("push_yn") push: String?
     ): Call<String>
-
-    //강연 정보 가져오기
-    @GET
-    fun getLectureInfo(
-        @Url url: String?,
-        @Query("Ea_Code") code: String?
-    ): Call<MemoInfoModel>
-
-    //수정을 위한 메모 정보 가져오기
-    @GET
-    fun getMemoInfo(
-        @Url url: String?,
-        @Query("user_id") user_id: String?,
-        @Query("Ea_Index") index: String?
-    ): Call<MemoInfoModel>
-
-    //메모 등록 내용 전송
-    @FormUrlEncoded
-    @POST
-    fun sendRegMemo(
-        @Url url: String?,
-        @Field("user_id") user_id: String?,
-        @Field("Ea_Code") code: String?,
-        @Field(value = "Ea_Content") content: String?,
-        @FieldMap map: LinkedHashMap<String?, String?>?
-    ): Call<ResultModel>
-
-    //메모 수정 내용 전송
-    @FormUrlEncoded
-    @POST
-    fun sendUpdateMemo(
-        @Url url: String?,
-        @Field("user_id") user_id: String?,
-        @Field("Ea_Index") index: String?,
-        @Field(value = "Ea_Content") content: String?,
-        @FieldMap map: LinkedHashMap<String?, String?>?
-    ): Call<ResultModel>
-
-    @Multipart
-    @POST
-    fun fileUpload(
-        @Url url: String?,
-        @Part list: ArrayList<MultipartBody.Part?>?
-    ): Call<PhotoListModel>
 
     companion object {
         val interceptor: HttpLoggingInterceptor
@@ -101,7 +49,7 @@ interface ApiClientService {
         //Gson으로 리턴
         val retrofit: Retrofit
             get() = Retrofit.Builder()
-                .baseUrl(Define.DOMAIN)
+                .baseUrl(Define.API_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(builder.build())
                 .build()

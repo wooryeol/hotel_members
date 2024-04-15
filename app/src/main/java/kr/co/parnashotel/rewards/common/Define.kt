@@ -30,4 +30,8 @@ object Define {
     //handler 사용 시 이벤트 콜백
     const val EVENT_OK = 10000
     const val EVENT_CANCEL = 10001
+
+    //API 통신
+    const val API_BASE_URL = "https://api.parnashotel.com/hub/api/"
+    const val DASHBOARD_INFO = "membership/dashboard/info"
 }
